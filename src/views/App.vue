@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import SignUp from './components/SignUp'
-import Particles from './components/Particles'
+import SignUp from '../components/SignUp'
+import Particles from '../components/Particles'
 export default {
   name: 'App',
   components: {
@@ -33,7 +33,7 @@ export default {
 for all browsers*/
 
 html {
-  background: url(./assets/bg.jpg) no-repeat center center fixed;
+  background: url(../assets/bg.jpg) no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
