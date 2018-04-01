@@ -2,9 +2,9 @@
 <!-- This file controls the particuls that are on screen -->
 
 <template>
-  <div class="white">
+  <div class="black">
     <vue-particles
-        color="#dedede"
+        color="#FE0073"
         :particleOpacity="0.7"
         :particlesNumber="80"
         shapeType="circle"
@@ -26,7 +26,7 @@
 
 <script>
 export default {
-  name: 'Particles'
+  name: 'ParticlesBlack'
 }
 </script>
 
