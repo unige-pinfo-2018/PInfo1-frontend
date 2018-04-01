@@ -10,7 +10,7 @@
     <router-link to="ask">Ask a question</router-link>
   </nav>
     <vue-particles
-        color="#dedede"
+        color="#80ff00"
         :particleOpacity="0.7"
         :particlesNumber="80"
         shapeType="circle"
@@ -32,7 +32,7 @@
 
 <script>
 export default {
-  name: 'Particles'
+  name: 'Ask'
 }
 </script>
 
