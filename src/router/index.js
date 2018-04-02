@@ -4,8 +4,11 @@ import Particles from '@/components/Particles'
 import Profile from '@/components/Profile'
 import Posts from '@/components/Posts'
 import Ask from '@/components/Ask'
+import Buefy from 'buefy'
+import 'buefy/lib/buefy.css'
 
 Vue.use(Router)
+Vue.use(Buefy)
 
 export default new Router({
   routes: [

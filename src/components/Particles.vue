@@ -3,12 +3,6 @@
 
 <template>
   <div>
-  <nav>
-    <router-link to="/">Search</router-link>
-    <router-link to="profile">My profile</router-link>
-    <router-link to="posts">Latest posts</router-link>
-    <router-link to="ask">Ask a question</router-link>
-  </nav>
     <vue-particles
         color="#dedede"
         :particleOpacity="0.7"
