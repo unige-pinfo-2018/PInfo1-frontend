@@ -25,6 +25,9 @@
 
 <script>
 export default {
-  name: 'Profile'
+  name: 'Profile',
+  created: function () {
+    this.$store.commit('switch_background', require('../assets/bg.jpg'))
+  }
 }
 </script>

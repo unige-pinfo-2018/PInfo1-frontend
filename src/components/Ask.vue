@@ -26,6 +26,9 @@
 
 <script>
 export default {
-  name: 'Ask'
+  name: 'Ask',
+  created: function () {
+    this.$store.commit('switch_background', require('../assets/bg-black.jpg'))
+  }
 }
 </script>
