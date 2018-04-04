@@ -65,6 +65,8 @@
     "vue-jest": "^1.0.2",
     "vue-loader": "^13.3.0",
     "vue-particles": "^1.0.9",
+    "vue-quick-menu": "^1.0.6",
+    "vue-social-sharing": "^2.3.3",
     "vue-style-loader": "^3.0.1",
     "vue-template-compiler": "^2.5.2",
     "webpack": "^3.6.0",

@@ -1,25 +1,53 @@
 <template>
   <section v-bind:style="{ background: 'url(' + this.$store.state.backgroundImagePath + ') no-repeat center center fixed' }"
            id="main-section" class="hero is-fullheight has-background">
+    <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"> //for the pop-up menu
+    </head>
+
     <div id="app" class="hero-body">
       <div class="container">
         <ul>
           <li class="one"><router-link to='/'>Search</router-link></li><!--
-       --><li class="two"><router-link to='profile'>My profile</router-link></li><!--
-       --><li class="three"><router-link to='posts'>Latest posts</router-link></li><!--
-       --><li class="four"><router-link to='ask'>Ask a question</router-link></li><!--
-       --><li class="five"><router-link to='logout'>Logout</router-link></li>
+       --><li class="two"><router-link to='posts'>Latest posts</router-link></li><!--
+       --><li class="three"><router-link to='ask'>Ask a question</router-link></li><!--
+       --><li class="four"><router-link to='logout'>Logout</router-link></li>
         <hr />
         </ul>
         <router-view/>
       </div>
     </div>
+    <quick-menu :menu-count=getCount :icon-class=icons :menu-url-list=list :background-color=backgroundColor :color=color :position=position :is-open-new-tab=getIsOpenNewTab></quick-menu>
   </section>
 </template>
 
+<!-- <li class="two"><router-link to='profile'>My profile</router-link></li> -->
+
 <script>
+import Vue from 'vue'
+import quickMenu from 'vue-quick-menu'
+Vue.component(quickMenu.name, quickMenu)
 export default {
-  name: 'App'
+  name: 'App',
+  data () {
+    return {
+      count: 4,
+      icons: ['fa fa-user', 'fa fa-comment', 'fa fa-envelope', 'fa fa-question'],
+      list: ['/#/profile', '/#/posts', '/', '/#/ask'],
+      backgroundColor: '#65B0FF',
+      color: '#ffffff',
+      position: 'bottom-right',
+      isOpenNewTab: false
+    }
+  },
+  computed: {
+    getCount () {
+      return Number(this.count)
+    },
+    getIsOpenNewTab () {
+      return Boolean(this.isOpenNewTab)
+    }
+  }
 }
 </script>
 
@@ -66,8 +94,7 @@ ul li {
 
 a {
   display: inline-block;
-  width: 20%;
-  padding: .50rem 0;
+  width: 25%;
   margin: 0;
   text-decoration: none;
   color: #FFFFFF;
@@ -75,11 +102,11 @@ a {
 
 hr {
   height: .25rem;
-  width: 20%;
+  width: 25%;
   margin-left: 0%;
   background: #65B0FF;
-  /*background: #FFFFFF;*/
   border: none;
+  transition: .5s ease-in-out;
 }
 
 a:hover {
@@ -87,19 +114,18 @@ a:hover {
 }
 
 .two:hover ~ hr {
-  margin-left: 20%;
+  margin-left: 25%;
 }
 
 .three:hover ~ hr {
-  margin-left: 40%;
+  margin-left: 50%;
 }
 
 .four:hover ~ hr {
-  margin-left: 60%;
+  margin-left: 75%;
 }
 
-.five:hover ~ hr {
-  margin-left: 80%;
-}
+/* CSS used for the notification menu */
 
+@import './menu.css'
 </style>
