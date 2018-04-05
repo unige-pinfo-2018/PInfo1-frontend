@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/unige-pinfo-2018/PInfo1-frontend.svg?branch=dev)](https://travis-ci.org/unige-pinfo-2018/PInfo1-frontend.svg?branch=dev)
+
 # uniweb
 
 > A Vue.js project
