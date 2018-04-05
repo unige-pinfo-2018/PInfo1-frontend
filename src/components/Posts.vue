@@ -1,10 +1,9 @@
 <!-- Author: @GiovannaTheo -->
 <!-- This file controls the particuls that are on screen -->
-
 <template>
   <div>
     <vue-particles
-        color="#dedede"
+        color="#0080FF"
         :particleOpacity="0.7"
         :particlesNumber="80"
         shapeType="circle"
@@ -26,9 +25,9 @@
 
 <script>
 export default {
-  name: 'Particles',
+  name: 'Posts',
   created: function () {
-    this.$store.commit('switch_background', require('../assets/bg.jpg'))
+    this.$store.commit('switch_background', require('../assets/bg-black.jpg'))
   }
 }
 </script>

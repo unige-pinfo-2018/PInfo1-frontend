@@ -4,7 +4,7 @@
 <template>
   <div>
     <vue-particles
-        color="#dedede"
+        color="#80ff00"
         :particleOpacity="0.7"
         :particlesNumber="80"
         shapeType="circle"
@@ -26,9 +26,9 @@
 
 <script>
 export default {
-  name: 'Particles',
+  name: 'Ask',
   created: function () {
-    this.$store.commit('switch_background', require('../assets/bg.jpg'))
+    this.$store.commit('switch_background', require('../assets/bg-black.jpg'))
   }
 }
 </script>

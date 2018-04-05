@@ -2,29 +2,36 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from '@/views/App.vue'
-import BootstrapVue from 'bootstrap-vue'
-import Vuetify from 'vuetify'
+import Profile from '@/components/Profile.vue'
+import Posts from '@/components/Posts.vue'
+import Logout from '@/components/Logout.vue'
+import router from './router'
 import VueParticles from 'vue-particles'
-import Vuelidate from 'vuelidate'
-import 'vuetify/dist/vuetify.min.css'
-import VueRouter from 'vue-router'
-import auth from '@/auth'
-// import router from '@/router'
-Vue.use(auth)
-Vue.use(VueRouter)
-Vue.use(BootstrapVue)
-Vue.use(Vuetify)
+import Vuex from 'vuex'
+
 Vue.use(VueParticles)
-Vue.use(Vuelidate)
+Vue.use(Vuex)
 Vue.config.productionTip = false
 
+// Vuex is a state management pattern + library for Vue.js applications. It serves as a centralized store for all the components in an application,
+// with rules ensuring that the state can only be mutated in a predictable fashion.
+
+const store = new Vuex.Store({
+  state: {
+    backgroundImagePath: require('./assets/bg.jpg')
+  },
+  mutations: { // possible transformations
+    switch_background (state, image) {
+      state.backgroundImagePath = image
+    }
+  }
+})
+
 /* eslint-disable no-new */
-// new Vue({
-//   el: '#app',
-//   components: { App },
-//   template: '<App/>'
-// })
-new Vue({
-  // router,
-  render: h => h(App)
-}).$mount('#app')
+export default new Vue({
+  el: '#app',
+  store,
+  router,
+  components: { App, Posts, Profile, Logout },
+  template: '<App/>'
+})
