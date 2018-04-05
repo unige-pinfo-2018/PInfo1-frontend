@@ -1,0 +1,2 @@
+language: vue
+install: "npm run build"
