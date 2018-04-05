@@ -1,2 +1,2 @@
 language: vue
-install: "npm run build"
+install: "npm install && npm run build"
