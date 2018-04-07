@@ -17,7 +17,7 @@
         <router-view/>
       </div>
     </div>
-    <!-- <quick-menu :menu-count=getCount :icon-class=icons :menu-url-list=list :background-color=backgroundColor :color=color :position=position :is-open-new-tab=getIsOpenNewTab></quick-menu> -->
+    <quick-menu :menu-count=getCount :icon-class=icons :menu-url-list=list :background-color=backgroundColor :color=color :position=position :is-open-new-tab=getIsOpenNewTab></quick-menu>
 
     <div id="social" class="text-xs-center">
       <v-btn depressed outline fab color="blue" href="https://github.com/unige-pinfo-2018/PInfo1-frontend">
