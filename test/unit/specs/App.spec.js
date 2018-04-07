@@ -17,4 +17,14 @@ describe('App.vue', () => {
     expect(defaultData.position).toBe('bottom-right')
   })
 
+  // it('computed properties are correct', () => {
+  //   const Constructor = Vue.extend(App)
+  //   const vm = new Constructor({
+  //     propsData: {
+  //     count: 4
+  //     }
+  //   }).$mount()
+  //   expect(vm.getCount).toEqual(4)
+  // })
+
 })

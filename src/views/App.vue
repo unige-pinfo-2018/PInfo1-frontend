@@ -11,13 +11,26 @@
           <li class="one"><router-link to='/'>Search</router-link></li><!--
        --><li class="two"><router-link to='posts'>Latest posts</router-link></li><!--
        --><li class="three"><router-link to='ask'>Ask a question</router-link></li><!--
-       --><li class="four"><router-link to='logout'>Logout</router-link></li>
+       --><li class="four"><router-link to='login'>Login</router-link></li>
         <hr />
         </ul>
         <router-view/>
       </div>
     </div>
-    <quick-menu :menu-count=getCount :icon-class=icons :menu-url-list=list :background-color=backgroundColor :color=color :position=position :is-open-new-tab=getIsOpenNewTab></quick-menu>
+    <!-- <quick-menu :menu-count=getCount :icon-class=icons :menu-url-list=list :background-color=backgroundColor :color=color :position=position :is-open-new-tab=getIsOpenNewTab></quick-menu> -->
+
+    <div id="social" class="text-xs-center">
+      <v-btn depressed outline fab color="blue" href="https://github.com/unige-pinfo-2018/PInfo1-frontend">
+        <v-icon color="white" style="margin-top: 42%">fa-github fa-2x</v-icon>
+      </v-btn>
+      <v-btn depressed outline fab color="blue" href="https://twitter.com/">
+        <v-icon color="white" style="margin-top: 42%">fa-twitter fa-2x</v-icon>
+      </v-btn>
+      <v-btn depressed outline fab color="blue" href="https://linkedin.com/">
+        <v-icon color="white" style="margin-top: 42%">fa-linkedin fa-2x</v-icon>
+      </v-btn>
+    </div>
+
   </section>
 </template>
 
@@ -49,6 +62,7 @@ export default {
     }
   }
 }
+
 </script>
 
 <style>
@@ -59,6 +73,15 @@ export default {
   text-align: center;
   color: #2c3e50;
 }
+
+/* CSS used for the social media links */
+
+#social {
+  margin-bottom: 30%;
+  text-align: center;
+}
+
+/* CSS used for the navigation bar */
 
 .has-background {
   -webkit-background-size: cover;
@@ -128,4 +151,5 @@ a:hover {
 /* CSS used for the notification menu */
 
 @import './menu.css'
+
 </style>

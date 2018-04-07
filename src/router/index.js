@@ -5,6 +5,7 @@ import Profile from '@/components/Profile'
 import Posts from '@/components/Posts'
 import Ask from '@/components/Ask'
 import Logout from '@/components/Logout'
+import Login from '@/components/Login'
 import Buefy from 'buefy'
 import 'buefy/lib/buefy.css'
 
@@ -37,6 +38,11 @@ export default new Router({
       path: '/logout',
       name: 'Logout',
       component: Logout
+    },
+    {
+      path: '/login',
+      name: 'Login',
+      component: Login
     }
   ]
 })
