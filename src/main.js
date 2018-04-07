@@ -5,10 +5,14 @@ import App from '@/views/App.vue'
 import Profile from '@/components/Profile.vue'
 import Posts from '@/components/Posts.vue'
 import Logout from '@/components/Logout.vue'
+import Login from '@/components/Login.vue'
 import router from './router'
 import VueParticles from 'vue-particles'
 import Vuex from 'vuex'
+import Vuetify from 'vuetify'
+import 'vuetify/dist/vuetify.css'
 
+Vue.use(Vuetify)
 Vue.use(VueParticles)
 Vue.use(Vuex)
 Vue.config.productionTip = false
@@ -32,6 +36,6 @@ export default new Vue({
   el: '#app',
   store,
   router,
-  components: { App, Posts, Profile, Logout },
+  components: { App, Posts, Profile, Login, Logout },
   template: '<App/>'
 })
