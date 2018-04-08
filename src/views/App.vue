@@ -47,7 +47,7 @@ export default {
       count: 4,
       icons: ['fa fa-user', 'fa fa-comment', 'fa fa-envelope', 'fa fa-question'],
       list: ['/#/profile', '/#/posts', '/', '/#/ask'],
-      backgroundColor: '#65B0FF',
+      backgroundColor: '#2196F3',
       color: '#ffffff',
       position: 'bottom-right',
       isOpenNewTab: false
@@ -77,8 +77,10 @@ export default {
 /* CSS used for the social media links */
 
 #social {
-  margin-bottom: 30%;
+  bottom: 10%;
+  width: 100%;
   text-align: center;
+  position: fixed;
 }
 
 /* CSS used for the navigation bar */
@@ -127,7 +129,7 @@ hr {
   height: .25rem;
   width: 25%;
   margin-left: 0%;
-  background: #65B0FF;
+  background: #2196F3;
   border: none;
   transition: .5s ease-in-out;
 }
