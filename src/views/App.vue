@@ -20,17 +20,36 @@
     <quick-menu :menu-count=getCount :icon-class=icons :menu-url-list=list :background-color=backgroundColor :color=color :position=position :is-open-new-tab=getIsOpenNewTab></quick-menu>
 
     <div id="social" class="text-xs-center">
-      <v-btn depressed outline fab color="blue" href="https://github.com/unige-pinfo-2018/PInfo1-frontend">
-        <v-icon color="white" style="margin-top: 42%">fa-github fa-2x</v-icon>
-      </v-btn>
-      <v-btn depressed outline fab color="blue" href="https://twitter.com/">
-        <v-icon color="white" style="margin-top: 42%">fa-twitter fa-2x</v-icon>
-      </v-btn>
-      <v-btn depressed outline fab color="blue" href="https://linkedin.com/">
-        <v-icon color="white" style="margin-top: 42%">fa-linkedin fa-2x</v-icon>
-      </v-btn>
+      <button class="button is-outlined is-large is-focused"
+              style="border-color: #2196F3; background-color: transparent; color: white; border-radius: 9999px"
+              onclick="window.location.href = 'https://github.com/unige-pinfo-2018/PInfo1-frontend' ">
+        <b-icon
+          pack="fa"
+          icon="facebook"
+        >
+        </b-icon>
+      </button>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <button class="button is-outlined is-large is-focused"
+              style="border-color: #2196F3; background-color: transparent; color: white; border-radius: 9999px"
+              onclick="window.location.href = 'https://twitter.com/' ">
+        <b-icon
+          pack="fa"
+          icon="twitter"
+        >
+        </b-icon>
+      </button>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <button class="button is-outlined is-large is-focused"
+              style="border-color: #2196F3; background-color: transparent; color: white; border-radius: 9999px"
+              onclick="window.location.href = 'https://linkedin.com/' ">
+        <b-icon
+          pack="fa"
+          icon="linkedin"
+        >
+        </b-icon>
+      </button>
     </div>
-
   </section>
 </template>
 
@@ -66,6 +85,7 @@ export default {
 </script>
 
 <style>
+
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -149,9 +169,4 @@ a:hover {
 .four:hover ~ hr {
   margin-left: 75%;
 }
-
-/* CSS used for the notification menu */
-
-@import './menu.css'
-
 </style>
