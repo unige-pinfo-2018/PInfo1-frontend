@@ -4,13 +4,10 @@ import Particles from '@/components/Particles'
 import Profile from '@/components/Profile'
 import Posts from '@/components/Posts'
 import Ask from '@/components/Ask'
-import Logout from '@/components/Logout'
+import SignUp from '@/components/SignUp'
 import Login from '@/components/Login'
-import Buefy from 'buefy'
-import 'buefy/lib/buefy.css'
 
 Vue.use(Router)
-Vue.use(Buefy)
 
 export default new Router({
   routes: [
@@ -35,9 +32,9 @@ export default new Router({
       component: Ask
     },
     {
-      path: '/logout',
-      name: 'Logout',
-      component: Logout
+      path: '/signup',
+      name: 'SignUp',
+      component: SignUp
     },
     {
       path: '/login',

@@ -1,34 +1,169 @@
 <!-- Author: @GiovannaTheo -->
-<!-- This file controls the particuls that are on screen -->
-
+<!-- This file contains the box used to log in -->
 <template>
-  <div>
+  <section>
     <vue-particles
-        color="#6600CC"
-        :particleOpacity="0.7"
-        :particlesNumber="80"
-        shapeType="circle"
-        :particleSize="4"
-        linesColor="#dedede"
-        :linesWidth="1"
-        :lineLinked="true"
-        :lineOpacity="0.4"
-        :linesDistance="150"
-        :moveSpeed="3"
-        :hoverEffect="true"
-        hoverMode="grab"
-        :clickEffect="true"
-        clickMode="push"
-      >
+      color="#FFFFFF"
+      :particleOpacity="0.7"
+      :particlesNumber="80"
+      shapeType="circle"
+      :particleSize="4"
+      linesColor="#dedede"
+      :linesWidth="1"
+      :lineLinked="true"
+      :lineOpacity="0.4"
+      :linesDistance="150"
+      :moveSpeed="3"
+      :hoverEffect="true"
+      hoverMode="grab"
+      :clickEffect="true"
+      clickMode="push"
+    >
     </vue-particles>
-  </div>
+    <div id="login">
+      <figure class="avatar">
+        <img src="../assets/logo.png" width="90" height="90">
+      </figure>
+      <formly-form :form="form" :model="model" :fields="fields" style="border: none"></formly-form>
+      <br/>
+      <div class="field is-grouped" style="max-width: 300px; margin-left: auto; margin-right: auto">
+        <div class="control">
+          <button class="button is-outlined" style="color: #2196F3; border-color: #2196F3">Submit</button>
+        </div>
+        <div class="control">
+          <router-link :to="{name: 'SignUp'}">
+            <button class="button is-text">Sign Up</button>
+          </router-link>
+        </div>
+      </div>
+    </div>
+  </section>
 </template>
 
 <script>
+/* eslint-disable */
 export default {
-  name: 'Login',
+  name: 'login',
   created: function () {
-    this.$store.commit('switch_background', require('../assets/bg.jpg'))
+    this.$store.commit('switch_background', require('../assets/bg-black.jpg'))
+  },
+  data () {
+    return {
+      form: {},
+      model: {},
+      fields: [
+        {
+          key: 'email',
+          type: 'input-with-field',
+          required: true,
+          templateOptions: {
+            properties: {
+              'type': 'email',
+              'maxlength': 40,
+              'placeholder': "email@university.com"
+            },
+            wrapper: {
+              properties: {
+                'label': 'Email',
+                'addons': false,
+                'style': "max-width: 300px; margin-left: auto; margin-right: auto"
+              }
+            }
+          },
+          validators: {
+            format: {
+              expression(field, model, next) {
+                next(/^[\w.\-]+@(unige.ch|etu.unige.ch|epfl.ch|ethz.ch|uzh.ch|unil.ch)$/.test(model[field.key]))
+              },
+              message: 'You must use an university email address'
+            }
+          }
+        },
+        {
+          key: 'password',
+          type: 'input-with-field',
+          required: true,
+          templateOptions: {
+            properties: {
+              'password-reveal': true,
+              'type': 'password',
+              'placeholder': "password"
+            },
+            wrapper: {
+              properties: {
+                'addons': false,
+                'label': 'Password',
+                'style': "max-width: 300px; margin-left: auto; margin-right: auto"
+              },
+            }
+          },
+          validators: {
+            reliability: {
+              expression: 'model[field.key].length > 8',
+              message: 'Password is too short'
+            }
+          }
+        }
+      ]
+    }
   }
 }
 </script>
+
+<style lang="scss">
+  /*
+   * Override Bulma rules to properly display a non-standard field.
+   */
+  .field.is-addons-ordered {
+    flex-wrap: wrap;
+    position: relative;
+    // Set validation message position
+    & > {
+      .label {
+        width: 100%;
+      }
+      // Only for a field with .control > .help
+      // In other case set .help { width: 100% }
+      .help {
+        position: absolute;
+        bottom: 0;
+      }
+    }
+    // Override border-radius of controls
+    div.control:first-of-type .button,
+    div.control:first-of-type .input,
+    div.control:first-of-type .select select {
+      border-radius: 3px 0 0 3px;
+    }
+    div.control:last-of-type .button,
+    div.control:last-of-type .input,
+    div.control:last-of-type .select select {
+      border-radius: 0 3px 3px 0;
+    }
+    // Override margin of controls
+    div.control:not(:first-of-type),
+    div.control:not(:last-of-type) {
+      margin: 0;
+    }
+    // Remove borders
+    .is-left-border-none {
+      border-left: none;
+    }
+    .is-right-border-none {
+      border-right: none;
+    }
+  }
+</style>
+
+<style>
+  #login {
+    background-color: white;
+    border-radius: 25px;
+    border: 2px solid #FFFFFF;
+    width: 550px;
+    height: 380px;
+    position: fixed;
+    left: 31%;
+    bottom: 30%;
+  }
+</style>

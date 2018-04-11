@@ -20,17 +20,36 @@
     <quick-menu :menu-count=getCount :icon-class=icons :menu-url-list=list :background-color=backgroundColor :color=color :position=position :is-open-new-tab=getIsOpenNewTab></quick-menu>
 
     <div id="social" class="text-xs-center">
-      <v-btn depressed outline fab color="blue" href="https://github.com/unige-pinfo-2018/PInfo1-frontend">
-        <v-icon color="white" style="margin-top: 42%">fa-github fa-2x</v-icon>
-      </v-btn>
-      <v-btn depressed outline fab color="blue" href="https://twitter.com/">
-        <v-icon color="white" style="margin-top: 42%">fa-twitter fa-2x</v-icon>
-      </v-btn>
-      <v-btn depressed outline fab color="blue" href="https://linkedin.com/">
-        <v-icon color="white" style="margin-top: 42%">fa-linkedin fa-2x</v-icon>
-      </v-btn>
+      <button class="button is-outlined is-large is-focused"
+              style="border-color: #2196F3; background-color: transparent; color: white; border-radius: 9999px"
+              onclick="window.location.href = 'https://github.com/unige-pinfo-2018/PInfo1-frontend' ">
+        <b-icon
+          pack="fa"
+          icon="facebook"
+        >
+        </b-icon>
+      </button>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <button class="button is-outlined is-large is-focused"
+              style="border-color: #2196F3; background-color: transparent; color: white; border-radius: 9999px"
+              onclick="window.location.href = 'https://twitter.com/' ">
+        <b-icon
+          pack="fa"
+          icon="twitter"
+        >
+        </b-icon>
+      </button>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <button class="button is-outlined is-large is-focused"
+              style="border-color: #2196F3; background-color: transparent; color: white; border-radius: 9999px"
+              onclick="window.location.href = 'https://linkedin.com/' ">
+        <b-icon
+          pack="fa"
+          icon="linkedin"
+        >
+        </b-icon>
+      </button>
     </div>
-
   </section>
 </template>
 
@@ -47,7 +66,7 @@ export default {
       count: 4,
       icons: ['fa fa-user', 'fa fa-comment', 'fa fa-envelope', 'fa fa-question'],
       list: ['/#/profile', '/#/posts', '/', '/#/ask'],
-      backgroundColor: '#65B0FF',
+      backgroundColor: '#2196F3',
       color: '#ffffff',
       position: 'bottom-right',
       isOpenNewTab: false
@@ -66,6 +85,7 @@ export default {
 </script>
 
 <style>
+
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -77,8 +97,10 @@ export default {
 /* CSS used for the social media links */
 
 #social {
-  margin-bottom: 30%;
+  bottom: 10%;
+  width: 100%;
   text-align: center;
+  position: fixed;
 }
 
 /* CSS used for the navigation bar */
@@ -127,7 +149,7 @@ hr {
   height: .25rem;
   width: 25%;
   margin-left: 0%;
-  background: #65B0FF;
+  background: #2196F3;
   border: none;
   transition: .5s ease-in-out;
 }
@@ -147,9 +169,4 @@ a:hover {
 .four:hover ~ hr {
   margin-left: 75%;
 }
-
-/* CSS used for the notification menu */
-
-@import './menu.css'
-
 </style>
