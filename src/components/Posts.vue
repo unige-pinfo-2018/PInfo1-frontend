@@ -30,7 +30,7 @@ export default {
 </script>
 
 <style>
-  #posts #post {
+  #posts {
     bottom: 23%;
     width: 100%;
     height: 60%;

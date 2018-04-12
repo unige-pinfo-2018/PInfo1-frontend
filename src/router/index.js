@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Particles from '@/components/Particles'
+import Home from '@/components/Home'
 import Profile from '@/components/Profile'
 import Posts from '@/components/Posts'
 import Ask from '@/components/Ask'
@@ -14,7 +14,7 @@ export default new Router({
     {
       path: '/',
       name: 'HomePage',
-      component: Particles
+      component: Home
     },
     {
       path: '/profile',

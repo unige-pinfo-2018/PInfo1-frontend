@@ -1,5 +1,5 @@
 <!-- Author: @GiovannaTheo -->
-<!-- This file controls the particuls that are on screen -->
+<!-- Home screen -->
 
 <template>
   <div>
@@ -26,7 +26,7 @@
 
 <script>
 export default {
-  name: 'Particles',
+  name: 'Home',
   created: function () {
     this.$store.commit('switch_background', require('../assets/bg.jpg'))
   }

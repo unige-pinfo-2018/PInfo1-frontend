@@ -13,7 +13,10 @@ import Buefy from 'buefy'
 import 'buefy/lib/buefy.css'
 import VueFormly from 'vue-formly'
 import VueFormlyBuefy from 'vue-formly-buefy'
+import axios from 'axios'
+import VueAxios from 'vue-axios'
 
+Vue.use(VueAxios, axios)
 Vue.use(Buefy)
 Vue.use(VueFormly)
 Vue.use(VueFormlyBuefy)
@@ -21,16 +24,25 @@ Vue.use(VueParticles)
 Vue.use(Vuex)
 Vue.config.productionTip = false
 
+// this sets axios properties so we can use it to do REST requests
+
+window.axios = require('axios')
+window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+
 // Vuex is a state management pattern + library for Vue.js applications. It serves as a centralized store for all the components in an application,
 // with rules ensuring that the state can only be mutated in a predictable fashion.
 
 const store = new Vuex.Store({
   state: {
-    backgroundImagePath: require('./assets/bg.jpg')
+    backgroundImagePath: require('./assets/bg.jpg'),
+    isAuthenticated: false
   },
   mutations: { // possible transformations
     switch_background (state, image) {
       state.backgroundImagePath = image
+    },
+    switch_auth (state, bool) {
+      state.isAuthenticated = bool
     }
   }
 })
