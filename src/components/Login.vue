@@ -28,7 +28,7 @@
       <br/>
       <div class="field is-grouped" style="max-width: 300px; margin-left: auto; margin-right: auto">
         <div class="control">
-          <button class="button is-outlined" style="color: #2196F3; border-color: #2196F3">Submit</button>
+          <button class="button is-outlined" style="color: #2196F3; border-color: #2196F3" v-on:click="login">Submit</button>
         </div>
         <div class="control">
           <router-link :to="{name: 'SignUp'}">
@@ -47,35 +47,56 @@ export default {
   created: function () {
     this.$store.commit('switch_background', require('../assets/bg-black.jpg'))
   },
+  methods: {
+    login: function () {
+      var tmp = this  //if this is not declared here, using it in the block below
+                      //doesn't reference the correct instance of vue, so $router
+                      //can't be used.
+      if (this.form.$valid){ //check if fields are correctly filled
+        axios.post('http://127.0.0.1:18080/users-service/rest/users/login', {
+          "username": this.$data.model.username,
+          "password": this.$data.model.password
+        })
+          .then(function (response) {
+            console.log(response)
+            tmp.$store.commit('switch_auth', true) //user is now authenticated
+            tmp.$router.push('/')
+          })
+          .catch(function (error) {
+            console.log(error.response);
+          });
+      } else {
+        alert('Please correct your inputs !')
+      }
+    }
+  },
   data () {
     return {
       form: {},
       model: {},
       fields: [
         {
-          key: 'email',
+          key: 'username',
           type: 'input-with-field',
           required: true,
           templateOptions: {
             properties: {
-              'type': 'email',
-              'maxlength': 40,
-              'placeholder': "email@university.com"
+              'type': 'text',
+              'maxlength': 30,
+              'placeholder': "JohnDoe"
             },
             wrapper: {
               properties: {
-                'label': 'Email',
+                'label': 'Username',
                 'addons': false,
                 'style': "max-width: 300px; margin-left: auto; margin-right: auto"
               }
             }
           },
           validators: {
-            format: {
-              expression(field, model, next) {
-                next(/^[\w.\-]+@(unige.ch|etu.unige.ch|epfl.ch|ethz.ch|uzh.ch|unil.ch)$/.test(model[field.key]))
-              },
-              message: 'You must use an university email address'
+            length: {
+              expression: "model[field.key].length > 0",
+              message: "This field is mandatory"
             }
           }
         },
@@ -87,7 +108,7 @@ export default {
             properties: {
               'password-reveal': true,
               'type': 'password',
-              'placeholder': "password"
+              'placeholder': "Password"
             },
             wrapper: {
               properties: {

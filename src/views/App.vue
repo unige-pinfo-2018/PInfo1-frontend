@@ -11,7 +11,8 @@
           <li class="one"><router-link to='/'>Search</router-link></li><!--
        --><li class="two"><router-link to='posts'>Latest posts</router-link></li><!--
        --><li class="three"><router-link to='ask'>Ask a question</router-link></li><!--
-       --><li class="four"><router-link to='login'>Login</router-link></li>
+       --><li v-show="isAuthenticated()" v-on:click="logout" class="four"><router-link to='/'>Logout</router-link></li><!--
+       --><li v-show="!isAuthenticated()" class="four"><router-link to='/login'>Login</router-link></li>
         <hr />
         </ul>
         <router-view/>
@@ -56,6 +57,7 @@
 <!-- <li class="two"><router-link to='profile'>My profile</router-link></li> -->
 
 <script>
+/* eslint-disable */
 import Vue from 'vue'
 import quickMenu from 'vue-quick-menu'
 Vue.component(quickMenu.name, quickMenu)
@@ -78,6 +80,16 @@ export default {
     },
     getIsOpenNewTab () {
       return Boolean(this.isOpenNewTab)
+    }
+  },
+  methods: {
+    isAuthenticated () { // returns whether a user is authenticated or not
+      return this.$store.state.isAuthenticated
+    },
+    logout () {
+      alert('Successfully logged out')
+      this.$store.commit('switch_auth', false) //user is now offline
+      this.$router.push('/')
     }
   }
 }

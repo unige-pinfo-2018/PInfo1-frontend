@@ -34,7 +34,7 @@
           <br/><br/>
           <div class="field is-grouped" style="max-width: 300px; margin-left: auto; margin-right: auto">
             <div class="control">
-              <button class="button is-outlined" style="color: #2196F3; border-color: #2196F3">Submit</button>
+              <button class="button is-outlined" style="color: #2196F3; border-color: #2196F3" v-on:click="signup">Submit</button>
             </div>
             <div class="control">
               <router-link :to="{name: 'Login'}">
@@ -55,7 +55,33 @@
     created: function () {
       this.$store.commit('switch_background', require('../assets/bg-black.jpg'))
     },
+    methods: {
+      signup: function () {
+        var tmp = this  //if this is not declared here, using it in the block below
+                        //doesn't reference the correct instance of vue, so $router
+                        //can't be used.
+        if (this.form1.$valid && this.form2.$valid){ //check if fields are correctly filled
+          axios.put('http://127.0.0.1:18080/users-service/rest/users/add', {
+            "username": this.$data.model2.username,
+            "email": this.$data.model1.email,
+            "role": "USER", //by default a new user is just a user
+            "password": this.$data.model1.password
+          })
+            .then(function (response) {
+              console.log(response);
+              alert('Sign up successful !')
+              tmp.$router.push('/login')
+            })
+            .catch(function (error) {
+              console.log(error.response);
+            });
+        } else {
+          alert('Please correct your inputs !')
+        }
+      }
+    },
     data () {
+      var tmp = this
       return {
         form1: {},
         model1: {},
@@ -132,8 +158,8 @@
             },
             validators: {
               reliability: {
-                expression: 'model[field.key].length > 8',
-                message: 'Password is too short'
+                expression: 'model[ field.key ] == model.password',
+                message: 'Password must match'
               }
             }
           }
@@ -142,14 +168,14 @@
         model2: {},
         fields2: [
           {
-            key: 'Username',
+            key: 'username',
             type: 'input-with-field',
             required: true,
             templateOptions: {
               properties: {
                 'type': 'text',
                 'maxlength': 30,
-                'placeholder': "JohnDoe"
+                'placeholder': "Username"
               },
               wrapper: {
                 properties: {
@@ -158,13 +184,7 @@
                   'style': "max-width: 300px; margin-left: auto; margin-right: auto"
                 }
               }
-            },
-              validators: {
-                length: {
-                  expression: "model[field.key].length > 0",
-                  message: "This field is mandatory"
-                }
-              }
+            }
           },
           {
             key: 'university',
