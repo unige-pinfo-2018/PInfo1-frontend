@@ -9,18 +9,18 @@ import Login from '@/components/Login.vue'
 import Ask from '@/components/Ask.vue'
 import Home from '@/components/Home.vue'
 import ConfirmSignUp from '@/components/ConfirmSignUp.vue'
+import ForgotPassword from '@/components/ForgotPassword.vue'
+import ChangePassword from '@/components/ChangePassword.vue'
 import router from './router'
 import VueParticles from 'vue-particles'
 import Vuex from 'vuex'
 import Buefy from 'buefy'
-import VModal from 'vue-js-modal'
 import 'buefy/lib/buefy.css'
 import VueFormly from 'vue-formly'
 import VueFormlyBuefy from 'vue-formly-buefy'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
-Vue.use(VModal)
 Vue.use(VueAxios, axios)
 Vue.use(Buefy)
 Vue.use(VueFormly)
@@ -56,6 +56,6 @@ export default new Vue({
   el: '#app',
   store,
   router,
-  components: {App, Posts, Profile, Login, SignUp, Home, Ask, ConfirmSignUp},
+  components: {App, Posts, Profile, Login, SignUp, Home, Ask, ConfirmSignUp, ForgotPassword, ChangePassword},
   template: '<App/>'
 })

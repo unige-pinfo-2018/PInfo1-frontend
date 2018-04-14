@@ -85,7 +85,6 @@ import confirmSignUp from '@/components/ConfirmSignUp.vue'
     },
     data () {
       return {
-        code: '',
         form1: {},
         model1: {},
         fields1: [

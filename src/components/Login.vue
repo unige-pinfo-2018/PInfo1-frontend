@@ -35,6 +35,11 @@
             <button class="button is-text">Sign Up</button>
           </router-link>
         </div>
+        <div class="control">
+          <router-link :to="{name: 'ForgotPassword'}">
+            <button class="button is-text">Forgot your password?</button>
+          </router-link>
+        </div>
       </div>
     </div>
   </section>
@@ -65,6 +70,7 @@ export default {
             return true
           })
           .catch(function (error) {
+            alert('Something went wrong. Please check your credentials!')
             console.log(error.response);
             return false
           });

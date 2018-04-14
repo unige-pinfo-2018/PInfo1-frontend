@@ -20,7 +20,7 @@
       clickMode="push"
     >
     </vue-particles>
-    <div v-on:keyup.enter="confirmSignup" id="login">
+    <div v-on:keyup.enter="changePassword" id="pwd">
       <figure class="avatar">
         <img src="../assets/logo.png" width="90" height="90">
       </figure>
@@ -28,7 +28,12 @@
       <br/>
       <div class="field is-grouped" style="max-width: 300px; margin-left: auto; margin-right: auto">
         <div class="control">
-          <button class="button is-outlined" style="color: #2196F3; border-color: #2196F3" v-on:click="confirmSignup">Submit</button>
+          <button class="button is-outlined" style="color: #2196F3; border-color: #2196F3" v-on:click="changePassword">Submit</button>
+        </div>
+        <div class="control">
+          <router-link :to="{name: 'Login'}">
+            <button class="button is-text">Already have an account?</button>
+          </router-link>
         </div>
       </div>
     </div>
@@ -43,17 +48,22 @@ export default {
     this.$store.commit('switch_background', require('../assets/bg-black.jpg'))
   },
   methods: {
-    confirmSignup: function () {
+    changePassword: function () {
       let tmp = this
       if (this.form.$valid){ //check if fields are correctly filled
-        axios.get('http://localhost:18080/users-service/rest/users/confirm?email='+this.$data.model.code)
+        axios.post('http://localhost:18080/users-service/rest/users/reset_password', {
+          "email": this.$data.model.email,
+          "id": this.$data.model.code,
+          "password": this.$data.model.password
+        })
           .then(function (response) {
             console.log(response)
-            alert('Account confirmation successfull. You can now login')
+            alert('Password reinitialized successfully. You can now login')
             tmp.$router.push('/login')
             return true
           })
           .catch(function (error) {
+            alert('Oops ! Something went wrong')
             console.log(error.response);
             return false
           });
@@ -67,6 +77,33 @@ export default {
       form: {},
       model: {},
       fields: [
+        {
+          key: 'email',
+          type: 'input-with-field',
+          required: true,
+          templateOptions: {
+            properties: {
+              'type': 'email',
+              'maxlength': 40,
+              'placeholder': "email@university.com"
+            },
+            wrapper: {
+              properties: {
+                'label': 'Email',
+                'addons': false,
+                'style': "max-width: 300px; margin-left: auto; margin-right: auto"
+              }
+            }
+          },
+          validators: {
+            format: {
+              expression(field, model, next) {
+                next(/^[\w.\-]+@(unige.ch|etu.unige.ch|epfl.ch|ethz.ch|uzh.ch|unil.ch)$/.test(model[field.key]))
+              },
+              message: 'Email doesn\'t match any university'
+            }
+          }
+        },
         {
           key: 'code',
           type: 'input-with-field',
@@ -88,6 +125,31 @@ export default {
             length: {
               expression: "model[field.key].length > 0",
               message: "This field is mandatory"
+            }
+          }
+        },
+        {
+          key: 'password',
+          type: 'input-with-field',
+          required: true,
+          templateOptions: {
+            properties: {
+              'password-reveal': true,
+              'type': 'password',
+              'placeholder': "Password"
+            },
+            wrapper: {
+              properties: {
+                'addons': false,
+                'label': 'New password',
+                'style': "max-width: 300px; margin-left: auto; margin-right: auto"
+              },
+            }
+          },
+          validators: {
+            reliability: {
+              expression: 'model[field.key].length > 8',
+              message: 'Password is too short'
             }
           }
         }
@@ -143,14 +205,14 @@ export default {
 </style>
 
 <style>
-  #login {
+  #pwd {
     background-color: white;
     border-radius: 25px;
     border: 2px solid #FFFFFF;
     width: 550px;
-    height: 380px;
+    height: 430px;
     position: fixed;
     left: 31%;
-    bottom: 27%;
+    bottom: 24%;
   }
 </style>

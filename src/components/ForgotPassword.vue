@@ -1,5 +1,4 @@
 <!-- Author: @GiovannaTheo -->
-
 <template>
   <section>
     <vue-particles
@@ -20,7 +19,7 @@
       clickMode="push"
     >
     </vue-particles>
-    <div v-on:keyup.enter="confirmSignup" id="login">
+    <div v-on:keyup.enter="resetPassword" id="forgot">
       <figure class="avatar">
         <img src="../assets/logo.png" width="90" height="90">
       </figure>
@@ -28,7 +27,12 @@
       <br/>
       <div class="field is-grouped" style="max-width: 300px; margin-left: auto; margin-right: auto">
         <div class="control">
-          <button class="button is-outlined" style="color: #2196F3; border-color: #2196F3" v-on:click="confirmSignup">Submit</button>
+          <button class="button is-outlined" style="color: #2196F3; border-color: #2196F3" v-on:click="resetPassword">Submit</button>
+        </div>
+        <div class="control">
+          <router-link :to="{name: 'Login'}">
+            <button class="button is-text">Already have an account?</button>
+          </router-link>
         </div>
       </div>
     </div>
@@ -38,22 +42,23 @@
 <script>
 /* eslint-disable */
 export default {
-  name: 'confirmSignUp',
+  name: "ForgotPassword",
   created: function () {
     this.$store.commit('switch_background', require('../assets/bg-black.jpg'))
   },
   methods: {
-    confirmSignup: function () {
+    resetPassword: function () {
       let tmp = this
       if (this.form.$valid){ //check if fields are correctly filled
-        axios.get('http://localhost:18080/users-service/rest/users/confirm?email='+this.$data.model.code)
+        axios.get('http://localhost:18080/users-service/rest/users/request_password_reset?email='+this.$data.model.email)
           .then(function (response) {
             console.log(response)
-            alert('Account confirmation successfull. You can now login')
-            tmp.$router.push('/login')
+            alert('Please check your inbox')
+            tmp.$router.push('/newpassword')
             return true
           })
           .catch(function (error) {
+            alert('Email address not found in database')
             console.log(error.response);
             return false
           });
@@ -68,26 +73,29 @@ export default {
       model: {},
       fields: [
         {
-          key: 'code',
+          key: 'email',
           type: 'input-with-field',
           required: true,
           templateOptions: {
             properties: {
-              'type': 'text',
-              'placeholder': "Confirmation code"
+              'type': 'email',
+              'maxlength': 40,
+              'placeholder': "email@university.com"
             },
             wrapper: {
               properties: {
-                'label': 'Confirmation code',
+                'label': 'Please enter your email address',
                 'addons': false,
                 'style': "max-width: 300px; margin-left: auto; margin-right: auto"
               }
             }
           },
           validators: {
-            length: {
-              expression: "model[field.key].length > 0",
-              message: "This field is mandatory"
+            format: {
+              expression(field, model, next) {
+                next(/^[\w.\-]+@(unige.ch|etu.unige.ch|epfl.ch|ethz.ch|uzh.ch|unil.ch)$/.test(model[field.key]))
+              },
+              message: 'Email doesn\'t match any university'
             }
           }
         }
@@ -143,7 +151,7 @@ export default {
 </style>
 
 <style>
-  #login {
+  #forgot {
     background-color: white;
     border-radius: 25px;
     border: 2px solid #FFFFFF;
