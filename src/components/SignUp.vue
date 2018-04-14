@@ -25,7 +25,7 @@
       <figure class="avatar">
         <img src="../assets/logo.png" width="90" height="90">
       </figure>
-      <div class="columns">
+      <div v-on:keyup.enter="signup" class="columns">
         <div class="column is-6">
           <formly-form :form="form1" :model="model1" :fields="fields1" style="border: none"></formly-form>
         </div>
@@ -50,14 +50,17 @@
 
 <script>
 /* eslint-disable */
-  export default {
-    name: 'login',
+
+import confirmSignUp from '@/components/ConfirmSignUp.vue'
+
+ export default {
+    name: 'SignUp',
     created: function () {
       this.$store.commit('switch_background', require('../assets/bg-black.jpg'))
     },
     methods: {
       signup: function () {
-        var tmp = this  //if this is not declared here, using it in the block below
+        let tmp = this  //if this is not declared here, using it in the block below
                         //doesn't reference the correct instance of vue, so $router
                         //can't be used.
         if (this.form1.$valid && this.form2.$valid){ //check if fields are correctly filled
@@ -69,8 +72,8 @@
           })
             .then(function (response) {
               console.log(response);
-              alert('Sign up successful !')
-              tmp.$router.push('/login')
+              alert('Signup successfull. Check your inbox')
+              tmp.$router.push('/confirmSignUp')
             })
             .catch(function (error) {
               console.log(error.response);
@@ -81,8 +84,8 @@
       }
     },
     data () {
-      var tmp = this
       return {
+        code: '',
         form1: {},
         model1: {},
         fields1: [
@@ -179,26 +182,8 @@
               },
               wrapper: {
                 properties: {
+                  'addons': false,
                   'label': 'Username',
-                  'addons': false,
-                  'style': "max-width: 300px; margin-left: auto; margin-right: auto"
-                }
-              }
-            }
-          },
-          {
-            key: 'university',
-            type: 'input-with-field',
-            required: true,
-            templateOptions: {
-              properties: {
-                'type': 'text',
-                'placeholder': "University"
-              },
-              wrapper: {
-                properties: {
-                  'addons': false,
-                  'label': 'University',
                   'style': "max-width: 300px; margin-left: auto; margin-right: auto"
                 },
               }
@@ -207,6 +192,52 @@
               length: {
                 expression: "model[field.key].length > 0",
                 message: "This field is mandatory"
+              }
+            }
+          },
+          {
+            key: "cursus",
+            type: "select-with-field",
+            required: true,
+            templateOptions: {
+              options: [
+                {
+                  label: "Cursus",
+                  options: [
+                    {
+                      "text": "Bachelor",
+                      "value": "bachelor"
+                    },
+                    {
+                      "text": "Master",
+                      "value": "master"
+                    },
+                    {
+                      "text": "Doctorate",
+                      "value": "phd"
+                    },
+                    {
+                      "text": "Assistant",
+                      "value": "assitant"
+                    },
+                    {
+                      "text": "Professor",
+                      "value": "professor"
+                    }
+                  ]
+                },
+              ],
+              properties: {
+                "icon": "school",
+                "placeholder": "Select...",
+                "required": true
+              },
+              wrapper: {
+                properties: {
+                  "addons": false,
+                  "label": "Cursus",
+                  'style': "max-width: 300px; margin-left: auto; margin-right: auto"
+                }
               }
             }
           }

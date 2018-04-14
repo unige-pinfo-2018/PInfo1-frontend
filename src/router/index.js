@@ -5,6 +5,7 @@ import Profile from '@/components/Profile'
 import Posts from '@/components/Posts'
 import Ask from '@/components/Ask'
 import SignUp from '@/components/SignUp'
+import ConfirmSignUp from '@/components/ConfirmSignUp'
 import Login from '@/components/Login'
 
 Vue.use(Router)
@@ -40,6 +41,11 @@ export default new Router({
       path: '/login',
       name: 'Login',
       component: Login
+    },
+    {
+      path: '/confirmSignUp',
+      name: 'ConfirmSignUp',
+      component: ConfirmSignUp
     }
   ]
 })
