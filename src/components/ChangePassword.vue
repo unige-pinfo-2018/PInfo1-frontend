@@ -48,6 +48,14 @@ export default {
     this.$store.commit('switch_background', require('../assets/bg-black.jpg'))
   },
   methods: {
+    warning(text) {
+      this.$snackbar.open({
+        message: text,
+        position: 'is-top',
+        actionText: 'Close',
+        indefinite: false
+      })
+    },
     changePassword: function () {
       let tmp = this
       if (this.form.$valid){ //check if fields are correctly filled
@@ -58,17 +66,17 @@ export default {
         })
           .then(function (response) {
             console.log(response)
-            alert('Password reinitialized successfully. You can now login')
+            tmp.warning('Password reinitialized successfully. You can now login.')
             tmp.$router.push('/login')
             return true
           })
           .catch(function (error) {
-            alert('Oops ! Something went wrong')
+            tmp.warning('Oops! Something went unexpected')
             console.log(error.response);
             return false
           });
       } else {
-        alert('Please correct your inputs !')
+        tmp.warning('Please correct your inputs')
       }
     }
   },

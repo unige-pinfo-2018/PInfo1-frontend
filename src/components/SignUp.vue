@@ -59,6 +59,14 @@ import confirmSignUp from '@/components/ConfirmSignUp.vue'
       this.$store.commit('switch_background', require('../assets/bg-black.jpg'))
     },
     methods: {
+      warning(text) {
+        this.$snackbar.open({
+          message: text,
+          position: 'is-top',
+          actionText: 'Close',
+          indefinite: false
+        })
+      },
       signup: function () {
         let tmp = this  //if this is not declared here, using it in the block below
                         //doesn't reference the correct instance of vue, so $router
@@ -72,14 +80,15 @@ import confirmSignUp from '@/components/ConfirmSignUp.vue'
           })
             .then(function (response) {
               console.log(response);
-              alert('Signup successfull. Check your inbox')
+              tmp.warning('Signup successfull, please check your inbox')
               tmp.$router.push('/confirmSignUp')
             })
             .catch(function (error) {
+              tmp.warning('Oops! Something went unexpected')
               console.log(error.response);
             });
         } else {
-          alert('Please correct your inputs !')
+          tmp.warning('Please correct your inputs')
         }
       }
     },

@@ -53,6 +53,14 @@ export default {
     this.$store.commit('switch_background', require('../assets/bg-black.jpg'))
   },
   methods: {
+    warning(text) {
+      this.$snackbar.open({
+        message: text,
+        position: 'is-top',
+        actionText: 'Close',
+        indefinite: false
+      })
+    },
     login: function () {
       let tmp = this  //if this is not declared here, using it in the block below
                       //doesn't reference the correct instance of vue, so $router
@@ -70,12 +78,12 @@ export default {
             return true
           })
           .catch(function (error) {
-            alert('Something went wrong. Please check your credentials!')
+            tmp.warning('Please check your credentials')
             console.log(error.response);
             return false
           });
       } else {
-        alert('Please correct your inputs !')
+        tmp.warning('Please correct your inputs')
       }
     }
   },
