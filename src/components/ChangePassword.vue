@@ -1,5 +1,5 @@
 <!-- Author: @GiovannaTheo -->
-<!-- This file contains the box used to log in -->
+
 <template>
   <section>
     <vue-particles
@@ -20,7 +20,7 @@
       clickMode="push"
     >
     </vue-particles>
-    <div v-on:keyup.enter="login" id="login">
+    <div v-on:keyup.enter="changePassword" id="pwd">
       <figure class="avatar">
         <img src="../assets/logo.png" width="90" height="90">
       </figure>
@@ -28,16 +28,11 @@
       <br/>
       <div class="field is-grouped" style="max-width: 300px; margin-left: auto; margin-right: auto">
         <div class="control">
-          <button class="button is-outlined" style="color: #2196F3; border-color: #2196F3" v-on:click="login">Submit</button>
+          <button class="button is-outlined" style="color: #2196F3; border-color: #2196F3" v-on:click="changePassword">Submit</button>
         </div>
         <div class="control">
-          <router-link :to="{name: 'SignUp'}">
-            <button class="button is-text">Sign Up</button>
-          </router-link>
-        </div>
-        <div class="control">
-          <router-link :to="{name: 'ForgotPassword'}">
-            <button class="button is-text">Forgot your password?</button>
+          <router-link :to="{name: 'Login'}">
+            <button class="button is-text">Already have an account?</button>
           </router-link>
         </div>
       </div>
@@ -48,29 +43,27 @@
 <script>
 /* eslint-disable */
 export default {
-  name: 'login',
+  name: 'confirmSignUp',
   created: function () {
     this.$store.commit('switch_background', require('../assets/bg-black.jpg'))
   },
   methods: {
-    login: function () {
-      let tmp = this  //if this is not declared here, using it in the block below
-                      //doesn't reference the correct instance of vue, so $router
-                      //can't be used.
+    changePassword: function () {
+      let tmp = this
       if (this.form.$valid){ //check if fields are correctly filled
-        axios.post('http://127.0.0.1:18080/users-service/rest/users/login', {
-          "username": this.$data.model.username,
+        axios.post('http://localhost:18080/users-service/rest/users/reset_password', {
+          "email": this.$data.model.email,
+          "id": this.$data.model.code,
           "password": this.$data.model.password
         })
           .then(function (response) {
             console.log(response)
-            //user is now authenticated
-            tmp.$store.commit('switch_auth', true)
-            tmp.$router.push('/')
+            alert('Password reinitialized successfully. You can now login')
+            tmp.$router.push('/login')
             return true
           })
           .catch(function (error) {
-            alert('Something went wrong. Please check your credentials!')
+            alert('Oops ! Something went wrong')
             console.log(error.response);
             return false
           });
@@ -85,18 +78,44 @@ export default {
       model: {},
       fields: [
         {
-          key: 'username',
+          key: 'email',
+          type: 'input-with-field',
+          required: true,
+          templateOptions: {
+            properties: {
+              'type': 'email',
+              'maxlength': 40,
+              'placeholder': "email@university.com"
+            },
+            wrapper: {
+              properties: {
+                'label': 'Email',
+                'addons': false,
+                'style': "max-width: 300px; margin-left: auto; margin-right: auto"
+              }
+            }
+          },
+          validators: {
+            format: {
+              expression(field, model, next) {
+                next(/^[\w.\-]+@(unige.ch|etu.unige.ch|epfl.ch|ethz.ch|uzh.ch|unil.ch)$/.test(model[field.key]))
+              },
+              message: 'Email doesn\'t match any university'
+            }
+          }
+        },
+        {
+          key: 'code',
           type: 'input-with-field',
           required: true,
           templateOptions: {
             properties: {
               'type': 'text',
-              'maxlength': 30,
-              'placeholder': "JohnDoe"
+              'placeholder': "Confirmation code"
             },
             wrapper: {
               properties: {
-                'label': 'Username',
+                'label': 'Confirmation code',
                 'addons': false,
                 'style': "max-width: 300px; margin-left: auto; margin-right: auto"
               }
@@ -122,7 +141,7 @@ export default {
             wrapper: {
               properties: {
                 'addons': false,
-                'label': 'Password',
+                'label': 'New password',
                 'style': "max-width: 300px; margin-left: auto; margin-right: auto"
               },
             }
@@ -186,14 +205,14 @@ export default {
 </style>
 
 <style>
-  #login {
+  #pwd {
     background-color: white;
     border-radius: 25px;
     border: 2px solid #FFFFFF;
     width: 550px;
-    height: 380px;
+    height: 430px;
     position: fixed;
     left: 31%;
-    bottom: 27%;
+    bottom: 24%;
   }
 </style>

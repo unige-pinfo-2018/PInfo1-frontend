@@ -1,10 +1,6 @@
 <template>
   <section v-bind:style="{ background: 'url(' + this.$store.state.backgroundImagePath + ') no-repeat center center fixed' }"
            id="main-section" class="hero is-fullheight has-background">
-    <head>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"> //for the pop-up menu
-    </head>
-
     <div id="app" class="hero-body">
       <div class="container">
         <ul>
@@ -13,12 +9,12 @@
        --><li class="three"><router-link to='ask'>Ask a question</router-link></li><!--
        --><li v-show="isAuthenticated()" v-on:click="logout" class="four"><router-link to='/'>Logout</router-link></li><!--
        --><li v-show="!isAuthenticated()" class="four"><router-link to='/login'>Login</router-link></li>
-        <hr />
+        <hr/>
         </ul>
         <router-view/>
       </div>
     </div>
-    <quick-menu :menu-count=getCount :icon-class=icons :menu-url-list=list :background-color=backgroundColor :color=color :position=position :is-open-new-tab=getIsOpenNewTab></quick-menu>
+    <quick-menu v-show="isAuthenticated()" :menu-count=getCount :icon-class=icons :menu-url-list=list :background-color=backgroundColor :color=color :position=position :is-open-new-tab=getIsOpenNewTab></quick-menu>
 
     <div id="social" class="text-xs-center">
       <button class="button is-outlined is-large is-focused"
@@ -54,8 +50,6 @@
   </section>
 </template>
 
-<!-- <li class="two"><router-link to='profile'>My profile</router-link></li> -->
-
 <script>
 /* eslint-disable */
 import Vue from 'vue'
@@ -67,7 +61,7 @@ export default {
     return {
       count: 4,
       icons: ['fa fa-user', 'fa fa-comment', 'fa fa-envelope', 'fa fa-question'],
-      list: ['/#/profile', '/#/posts', '/', '/#/ask'],
+      list: ['/#/profile', '/#/posts', '/#/', '/#/ask'],
       backgroundColor: '#2196F3',
       color: '#ffffff',
       position: 'bottom-right',

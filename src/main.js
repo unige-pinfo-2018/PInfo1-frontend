@@ -6,6 +6,11 @@ import Profile from '@/components/Profile.vue'
 import Posts from '@/components/Posts.vue'
 import SignUp from '@/components/SignUp.vue'
 import Login from '@/components/Login.vue'
+import Ask from '@/components/Ask.vue'
+import Home from '@/components/Home.vue'
+import ConfirmSignUp from '@/components/ConfirmSignUp.vue'
+import ForgotPassword from '@/components/ForgotPassword.vue'
+import ChangePassword from '@/components/ChangePassword.vue'
 import router from './router'
 import VueParticles from 'vue-particles'
 import Vuex from 'vuex'
@@ -27,7 +32,6 @@ Vue.config.productionTip = false
 // this sets axios properties so we can use it to do REST requests
 
 window.axios = require('axios')
-window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
 
 // Vuex is a state management pattern + library for Vue.js applications. It serves as a centralized store for all the components in an application,
 // with rules ensuring that the state can only be mutated in a predictable fashion.
@@ -52,6 +56,6 @@ export default new Vue({
   el: '#app',
   store,
   router,
-  components: { App, Posts, Profile, Login, SignUp },
+  components: {App, Posts, Profile, Login, SignUp, Home, Ask, ConfirmSignUp, ForgotPassword, ChangePassword},
   template: '<App/>'
 })
