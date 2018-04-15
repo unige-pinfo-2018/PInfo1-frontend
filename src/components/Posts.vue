@@ -55,7 +55,9 @@
           </div>
           <div class="level-left">
             <a class="level-item">
-              <button class="button is-outlined" style="color: #2196F3; border-color: #2196F3">Answer</button>
+              <button class="button is-outlined"
+                      style="color: #2196F3; border-color: #2196F3"
+               >Answer</button>
             </a>
           </div>
         </nav>
@@ -120,7 +122,8 @@
               <div class="level-left">
                 <a class="level-item">
                   <button class="button is-outlined"
-                          style="color: #2196F3; border-color: #2196F3">
+                          style="color: #2196F3; border-color: #2196F3"
+                          @click="isVisible = true; injectComment($event)">
                     Answer
                   </button>
                 </a>
@@ -174,7 +177,11 @@
               </div>
               <div class="level-left">
                 <a class="level-item">
-                  <button class="button is-outlined" style="color: #2196F3; border-color: #2196F3">Answer</button>
+                  <button class="button is-outlined"
+                          style="color: #2196F3; border-color: #2196F3"
+                          @click="isVisible = true; injectComment($event)">
+                    Answer
+                  </button>
                 </a>
               </div>
             </nav>
@@ -226,7 +233,11 @@
               </div>
               <div class="level-left">
                 <a class="level-item">
-                  <button class="button is-outlined" style="color: #2196F3; border-color: #2196F3">Answer</button>
+                  <button class="button is-outlined"
+                          style="color: #2196F3; border-color: #2196F3"
+                          @click="isVisible = true; injectComment($event)">
+                    Answer
+                  </button>
                 </a>
               </div>
             </nav>
@@ -248,6 +259,40 @@
         </article>
       </div>
     </div>
+    <div id="answer" v-show="isVisible">
+      <transition name="modal">
+        <div class="modal-mask">
+          <div class="modal-wrapper">
+            <div class="modal-container">
+              <article class="media" id="commentBox">
+                <figure class="media-left">
+                  <p class="image is-64x64">
+                    <img id="profilePictureComment" src="https://bulma.io/images/placeholders/128x128.png" style="border-radius: 999px">
+                  </p>
+                </figure>
+                <div class="media-content">
+                  <div class="field">
+                    <p class="control">
+                      <textarea class="textarea" placeholder="Add a comment..."></textarea>
+                    </p>
+                  </div>
+                  <div class="field">
+                    <p class="control">
+                      <button class="button">Post comment</button>
+                    </p>
+                  </div>
+                </div>
+              </article>
+              <article class="media" id="footerAnswer">
+                <footer style="background-color: white; margin-right: auto; margin-left: auto">
+                  <button class="button is-outlined" style="color: #2196F3; border-color: #2196F3" v-on:click="isVisible=false; deletePost($event)">Close</button>
+                </footer>
+              </article>
+            </div>
+          </div>
+        </div>
+      </transition>
+    </div>
   </section>
 </template>
 
@@ -260,6 +305,7 @@ export default {
   },
   data() {
     return {
+      isVisible: false,
       tags: [],
       colors: [
         'is-info',
@@ -277,14 +323,37 @@ export default {
           username: "@tahaponce",
           date: "3y"
         }
+      ],
+      posts: [
+        {
+
+        }
       ]
     }
   },
   methods: {
-    deletePost: function (id) {
-      let posts = document.getElementById("posts")
-      let post = document.getElementById(id)
-      posts.removeChild(post)
+    deletePost: function (event) {
+      /* Gets the section that contains the post */
+      let ans = event.target.parentElement.parentElement.parentElement
+      /* Removes the previous injection */
+      ans.removeChild(ans.firstChild)
+    },
+    injectComment: function (event) {
+      /* Retrieves the ID of the post from which the function was triggered */
+      let callID = event.target.parentElement.parentElement.parentElement.parentElement.parentElement.getAttribute("id")
+      /* Retrieves the post */
+      let post = document.getElementById(callID).cloneNode(true)
+      /* Removes the answer button */
+      post.getElementsByClassName("level-left")[0].getElementsByClassName("level-item")[0].innerHTML = ""
+      /* Retrieves the answer window */
+      let answer = document.getElementById("answer").getElementsByClassName("modal-container")[0]
+      /* Injects the comment from which the button was triggered in the answer window */
+      answer.insertBefore(post, document.getElementById("commentBox"))
+      /* Sets the profile picture of the user logged in */
+
+      // TODO: connect to the database to retrieve the true profile picture (link) of the user logged in
+
+      document.getElementById("profilePictureComment").src = this.$data.postContent[0].profilePicture
     },
     injectPost: function () {
       /* Gets all posts */
@@ -295,31 +364,48 @@ export default {
       newPost.id = document.getElementById("posts").getElementsByClassName("media").length
       /* Sets the profile picture of the user */
       newPost.getElementsByClassName("media-left")[0]
-             .getElementsByClassName("image is-64x64")[0]
-             .innerHTML = "<img src=" + this.$data.postContent[0].profilePicture + " style=border-radius:50%>"
+        .getElementsByClassName("image is-64x64")[0]
+        .innerHTML = "<img src=" + this.$data.postContent[0].profilePicture + " style=border-radius:50%>"
       /* Sets the name, username and date of the user / post */
       newPost.getElementsByClassName("media-content")[0]
-             .getElementsByClassName("content")[0]
-             .innerHTML = "<p><strong>" + this.$data.postContent[0].name + " </strong> <small> "
-                        + this.$data.postContent[0].username + " </small> <small> "
-                        + this.$data.postContent[0].date
-                        + " </small><br>" + this.$data.postContent[0].text + " </p>"
+        .getElementsByClassName("content")[0]
+        .innerHTML = "<p><strong>" + this.$data.postContent[0].name + " </strong> <small> "
+        + this.$data.postContent[0].username + " </small> <small> "
+        + this.$data.postContent[0].date
+        + " </small><br>" + this.$data.postContent[0].text + " </p>"
       /* Sets the number of comments of the actual post */
       newPost.getElementsByClassName("media-right")[0]
-             .innerHTML = "<span class='icon' style='color: rgb(68, 199, 132);'><i class='fa fa-comment fa-lg'></i></span> <p>"
-                        + this.$data.postContent[0].date + " </p>"
+        .innerHTML = "<span class='icon' style='color: rgb(68, 199, 132);'><i class='fa fa-comment fa-lg'></i></span> <p>"
+        + this.$data.postContent[0].numberOfComments + " </p>"
+      /* Sets button action */
+      newPost.getElementsByClassName("media-content")[0]
+             .getElementsByClassName("level is-mobile")[0]
+             .getElementsByClassName("level-left")[0]
+             .getElementsByClassName("level-item")[0]
+             .innerHTML = " <button class='button is-outlined' " +
+                          "style='color: #2196F3; border-color: #2196F3' " +
+                          " @click='isVisible = true; injectComment($event)'> " + "Answer" + " </button> "
+      console.log(newPost.getElementsByClassName("media-content")[0]
+        .getElementsByClassName("level is-mobile")[0]
+        .getElementsByClassName("level-left")[0]
+        .getElementsByClassName("level-item")[0]
+        .innerHTML)
       /* Allow the post to be visible */
       newPost.style = ""
       /* Appends the new post to the existing ones, before the footer */
       posts.insertBefore(newPost, document.getElementById("footer"))
     },
     getColor: function () {
-        this.$data.counter = this.$data.tags.length // Makes sure we never have too much tags
-        let r = Math.floor(Math.random() * Math.floor(4)) // Picks a random number
-        let color = this.$data.colors[r]; // Picks a random color
-        document.getElementById("tags").getElementsByClassName("myTags")[0] // Gets the line to be modified
-          .getElementsByClassName("taginput-container is-focusable")[0]
-          .childNodes[this.$data.counter-1].className = "tag " + color + " is-rounded"
+      /* Makes sure we never have too much tags */
+      this.$data.counter = this.$data.tags.length
+      /* Picks a random number */
+      let r = Math.floor(Math.random() * Math.floor(4))
+      /* Picks a random color */
+      let color = this.$data.colors[r];
+      /* Changes the color of the tag */
+      document.getElementById("tags").getElementsByClassName("myTags")[0]
+        .getElementsByClassName("taginput-container is-focusable")[0]
+        .childNodes[this.$data.counter-1].className = "tag " + color + " is-rounded"
     }
   }
 }
@@ -341,7 +427,7 @@ export default {
     border-radius: 25px;
     border: 2px solid #FFFFFF;
     max-width: 400px;
-    max-height: 430px;
+    max-height: 400px;
     position: fixed;
     left: 5%;
     top: 25%;
@@ -349,6 +435,7 @@ export default {
 
   #posts {
     background-color: white;
+    border-radius: 25px;
     max-width: 700px;
     left: 40%;
     top: 25%;
@@ -356,4 +443,42 @@ export default {
     position: fixed;
     overflow-y: scroll;
   }
+
+  .modal-mask {
+    position: fixed;
+    z-index: 9998;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, .5);
+    display: table;
+    transition: opacity .3s ease;
+  }
+
+  .modal-wrapper {
+    display: table-cell;
+    vertical-align: middle;
+    width: 700px;
+  }
+
+  .modal-container {
+    width: 700px;
+    margin: 0px auto;
+    padding: 20px 30px;
+    background-color: #fff;
+    border-radius: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+    transition: all .3s ease;
+    font-family: Helvetica, Arial, sans-serif;
+    max-height: 400px;
+    overflow-y: scroll;
+  }
+
+  .modal-enter .modal-container,
+  .modal-leave-active .modal-container {
+    -webkit-transform: scale(1.1);
+    transform: scale(1.1);
+  }
+
 </style>
