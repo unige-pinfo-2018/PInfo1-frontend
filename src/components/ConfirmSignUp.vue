@@ -44,11 +44,23 @@ export default {
   },
   methods: {
     warning(text) {
-      this.$snackbar.open({
+      this.$dialog.alert({
+        title: 'Error',
         message: text,
-        position: 'is-top',
-        actionText: 'Close',
-        indefinite: false
+        type: 'is-danger',
+        hasIcon: true,
+        icon: 'times-circle',
+        iconPack: 'fa'
+      })
+    },
+    success(text) {
+      this.$dialog.alert({
+        title: 'Success',
+        message: text,
+        type: 'is-success',
+        hasIcon: true,
+        icon: 'check-circle',
+        iconPack: 'fa'
       })
     },
     confirmSignup: function () {
@@ -57,7 +69,7 @@ export default {
         axios.get('http://localhost:18080/users-service/rest/users/confirm?email='+this.$data.model.code)
           .then(function (response) {
             console.log(response)
-            tmp.warning('Account confirmation successfull. You can now login.')
+            tmp.success('Account confirmation successfull. You can now login.')
             tmp.$router.push('/login')
             return true
           })

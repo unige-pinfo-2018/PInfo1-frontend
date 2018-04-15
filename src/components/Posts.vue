@@ -323,15 +323,16 @@ export default {
           username: "@tahaponce",
           date: "3y"
         }
-      ],
-      posts: [
-        {
-
-        }
       ]
     }
   },
   methods: {
+
+    // TODO: Write a method for the post comment button that auto-inject a new post in the current thread
+    // TODO: Send the new post to the database
+    // TODO: Allow users to upload pictures with Imgur API
+    // TODO: Allow users to user markdown when writting posts
+
     deletePost: function (event) {
       /* Gets the section that contains the post */
       let ans = event.target.parentElement.parentElement.parentElement
@@ -354,6 +355,19 @@ export default {
       // TODO: connect to the database to retrieve the true profile picture (link) of the user logged in
 
       document.getElementById("profilePictureComment").src = this.$data.postContent[0].profilePicture
+
+      // TODO: retrieve comments from the database and append them to the original post if they exist
+
+      /* THE LINES BELOW ARE PURELY FOR DEMONSTRATION ONLY */
+
+      let com1 = document.getElementById("2").cloneNode(true)
+      com1.getElementsByClassName("level-left")[0].getElementsByClassName("level-item")[0].innerHTML = ""
+      com1.getElementsByClassName("media-right")[0].innerHTML = ""
+      let com2 = document.getElementById("3").cloneNode(true)
+      com2.getElementsByClassName("level-left")[0].getElementsByClassName("level-item")[0].innerHTML = ""
+      com2.getElementsByClassName("media-right")[0].innerHTML = ""
+      answer.getElementsByClassName("media-content")[0].appendChild(com1)
+      answer.getElementsByClassName("media-content")[0].appendChild(com2)
     },
     injectPost: function () {
       /* Gets all posts */
@@ -385,6 +399,9 @@ export default {
              .innerHTML = " <button class='button is-outlined' " +
                           "style='color: #2196F3; border-color: #2196F3' " +
                           " @click='isVisible = true; injectComment($event)'> " + "Answer" + " </button> "
+
+      // TODO: FIND WHY THE FUCKING FUCK THE BUTTON CLICK DOESNT WORK
+
       console.log(newPost.getElementsByClassName("media-content")[0]
         .getElementsByClassName("level is-mobile")[0]
         .getElementsByClassName("level-left")[0]

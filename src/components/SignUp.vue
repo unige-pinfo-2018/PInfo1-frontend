@@ -67,6 +67,16 @@ import confirmSignUp from '@/components/ConfirmSignUp.vue'
           indefinite: false
         })
       },
+      success(text) {
+        this.$dialog.alert({
+          title: 'Success',
+          message: text,
+          type: 'is-success',
+          hasIcon: true,
+          icon: 'check-circle',
+          iconPack: 'fa'
+        })
+      },
       signup: function () {
         let tmp = this  //if this is not declared here, using it in the block below
                         //doesn't reference the correct instance of vue, so $router
@@ -80,7 +90,7 @@ import confirmSignUp from '@/components/ConfirmSignUp.vue'
           })
             .then(function (response) {
               console.log(response);
-              tmp.warning('Signup successfull, please check your inbox')
+              tmp.success('Please check your inbox')
               tmp.$router.push('/confirmSignUp')
             })
             .catch(function (error) {

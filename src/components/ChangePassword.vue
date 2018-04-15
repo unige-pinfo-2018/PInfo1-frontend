@@ -49,11 +49,23 @@ export default {
   },
   methods: {
     warning(text) {
-      this.$snackbar.open({
+      this.$dialog.alert({
+        title: 'Error',
         message: text,
-        position: 'is-top',
-        actionText: 'Close',
-        indefinite: false
+        type: 'is-danger',
+        hasIcon: true,
+        icon: 'times-circle',
+        iconPack: 'fa'
+      })
+    },
+    success(text) {
+      this.$dialog.alert({
+        title: 'Success',
+        message: text,
+        type: 'is-success',
+        hasIcon: true,
+        icon: 'check-circle',
+        iconPack: 'fa'
       })
     },
     changePassword: function () {
@@ -66,7 +78,7 @@ export default {
         })
           .then(function (response) {
             console.log(response)
-            tmp.warning('Password reinitialized successfully. You can now login.')
+            tmp.success('Success. You can now login.')
             tmp.$router.push('/login')
             return true
           })
