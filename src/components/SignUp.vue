@@ -60,11 +60,13 @@ import confirmSignUp from '@/components/ConfirmSignUp.vue'
     },
     methods: {
       warning(text) {
-        this.$snackbar.open({
+        this.$dialog.alert({
+          title: 'Error',
           message: text,
-          position: 'is-top',
-          actionText: 'Close',
-          indefinite: false
+          type: 'is-danger',
+          hasIcon: true,
+          icon: 'times-circle',
+          iconPack: 'fa'
         })
       },
       success(text) {
