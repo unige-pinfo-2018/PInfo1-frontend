@@ -138,6 +138,44 @@
                       </a>
                     </div>
                   </nav>
+                  <article v-if="ans.hasComments" v-for="com in comments" :key="com.id" class="media" :id="com.id">
+                    <figure class="media-left">
+                      <p class="image is-64x64">
+                        <img :src="com.profilePicture" style="border-radius: 50%;">
+                      </p>
+                    </figure>
+                    <div class="media-content">
+                      <div class="content">
+                        <p>
+                          <strong>{{com.name}}</strong> <small>{{com.username}}</small> <small>{{com.date}}</small>
+                          <br>
+                        </p>
+                        <p>
+                          {{com.text}}
+                        </p>
+                      </div>
+                      <nav class="level is-mobile">
+                        <div class="level-right">
+                          <a class="level-item">
+                            <b-icon
+                              pack="fa"
+                              icon="heart"
+                              style="color: orangered;"
+                            >
+                            </b-icon>
+                          </a>
+                          <a class="level-item">
+                            <b-icon
+                              pack="fa"
+                              icon="thumbs-down"
+                              style="color: #000"
+                            >
+                            </b-icon>
+                          </a>
+                        </div>
+                      </nav>
+                    </div>
+                  </article>
                 </div>
               </article>
               <article class="media" id="commentBox">
@@ -149,12 +187,12 @@
                 <div class="media-content">
                   <div class="field">
                     <p class="control">
-                      <textarea class="textarea" placeholder="Add a comment..."></textarea>
+                      <formly-form :form="form" :model="model" :fields="fields" style="border: none"></formly-form>
                     </p>
                   </div>
                   <div class="field">
                     <p class="control">
-                      <button class="button">Post comment</button>
+                      <button class="button" v-on:click="postComment($event)">Post comment</button>
                     </p>
                   </div>
                 </div>
@@ -182,21 +220,41 @@ export default {
   },
   data() {
     return {
-      isVisible: false,
-      tags: [],
-      colors: [
+      model: {},
+      form: {},
+      fields: [
+        {
+          "key": "message",
+          "type": "input-with-field",
+          "templateOptions": {
+            "properties": {
+              "type": "textarea",
+            },
+            "wrapper": {
+              "properties": {
+                "label": "Message",
+                "addons": false
+              }
+            }
+          }
+        }
+      ],
+      isVisible: false, // To show or not the answer window
+      tags: [], // contains the tags
+      colors: [ // all colors that the tags can recieve
         'is-info',
         'is-success',
         'is-warning',
         'is-danger'
       ],
-      counter: 0,
-      answerTo: [
+      counter: 0, // used to assign colors to tags
+      answerTo: [ // will contain the parent post that is displayed in the answer window
       ],
-      posts: [
+      posts: [ // contains all the post displayed on screen
         {
-          id: "post0",
-          text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ornare magna eros, eu pellentesque tortor vestibulum ut. Maecenas non massa sem. Etiam finibus odio quis feugiat facilisis.",
+          hasComments: false,
+          id: "post1",
+          text: "",
           profilePicture: "http://acevasupportservices.com/wp-content/uploads/2014/11/profile-pic-round-300x295.jpg",
           numberOfComments: "6",
           name: "Taha Ponce",
@@ -204,59 +262,248 @@ export default {
           date: "3y"
         },
         {
-          id: "post1",
-          text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ornare magna eros, eu pellentesque tortor vestibulum ut. Maecenas non massa sem. Etiam finibus odio quis feugiat facilisis.",
-          profilePicture: "http://www.abbieterpening.com/wp-content/uploads/2013/10/profile-pic-round-200px.png",
+          hasComments: false,
+          id: "post2",
+          text: "",
+          profilePicture: "http://www.sunstateautoglass.com/wp-content/uploads/2017/03/tb_profile_201303_round.png",
           numberOfComments: "4",
-          name: "Meera Mcconnell",
+          name: "Meer Mcconnell",
+          username: "@mcconnell",
+          date: "2d"
+        },
+        {
+          hasComments: false,
+          id: "post3",
+          text: "",
+          profilePicture: "http://www.sheeby.com/assets/595ecbfa1f59ed4102ce251258438674.png",
+          numberOfComments: "0",
+          name: "Alastair Robertson",
+          username: "@alarob",
+          date: "31mn"
+        },
+        {
+          hasComments: false,
+          id: "post4",
+          text: "",
+          profilePicture: "https://i.imgur.com/r0bsDqL.jpg",
+          numberOfComments: "1",
+          name: "Nabil Rees",
+          username: "@nabil",
+          date: "1y"
+        },
+        {
+          hasComments: false,
+          id: "post5",
+          text: "",
+          profilePicture: "http://www.sunstateautoglass.com/wp-content/uploads/2017/03/tb_profile_201303_round.png",
+          numberOfComments: "4",
+          name: "Meer Mcconnell",
           username: "@mcconnell",
           date: "2d"
         }
       ],
-      user: [
+      user: [ // information of the current user that's logged in
         {
+          id : "1",
           username: "@admin",
           name: "Ranters",
           profilePicture: "https://t4.ftcdn.net/jpg/00/68/77/03/160_F_68770340_LuNbpob370ftmWxS0FzYQiIwkEY5iEVt.jpg"
         }
-      ]
+      ],
+      comments: [ // will contain all comments relative to a post
+      ],
+      nbTotalPosts: 0, // total number of posts that are stored in the DB
+      from: 1, // where it starts fetching posts
+      to: 5 // where it stops fetching posts
     }
   },
   methods: {
 
-    // TODO: Write a method for the post comment button that auto-inject a new post in the current thread
     // TODO: Send the new post to the database
     // TODO: Allow users to upload pictures with Imgur API
     // TODO: Allow users to user markdown when writting posts
     // TODO: connect to the database to retrieve the true profile picture (link) of the user logged in
-    // TODO: retrieve comments from the database and append them to the original post if they exist
 
-    answer: function(event) {
-      let postID = event.target
+    /* Function used to popup a warning with a custom message */
+    warning(text) {
+      this.$dialog.alert({
+        title: 'Error',
+        message: text,
+        type: 'is-danger',
+        hasIcon: true,
+        icon: 'times-circle',
+        iconPack: 'fa'
+      })
+    },
+
+    /* Retrieves posts from the DB. This function is called as soon as the component is mounted */
+    retrievePosts: function () {
+      let tmp = this
+      /* First we retrieve how many posts we have in the DB */
+      axios.get('http://127.0.0.1:18080/post-service/rest/posts/nbPosts/')
+        .then(function (response) {
+          tmp.$data.nbTotalPosts = response.data.nbPosts // sets number of posts that are in the DB
+          return true
+        })
+        .catch(function (error) {
+          tmp.warning('Could not connect to database')
+          console.log(error.response);
+          return false
+        });
+
+      /* Now we retrieve a fixed amount of post by default */
+      axios.get('http://127.0.0.1:18080/post-service/rest/posts/content_by_ids?from='+this.$data.from.toString()+'&to='+this.$data.to.toString())
+        .then(function (response) {
+          let p = response.data
+          for (let i=0; i<p.length; i++){ // Currently Im modyfing existing posts, but later it'll just push a new post
+            tmp.$data.posts[i].text = p[i].entity.content
+          }
+          return true
+        })
+        .catch(function (error) {
+          tmp.warning('Could not connect to database')
+          console.log(error.response);
+          return false
+        });
+    },
+
+    /* When the button answer is clicked, it fires this function that retrieves the post
+     * from which the button was clicked, and pushes it to the answer window in order to display it */
+    answer: function (event) {
+      let postID = event.target // Gets which post fired the answer function
         .parentElement.parentElement.parentElement.parentElement
         .parentElement.getAttribute("id")
-      let postNumberID = postID.match(/\d/g).join("")
-      let post = this.$data.posts[postNumberID]
-      post.id = "answer"+ postNumberID
-      this.$data.answerTo.push(post)
+      let postNumberID = postID.match(/\d/g).join("") // Gets just the number so we can construct an id and get the post
+      let post = this.$data.posts[postNumberID-1] // Gets the post
+      post.id = "answer"+ postNumberID // Construct a unique id
+      this.$data.answerTo.push(post) // Pushes it to the answer window
+      let tmp = this
+      if (this.$data.posts[postNumberID-1].hasComments) {
+        axios.get('http://127.0.0.1:18080/post-service/rest/posts/getCommentsForPost/'+postNumberID.toString())
+          .then(function (response) {
+            let p = response.data
+            for (let i=0; i<p.length; i++){
+              let comment = {
+                hasComments: false,
+                id: p[i].entity.id,
+                text: p[i].entity.content,
+                profilePicture: "http://www.sunstateautoglass.com/wp-content/uploads/2017/03/tb_profile_201303_round.png",
+                numberOfComments: "4",
+                name: "Meer Mcconnell",
+                username: "@mcconnell",
+                date: "2d"
+              }
+              tmp.$data.comments.push(comment)
+            }
+            return true
+          })
+          .catch(function (error) {
+            tmp.warning('Could not fetch posts. Database not reachable')
+            console.log(error.response);
+            return false
+          });
+      }
     },
+
+    /* Simply re-initialize the answer window post and the comments */
     deletePost: function () {
-      this.$data.answerTo.splice(0,1)
+      this.$data.answerTo.splice(0,1) // removes the first (and unique) element of array answerTo
+      this.$data.comments = []
     },
+
+    /* This function is triggered by a user wishing to load more post. It will fetch posts that are yet not
+     * displayed in the database and push them onto the screen */
     loadmore: function () {
-      let id = this.$data.posts.length
-      this.$data.posts.push(
-        {
-          id: "post"+(id).toString(),
-          text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ornare magna eros, eu pellentesque tortor vestibulum ut. Maecenas non massa sem. Etiam finibus odio quis feugiat facilisis.",
-          profilePicture: "https://media.creativemornings.com/uploads/user/avatar/167913/Adam_LR_Round_Profile_Pic.jpg",
-          numberOfComments: "2",
-          name: "John Smith",
-          username: "@johnsmith",
-          date: "4w"
-        }
-      )
+      let tmp = this
+      this.$data.from += 5 // By default we want to display 5 more posts
+      let diff = this.$data.nbTotalPosts - this.$data.from + 1 // Checks how many posts remaining can be displayed
+      if (diff >= 5){ // Then we can fetch 5 posts
+        tmp.$data.to += 5
+      } else if (diff > 0) { // We can only fetch whats left
+        tmp.$data.to += diff
+      } else {
+        tmp.warning("No more posts to load") // No more posts in the databse
+      }
+      if ((diff>0)){ // Then we can call the database
+        axios.get('http://127.0.0.1:18080/post-service/rest/posts/content_by_ids?from='+this.$data.from.toString()+'&to='+this.$data.to.toString())
+          .then(function (response) {
+            let p = response.data
+            for (let i=0; i<p.length; i++){
+              let post = {
+                hasComments: false,
+                id: p[i].entity.id - 1,
+                text: p[i].entity.content,
+                profilePicture: "http://www.sunstateautoglass.com/wp-content/uploads/2017/03/tb_profile_201303_round.png",
+                numberOfComments: "4",
+                name: "Meer Mcconnell",
+                username: "@mcconnell",
+                date: "2d"
+              }
+              tmp.$data.posts.push(post)
+            }
+            return true
+          })
+          .catch(function (error) {
+            tmp.warning('Could not fetch posts. Database not reachable')
+            console.log(error.response);
+            return false
+          });
+      }
     },
+
+    /* Checks if a string is empty or undefined or only contains white spaces */
+    empty: function (str) {
+      if (typeof str == 'undefined' || !str || str.length === 0 || str === "" || !/[^\s]/.test(str) || /^\s*$/.test(str) || str.replace(/\s/g,"") === "") {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    /* This function is triggered when a user answers an existing post */
+    postComment: function (event) {
+      if (!this.empty(this.$data.model.message)) { // Checks that there's something in the text-field area
+        let tmp = this
+        let msg = this.$data.model.message // Gets the message
+        let id = this.$data.comments.length + 1 // Creates an id
+        let postID = event.target // Gets the id for the parent post
+          .parentElement.parentElement.parentElement.parentElement
+          .parentElement.firstChild.getAttribute("id")
+        let postNumberID = postID.match(/\d/g).join("") // Gets the number
+        if (this.$data.posts[postNumberID-1].hasComments == false) { // Now the post has comment
+          this.$data.posts[postNumberID-1].hasComments = true
+        }
+        let comment = { // creating the comment
+          hasComments: false, // a comment cannot have comments
+          id: "comment"+(id).toString(),
+          text: msg,
+          profilePicture: tmp.$data.user[0].profilePicture,
+          name: tmp.$data.user[0].name,
+          username: tmp.$data.user[0].username,
+          date: "1min"
+        }
+        this.$data.comments.push(comment) // pushing it so it displays
+        this.$data.model = {} // reinit the comment box
+
+        axios.put('http://127.0.0.1:18080/post-service/rest/posts/addPost', {
+          "userId": tmp.$data.user[0].id,
+          "content": msg,
+          "parentId": postNumberID
+        })
+          .then(function (response) {
+            console.log(response)
+            return true
+          })
+          .catch(function (error) {
+            tmp.warning('Could not fetch posts. Database not reachable')
+            console.log(error.response);
+            return false
+          });
+
+      }
+    },
+
+    /* This function is used to change the tags color */
     getColor: function () {
       /* Makes sure we never have too much tags */
       this.$data.counter = this.$data.tags.length
@@ -269,6 +516,10 @@ export default {
         .getElementsByClassName("taginput-container is-focusable")[0]
         .childNodes[this.$data.counter-1].className = "tag " + color + " is-rounded"
     }
+  },
+  beforeMount(){
+    /* When the component is mounted, the functions below are triggered */
+    this.retrievePosts()
   }
 }
 </script>
@@ -298,7 +549,7 @@ export default {
   #posts {
     background-color: white;
     border-radius: 25px;
-    max-width: 700px;
+    width: 700px;
     left: 40%;
     top: 25%;
     max-height: 400px;
