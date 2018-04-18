@@ -251,63 +251,21 @@ export default {
       answerTo: [ // will contain the parent post that is displayed in the answer window
       ],
       posts: [ // contains all the post displayed on screen
-        {
-          hasComments: false,
-          id: "post1",
-          text: "",
-          profilePicture: "http://acevasupportservices.com/wp-content/uploads/2014/11/profile-pic-round-300x295.jpg",
-          numberOfComments: 0,
-          name: "Taha Ponce",
-          username: "@tahaponce",
-          date: "3y"
-        },
-        {
-          hasComments: false,
-          id: "post2",
-          text: "",
-          profilePicture: "http://www.sunstateautoglass.com/wp-content/uploads/2017/03/tb_profile_201303_round.png",
-          numberOfComments: 0,
-          name: "Meer Mcconnell",
-          username: "@mcconnell",
-          date: "2d"
-        },
-        {
-          hasComments: false,
-          id: "post3",
-          text: "",
-          profilePicture: "http://www.sheeby.com/assets/595ecbfa1f59ed4102ce251258438674.png",
-          numberOfComments: 0,
-          name: "Alastair Robertson",
-          username: "@alarob",
-          date: "31mn"
-        },
-        {
-          hasComments: false,
-          id: "post4",
-          text: "",
-          profilePicture: "https://i.imgur.com/r0bsDqL.jpg",
-          numberOfComments: 0,
-          name: "Nabil Rees",
-          username: "@nabil",
-          date: "1y"
-        },
-        {
-          hasComments: false,
-          id: "post5",
-          text: "",
-          profilePicture: "http://www.sunstateautoglass.com/wp-content/uploads/2017/03/tb_profile_201303_round.png",
-          numberOfComments: 0,
-          name: "Meer Mcconnell",
-          username: "@mcconnell",
-          date: "2d"
-        }
       ],
       user: [ // information of the current user that's logged in
         {
           id : "1",
-          username: "@admin",
-          name: "Ranters",
-          profilePicture: "https://t4.ftcdn.net/jpg/00/68/77/03/160_F_68770340_LuNbpob370ftmWxS0FzYQiIwkEY5iEVt.jpg"
+          username: "@theogio",
+          name: "Théo Giovanna",
+          profilePicture: "http://foundrysocial.com/wp-content/uploads/2016/12/Anonymous-Icon-Round-01.png"
+        }
+      ],
+      userPost: [
+        {
+          "id": 0,
+          "username": "",
+          "name": "",
+          "pictureUrl": "https://cdn5.vectorstock.com/i/thumb-large/72/44/bodybuilder-logo-icon-on-white-background-vector-18167244.jpg"
         }
       ],
       comments: [ // will contain all comments relative to a post
@@ -319,7 +277,6 @@ export default {
   },
   methods: {
 
-    // TODO: Send the new post to the database
     // TODO: Allow users to upload pictures with Imgur API
     // TODO: Allow users to user markdown when writting posts
     // TODO: connect to the database to retrieve the true profile picture (link) of the user logged in
@@ -351,32 +308,44 @@ export default {
           return false
         });
 
+      let idPost = [], textPost = [], datePost = []
       /* Now we retrieve a fixed amount of post by default */
       axios.get('http://127.0.0.1:18080/post-service/rest/posts/content_by_ids?from='+this.$data.from.toString()+'&to='+this.$data.to.toString())
         .then(function (response) {
           let p = response.data
-          for (let i=0; i<p.length; i++){ // Currently Im modyfing existing posts, but later it'll just push a new post
-            tmp.$data.posts[i].text = p[i].entity.content
-          }
-          return true
-        })
-        .catch(function (error) {
-          tmp.warning('Could not connect to database')
-          console.log(error.response);
-          return false
-        });
-
-      /* Now we retrieve the number of comments for each post so we can display them */
-      axios.get('http://127.0.0.1:18080/post-service/rest/posts/getCommentsForPosts?from='+this.$data.from.toString()+'&to='+this.$data.to.toString())
-        .then(function (response) {
-          let p = response.data
-          for (let i=tmp.$data.from; i<=tmp.$data.to; i++) {
-            if (p[""+i+""].length !== 0) { // then a post has comments
-              tmp.$data.posts[i-1].hasComments = true
-              tmp.$data.posts[i-1].numberOfComments = p[""+i+""].length
+          let promises = [] // Requests that will have to be queried
+          for (let i=0; i<p.length; i++) {
+            /* Gets the info related to the post */
+            if (p[i].entity.parentId == null) { // Then it is a post, so we can display it
+              idPost.push(p[i].entity.id)
+              textPost.push(p[i].entity.content)
+              datePost.push(p[i].entity.datePost)
+              promises.push(axios.get('http://127.0.0.1:18080/users-service/rest/users/by_id/'+p[i].entity.userId.toString()))
             }
           }
-          return true
+          /* To retrieve the comments */
+          promises.push(axios.get('http://127.0.0.1:18080/post-service/rest/posts/getCommentsForPosts?from='+tmp.$data.from.toString()+'&to='+tmp.$data.to.toString()))
+          /* Makes the call to get user info + comments in a synchronized way */
+          axios.all(promises).then(function(results) {
+            for (let i=0; i<results.length-1; i++) {
+              let com = false
+              if (results[tmp.$data.to-tmp.$data.from+1].data[""+(i+1).toString()+""].length !== 0) { // post has comment or not
+                com = true
+              }
+              let date = new Date(datePost[i])
+              let post = {
+                hasComments: com, // just so it displays the comment accordingly to the number of comments of a post
+                id: idPost[i],
+                text: textPost[i],
+                profilePicture: results[i].data.pictureUrl,
+                numberOfComments: results[tmp.$data.to-tmp.$data.from+1].data[""+(i+1).toString()+""].length, // retrieved later
+                name: results[i].data.name,
+                username: "@"+results[i].data.username,
+                date: date.getDay() + '/' + date.getMonth() + '/' + date.getFullYear() + ' - ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
+              }
+              tmp.$data.posts.push(post)
+            }
+          });
         })
         .catch(function (error) {
           tmp.warning('Could not connect to database')
@@ -400,20 +369,27 @@ export default {
         axios.get('http://127.0.0.1:18080/post-service/rest/posts/getCommentsForPost/'+postNumberID.toString())
           .then(function (response) {
             let p = response.data
-            for (let i=0; i<p.length; i++){
-              let comment = {
-                hasComments: false,
-                id: p[i].entity.id,
-                text: p[i].entity.content,
-                profilePicture: "http://www.sunstateautoglass.com/wp-content/uploads/2017/03/tb_profile_201303_round.png",
-                numberOfComments: 0,
-                name: "Meer Mcconnell",
-                username: "@mcconnell",
-                date: "2d"
-              }
-              tmp.$data.comments.push(comment)
+            let promises = []
+            for (let i=0; i<p.length; i++) {
+              /* Queries to retrive user informations for the comments */
+              promises.push(axios.get('http://127.0.0.1:18080/users-service/rest/users/by_id/' + (p[i].entity.userId).toString()))
             }
-            return true
+            axios.all(promises).then(function(results) {
+              for (let i=0; i<results.length; i++) {
+                let date = new Date(p[i].entity.datePost)
+                let comment = {
+                  hasComments: false, // because its a comment
+                  id: p[i].entity.id,
+                  text: p[i].entity.content,
+                  profilePicture: results[i].data.pictureUrl,
+                  numberOfComments: 0, // because its a comment
+                  name: results[i].data.name,
+                  username: "@"+results[i].data.username,
+                  date: date.getDay() + '/' + date.getMonth() + '/' + date.getFullYear() + ' - ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
+                }
+                tmp.$data.comments.push(comment)
+              }
+            });
           })
           .catch(function (error) {
             tmp.warning('Could not fetch posts. Database not reachable')
@@ -443,35 +419,42 @@ export default {
         tmp.warning("No more posts to load") // No more posts in the databse
       }
       if ((diff>0)){ // Then we can call the database
+        let idPost = [], textPost = [], datePost = []
         axios.get('http://127.0.0.1:18080/post-service/rest/posts/content_by_ids?from='+this.$data.from.toString()+'&to='+this.$data.to.toString())
           .then(function (response) {
             let p = response.data
-            for (let i=0; i<p.length; i++){
-              if (p[i].entity.parentId == null){ // Then its not a comment but a post so it needs to be displayed
-                let post = {
-                  hasComments: false,
-                  id: p[i].entity.id - 1,
-                  text: p[i].entity.content,
-                  profilePicture: "http://www.sunstateautoglass.com/wp-content/uploads/2017/03/tb_profile_201303_round.png",
-                  numberOfComments: 0,
-                  name: "Meer Mcconnell",
-                  username: "@mcconnell",
-                  date: "2d"
-                }
-                tmp.$data.posts.push(post)
-              } else {
-                if (i === p.length-1) {
-                  tmp.warning("No more posts to load") // No more posts that arent comments to load
-                }
+            let promises = []
+            for (let i = 0; i < p.length; i++) {
+              /* Gets the info related to the post */
+              if (p[i].entity.parentId == null) { // Then it is a post, so we can display it
+                idPost.push(p[i].entity.id)
+                textPost.push(p[i].entity.content)
+                datePost.push(p[i].entity.datePost)
+                promises.push(axios.get('http://127.0.0.1:18080/users-service/rest/users/by_id/' + p[i].entity.userId.toString()))
               }
             }
-            return true
-          })
-          .catch(function (error) {
-            tmp.warning('Could not fetch posts. Database not reachable')
-            console.log(error.response);
-            return false
-          });
+            /* Makes the call to get user info in a synchronized way */
+            axios.all(promises).then(function (results) {
+              for (let i = 0; i < results.length; i++) {
+                let date = new Date(datePost[i])
+                let post = {
+                  hasComments: false,
+                  id: idPost[i],
+                  text: textPost[i],
+                  profilePicture: results[i].data.pictureUrl,
+                  numberOfComments: 0, // retrieved later
+                  name: results[i].data.name,
+                  username: "@" + results[i].data.username,
+                  date: date.getDay() + '/' + date.getMonth() + '/' + date.getFullYear() + ' - ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
+                }
+                tmp.$data.posts.push(post)
+              }
+            });
+          }).catch(function (error) {
+          tmp.warning('Could not fetch posts. Database not reachable')
+          console.log(error.response);
+          return false
+        });
       }
     },
 
