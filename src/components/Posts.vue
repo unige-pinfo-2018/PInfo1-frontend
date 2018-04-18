@@ -280,6 +280,7 @@ export default {
     // TODO: Allow users to upload pictures with Imgur API
     // TODO: Allow users to user markdown when writting posts
     // TODO: connect to the database to retrieve the true profile picture (link) of the user logged in
+    //TODO: Need to rewrite the posts datatype: it needs to be a map between an id (fetched from the DB) and the actual post
 
     /* Function used to popup a warning with a custom message */
     warning(text) {
@@ -361,6 +362,7 @@ export default {
         .parentElement.parentElement.parentElement.parentElement
         .parentElement.getAttribute("id")
       let postNumberID = postID.match(/\d/g).join("") // Gets just the number so we can construct an id and get the post
+      console.log(this.$data.posts.length)
       let post = this.$data.posts[postNumberID-1] // Gets the post
       post.id = "answer"+ postNumberID // Construct a unique id
       this.$data.answerTo.push(post) // Pushes it to the answer window
@@ -408,9 +410,10 @@ export default {
     /* This function is triggered by a user wishing to load more post. It will fetch posts that are yet not
      * displayed in the database and push them onto the screen */
     loadmore: function () {
+      console.log(this.$data.posts.length)
       let tmp = this
       this.$data.from += 5 // By default we want to display 5 more posts
-      let diff = this.$data.nbTotalPosts - this.$data.from + 1 // Checks how many posts remaining can be displayed
+      let diff = this.$data.nbTotalPosts - this.$data.from // Checks how many posts remaining can be displayed
       if (diff >= 5){ // Then we can fetch 5 posts
         tmp.$data.to += 5
       } else if (diff > 0) { // We can only fetch whats left
@@ -433,21 +436,30 @@ export default {
                 promises.push(axios.get('http://127.0.0.1:18080/users-service/rest/users/by_id/' + p[i].entity.userId.toString()))
               }
             }
+            promises.push(axios.get('http://127.0.0.1:18080/post-service/rest/posts/getCommentsForPosts?from='+tmp.$data.from.toString()+'&to='+tmp.$data.to.toString()))
             /* Makes the call to get user info in a synchronized way */
             axios.all(promises).then(function (results) {
-              for (let i = 0; i < results.length; i++) {
+              for (let i = 0; i < results.length-1; i++) {
                 let date = new Date(datePost[i])
-                let post = {
-                  hasComments: false,
-                  id: idPost[i],
-                  text: textPost[i],
-                  profilePicture: results[i].data.pictureUrl,
-                  numberOfComments: 0, // retrieved later
-                  name: results[i].data.name,
-                  username: "@" + results[i].data.username,
-                  date: date.getDay() + '/' + date.getMonth() + '/' + date.getFullYear() + ' - ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
+                let com = false
+                try{
+                  if (results[tmp.$data.to-tmp.$data.from].data[(i+tmp.$data.from).toString()].length !== 0) { // post has comment or not
+                    com = true
+                  }
+                  let post = {
+                    hasComments: com,
+                    id: idPost[i],
+                    text: textPost[i],
+                    profilePicture: results[i].data.pictureUrl,
+                    numberOfComments: results[tmp.$data.to-tmp.$data.from].data[(i+tmp.$data.from).toString()].length,
+                    name: results[i].data.name,
+                    username: "@" + results[i].data.username,
+                    date: date.getDay() + '/' + date.getMonth() + '/' + date.getFullYear() + ' - ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
+                  }
+                  tmp.$data.posts.push(post)
+                }catch(e){
+                  console.log("Caught exception",e)
                 }
-                tmp.$data.posts.push(post)
               }
             });
           }).catch(function (error) {
