@@ -256,7 +256,7 @@ export default {
           id: "post1",
           text: "",
           profilePicture: "http://acevasupportservices.com/wp-content/uploads/2014/11/profile-pic-round-300x295.jpg",
-          numberOfComments: "6",
+          numberOfComments: 0,
           name: "Taha Ponce",
           username: "@tahaponce",
           date: "3y"
@@ -266,7 +266,7 @@ export default {
           id: "post2",
           text: "",
           profilePicture: "http://www.sunstateautoglass.com/wp-content/uploads/2017/03/tb_profile_201303_round.png",
-          numberOfComments: "4",
+          numberOfComments: 0,
           name: "Meer Mcconnell",
           username: "@mcconnell",
           date: "2d"
@@ -276,7 +276,7 @@ export default {
           id: "post3",
           text: "",
           profilePicture: "http://www.sheeby.com/assets/595ecbfa1f59ed4102ce251258438674.png",
-          numberOfComments: "0",
+          numberOfComments: 0,
           name: "Alastair Robertson",
           username: "@alarob",
           date: "31mn"
@@ -286,7 +286,7 @@ export default {
           id: "post4",
           text: "",
           profilePicture: "https://i.imgur.com/r0bsDqL.jpg",
-          numberOfComments: "1",
+          numberOfComments: 0,
           name: "Nabil Rees",
           username: "@nabil",
           date: "1y"
@@ -296,7 +296,7 @@ export default {
           id: "post5",
           text: "",
           profilePicture: "http://www.sunstateautoglass.com/wp-content/uploads/2017/03/tb_profile_201303_round.png",
-          numberOfComments: "4",
+          numberOfComments: 0,
           name: "Meer Mcconnell",
           username: "@mcconnell",
           date: "2d"
@@ -365,6 +365,24 @@ export default {
           console.log(error.response);
           return false
         });
+
+      /* Now we retrieve the number of comments for each post so we can display them */
+      axios.get('http://127.0.0.1:18080/post-service/rest/posts/getCommentsForPosts?from='+this.$data.from.toString()+'&to='+this.$data.to.toString())
+        .then(function (response) {
+          let p = response.data
+          for (let i=tmp.$data.from; i<=tmp.$data.to; i++) {
+            if (p[""+i+""].length !== 0) { // then a post has comments
+              tmp.$data.posts[i-1].hasComments = true
+              tmp.$data.posts[i-1].numberOfComments = p[""+i+""].length
+            }
+          }
+          return true
+        })
+        .catch(function (error) {
+          tmp.warning('Could not connect to database')
+          console.log(error.response);
+          return false
+        });
     },
 
     /* When the button answer is clicked, it fires this function that retrieves the post
@@ -388,7 +406,7 @@ export default {
                 id: p[i].entity.id,
                 text: p[i].entity.content,
                 profilePicture: "http://www.sunstateautoglass.com/wp-content/uploads/2017/03/tb_profile_201303_round.png",
-                numberOfComments: "4",
+                numberOfComments: 0,
                 name: "Meer Mcconnell",
                 username: "@mcconnell",
                 date: "2d"
@@ -434,7 +452,7 @@ export default {
                 id: p[i].entity.id - 1,
                 text: p[i].entity.content,
                 profilePicture: "http://www.sunstateautoglass.com/wp-content/uploads/2017/03/tb_profile_201303_round.png",
-                numberOfComments: "4",
+                numberOfComments: 0,
                 name: "Meer Mcconnell",
                 username: "@mcconnell",
                 date: "2d"
@@ -473,6 +491,7 @@ export default {
         if (this.$data.posts[postNumberID-1].hasComments == false) { // Now the post has comment
           this.$data.posts[postNumberID-1].hasComments = true
         }
+        this.$data.posts[postNumberID-1].numberOfComments ++
         let comment = { // creating the comment
           hasComments: false, // a comment cannot have comments
           id: "comment"+(id).toString(),
