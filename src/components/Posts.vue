@@ -272,7 +272,8 @@ export default {
       ],
       nbTotalPosts: 0, // total number of posts that are stored in the DB
       from: 1, // where it starts fetching posts
-      to: 5 // where it stops fetching posts
+      to: 5, // where it stops fetching posts
+      offset: 0 // to control the from and to requests
     }
   },
   methods: {
@@ -414,10 +415,10 @@ export default {
     /* This function is triggered by a user wishing to load more post. It will fetch posts that are yet not
      * displayed in the database and push them onto the screen */
     loadmore: function () {
-      console.log(this.$data.posts.length)
       let tmp = this
       this.$data.from += 5 // By default we want to display 5 more posts
-      let diff = this.$data.nbTotalPosts - this.$data.from // Checks how many posts remaining can be displayed
+      console.log('nb posts', this.$data.nbTotalPosts)
+      let diff = this.$data.nbTotalPosts - this.$data.posts.length // Checks how many posts remaining can be displayed
       if (diff >= 5){ // Then we can fetch 5 posts
         tmp.$data.to += 5
       } else if (diff > 0) { // We can only fetch whats left
@@ -443,11 +444,12 @@ export default {
             promises.push(axios.get('http://127.0.0.1:18080/post-service/rest/posts/getCommentsForPosts?from='+tmp.$data.from.toString()+'&to='+tmp.$data.to.toString()))
             /* Makes the call to get user info in a synchronized way */
             axios.all(promises).then(function (results) {
+              console.log(results)
               for (let i = 0; i < results.length-1; i++) {
                 let date = new Date(datePost[i])
                 let com = false
                 try{
-                  if (results[tmp.$data.to-tmp.$data.from].data[(i+tmp.$data.from).toString()].length !== 0) { // post has comment or not
+                  if (results[tmp.$data.to-tmp.$data.from+1].data[(idPost[i]).toString()].length !== 0) { // post has comment or not
                     com = true
                   }
                   let post = {
@@ -455,7 +457,7 @@ export default {
                     id: idPost[i],
                     text: textPost[i],
                     profilePicture: results[i].data.pictureUrl,
-                    numberOfComments: results[tmp.$data.to-tmp.$data.from].data[(i+tmp.$data.from).toString()].length,
+                    numberOfComments: results[tmp.$data.to-tmp.$data.from+1].data[(idPost[i]).toString()].length,
                     name: results[i].data.name,
                     username: "@" + results[i].data.username,
                     date: date.getDay() + '/' + date.getMonth() + '/' + date.getFullYear() + ' - ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
@@ -465,6 +467,10 @@ export default {
                   console.log("Caught exception",e)
                 }
               }
+              tmp.$data.offset = idPost[idPost.length-1] - tmp.$data.to
+              tmp.$data.from += tmp.$data.offset
+              tmp.$data.to += tmp.$data.offset
+              console.log('from: ', tmp.$data.from, 'to: ', tmp.$data.to)
             });
           }).catch(function (error) {
           tmp.warning('Could not fetch posts. Database not reachable')
