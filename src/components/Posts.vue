@@ -358,16 +358,20 @@ export default {
     /* When the button answer is clicked, it fires this function that retrieves the post
      * from which the button was clicked, and pushes it to the answer window in order to display it */
     answer: function (event) {
+      let tmp = this
       let postID = event.target // Gets which post fired the answer function
         .parentElement.parentElement.parentElement.parentElement
         .parentElement.getAttribute("id")
       let postNumberID = postID.match(/\d/g).join("") // Gets just the number so we can construct an id and get the post
-      console.log(this.$data.posts.length)
-      let post = this.$data.posts[postNumberID-1] // Gets the post
-      post.id = "answer"+ postNumberID // Construct a unique id
+      console.log(postNumberID)
+      let post
+      for (let i=0; i<this.$data.posts.length; i++) {
+        if (tmp.$data.posts[i].id == postNumberID) { // look for the right post to inject in the answer window
+          post = tmp.$data.posts[i]
+        }
+      }
       this.$data.answerTo.push(post) // Pushes it to the answer window
-      let tmp = this
-      if (this.$data.posts[postNumberID-1].hasComments) {
+      if (post.hasComments) {
         axios.get('http://127.0.0.1:18080/post-service/rest/posts/getCommentsForPost/'+postNumberID.toString())
           .then(function (response) {
             let p = response.data
@@ -489,10 +493,16 @@ export default {
           .parentElement.parentElement.parentElement.parentElement
           .parentElement.firstChild.getAttribute("id")
         let postNumberID = postID.match(/\d/g).join("") // Gets the number
-        if (this.$data.posts[postNumberID-1].hasComments == false) { // Now the post has comment
-          this.$data.posts[postNumberID-1].hasComments = true
+        let post
+        for (let i=0; i<this.$data.posts.length; i++) {
+          if (tmp.$data.posts[i].id == postNumberID) { // look for the right post to inject in the answer window
+            post = tmp.$data.posts[i]
+          }
         }
-        this.$data.posts[postNumberID-1].numberOfComments ++
+        if (post.hasComments == false) { // Now the post has comment
+          post.hasComments = true
+        }
+        post.numberOfComments ++
         let comment = { // creating the comment
           hasComments: false, // a comment cannot have comments
           id: "comment"+(id).toString(),
