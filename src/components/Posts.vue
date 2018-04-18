@@ -447,17 +447,23 @@ export default {
           .then(function (response) {
             let p = response.data
             for (let i=0; i<p.length; i++){
-              let post = {
-                hasComments: false,
-                id: p[i].entity.id - 1,
-                text: p[i].entity.content,
-                profilePicture: "http://www.sunstateautoglass.com/wp-content/uploads/2017/03/tb_profile_201303_round.png",
-                numberOfComments: 0,
-                name: "Meer Mcconnell",
-                username: "@mcconnell",
-                date: "2d"
+              if (p[i].entity.parentId == null){ // Then its not a comment but a post so it needs to be displayed
+                let post = {
+                  hasComments: false,
+                  id: p[i].entity.id - 1,
+                  text: p[i].entity.content,
+                  profilePicture: "http://www.sunstateautoglass.com/wp-content/uploads/2017/03/tb_profile_201303_round.png",
+                  numberOfComments: 0,
+                  name: "Meer Mcconnell",
+                  username: "@mcconnell",
+                  date: "2d"
+                }
+                tmp.$data.posts.push(post)
+              } else {
+                if (i === p.length-1) {
+                  tmp.warning("No more posts to load") // No more posts that arent comments to load
+                }
               }
-              tmp.$data.posts.push(post)
             }
             return true
           })
