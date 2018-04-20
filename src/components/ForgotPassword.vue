@@ -47,23 +47,43 @@ export default {
     this.$store.commit('switch_background', require('../assets/bg-black.jpg'))
   },
   methods: {
+    warning(text) {
+      this.$dialog.alert({
+        title: 'Error',
+        message: text,
+        type: 'is-danger',
+        hasIcon: true,
+        icon: 'times-circle',
+        iconPack: 'fa'
+      })
+    },
+    success(text) {
+      this.$dialog.alert({
+        title: 'Success',
+        message: text,
+        type: 'is-success',
+        hasIcon: true,
+        icon: 'check-circle',
+        iconPack: 'fa'
+      })
+    },
     resetPassword: function () {
       let tmp = this
       if (this.form.$valid){ //check if fields are correctly filled
         axios.get('http://localhost:18080/users-service/rest/users/request_password_reset?email='+this.$data.model.email)
           .then(function (response) {
             console.log(response)
-            alert('Please check your inbox')
+            tmp.success('Please check your inbox')
             tmp.$router.push('/newpassword')
             return true
           })
           .catch(function (error) {
-            alert('Email address not found in database')
+            tmp.warning('Email address not found in database')
             console.log(error.response);
             return false
           });
       } else {
-        alert('Please correct your inputs !')
+        tmp.warning('Please correct your input')
       }
     }
   },

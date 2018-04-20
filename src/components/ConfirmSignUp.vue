@@ -43,22 +43,43 @@ export default {
     this.$store.commit('switch_background', require('../assets/bg-black.jpg'))
   },
   methods: {
+    warning(text) {
+      this.$dialog.alert({
+        title: 'Error',
+        message: text,
+        type: 'is-danger',
+        hasIcon: true,
+        icon: 'times-circle',
+        iconPack: 'fa'
+      })
+    },
+    success(text) {
+      this.$dialog.alert({
+        title: 'Success',
+        message: text,
+        type: 'is-success',
+        hasIcon: true,
+        icon: 'check-circle',
+        iconPack: 'fa'
+      })
+    },
     confirmSignup: function () {
       let tmp = this
       if (this.form.$valid){ //check if fields are correctly filled
         axios.get('http://localhost:18080/users-service/rest/users/confirm?email='+this.$data.model.code)
           .then(function (response) {
             console.log(response)
-            alert('Account confirmation successfull. You can now login')
+            tmp.success('Account confirmation successfull. You can now login.')
             tmp.$router.push('/login')
             return true
           })
           .catch(function (error) {
+            tmp.warning('Oops! Something went wrong.')
             console.log(error.response);
             return false
           });
       } else {
-        alert('Please correct your inputs !')
+        tmp.warning('Please correct your inputs')
       }
     }
   },

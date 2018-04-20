@@ -59,6 +59,26 @@ import confirmSignUp from '@/components/ConfirmSignUp.vue'
       this.$store.commit('switch_background', require('../assets/bg-black.jpg'))
     },
     methods: {
+      warning(text) {
+        this.$dialog.alert({
+          title: 'Error',
+          message: text,
+          type: 'is-danger',
+          hasIcon: true,
+          icon: 'times-circle',
+          iconPack: 'fa'
+        })
+      },
+      success(text) {
+        this.$dialog.alert({
+          title: 'Success',
+          message: text,
+          type: 'is-success',
+          hasIcon: true,
+          icon: 'check-circle',
+          iconPack: 'fa'
+        })
+      },
       signup: function () {
         let tmp = this  //if this is not declared here, using it in the block below
                         //doesn't reference the correct instance of vue, so $router
@@ -72,14 +92,15 @@ import confirmSignUp from '@/components/ConfirmSignUp.vue'
           })
             .then(function (response) {
               console.log(response);
-              alert('Signup successfull. Check your inbox')
+              tmp.success('Please check your inbox')
               tmp.$router.push('/confirmSignUp')
             })
             .catch(function (error) {
+              tmp.warning('Oops! Something went unexpected')
               console.log(error.response);
             });
         } else {
-          alert('Please correct your inputs !')
+          tmp.warning('Please correct your inputs')
         }
       }
     },
