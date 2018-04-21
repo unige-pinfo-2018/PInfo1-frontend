@@ -21,12 +21,14 @@
     >
     </vue-particles>
     <div id="tags">
-      <div id="tag" v-on:keyup.enter="getColor">
+      <div id="tag" v-on:keyup.enter="switchColor">
         <h4 style="margin-top: 20px; color: #000000;">Search for tags</h4>
         <b-taginput class="myTags" style="border-radius: 25px; max-height: 430px; margin-left: 15px; margin-top: 15px; margin-right: 15px; margin-bottom: 52px"
                     v-model="tags" rounded
                     type='color'
-                    maxtags = "20">
+                    maxtags = "20"
+                    v-on:remove="updateSearch"
+                    v-on:add="updateSearch">
         </b-taginput>
       </div>
     </div>
@@ -254,18 +256,10 @@ export default {
       ],
       user: [ // information of the current user that's logged in
         {
-          id : "1",
+          id : "2",
           username: "@theogio",
           name: "Théo Giovanna",
           profilePicture: "http://foundrysocial.com/wp-content/uploads/2016/12/Anonymous-Icon-Round-01.png"
-        }
-      ],
-      userPost: [
-        {
-          "id": 0,
-          "username": "",
-          "name": "",
-          "pictureUrl": "https://cdn5.vectorstock.com/i/thumb-large/72/44/bodybuilder-logo-icon-on-white-background-vector-18167244.jpg"
         }
       ],
       comments: [ // will contain all comments relative to a post
@@ -280,8 +274,6 @@ export default {
 
     // TODO: Allow users to upload pictures with Imgur API
     // TODO: Allow users to user markdown when writting posts
-    // TODO: connect to the database to retrieve the true profile picture (link) of the user logged in
-    //TODO: Need to rewrite the posts datatype: it needs to be a map between an id (fetched from the DB) and the actual post
 
     /* Function used to popup a warning with a custom message */
     warning(text) {
@@ -364,7 +356,7 @@ export default {
         .parentElement.parentElement.parentElement.parentElement
         .parentElement.getAttribute("id")
       let postNumberID = postID.match(/\d/g).join("") // Gets just the number so we can construct an id and get the post
-      console.log(postNumberID)
+
       let post
       for (let i=0; i<this.$data.posts.length; i++) {
         if (tmp.$data.posts[i].id == postNumberID) { // look for the right post to inject in the answer window
@@ -430,6 +422,7 @@ export default {
         let idPost = [], textPost = [], datePost = []
         axios.get('http://127.0.0.1:18080/post-service/rest/posts/content_by_ids?from='+this.$data.from.toString()+'&to='+this.$data.to.toString())
           .then(function (response) {
+            console.log(response.data)
             let p = response.data
             let promises = []
             for (let i = 0; i < p.length; i++) {
@@ -470,7 +463,6 @@ export default {
               tmp.$data.offset = idPost[idPost.length-1] - tmp.$data.to
               tmp.$data.from += tmp.$data.offset
               tmp.$data.to += tmp.$data.offset
-              console.log('from: ', tmp.$data.from, 'to: ', tmp.$data.to)
             });
           }).catch(function (error) {
           tmp.warning('Could not fetch posts. Database not reachable')
@@ -539,8 +531,8 @@ export default {
       }
     },
 
-    /* This function is used to change the tags color */
-    getColor: function () {
+    /* This function is used to change the tags color and retrieve posts that have the tag*/
+    switchColor: function () {
       /* Makes sure we never have too much tags */
       this.$data.counter = this.$data.tags.length
       /* Picks a random number */
@@ -551,6 +543,72 @@ export default {
       document.getElementById("tags").getElementsByClassName("myTags")[0]
         .getElementsByClassName("taginput-container is-focusable")[0]
         .childNodes[this.$data.counter-1].className = "tag " + color + " is-rounded"
+    },
+    /* This function is triggered when a user input tags when looking at all posts */
+    updateSearch: function () {
+      let tmp = this
+      let tags = ""
+      /* First we construct a string that will be used in the request to the server */
+      if (this.$data.tags.length !== 0) {
+        for (let i = 0; i<this.$data.tags.length; i++) {
+          tags = tags + '&t=' + tmp.$data.tags[i]
+        }
+        let query = 'http://127.0.0.1:18080/post-service/rest/posts/posts_and_comments_by_tags?n=5'+tags
+        /* We use these variables to store temporary data while doing the second request to the server */
+        let idPost = [], textPost = [], datePost = [], nbComments = [], userIdsToQuery = []
+        /* First, we retrieve the posts and their comments (to display the number of comments) of the posts that
+         * match the tags */
+        axios.get(query)
+          .then(function (response) {
+            if (response.data.length !== 0) { //then we have results
+              tmp.$data.posts = [] // we remove existing posts
+              for (let i=0; i<response.data[1].length; i++) {
+                nbComments.push(response.data[1][i].length) // we save the number of comments of each post
+              }
+              /* We store temporarily the contents of the posts */
+              for (let i=response.data[0].length-1; i>=0; i--) {
+                datePost.push(new Date(response.data[0][i].datePost))
+                idPost.push(response.data[0][i].id)
+                textPost.push(response.data[0][i].content)
+                userIdsToQuery.push(response.data[0][i].userId)
+              }
+              /* Now we query the informations of the users that created the posts */
+              axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
+                "ids": userIdsToQuery
+              })
+                .then(function (response) {
+                  for (let i=0; i<response.data.length; i++) {
+                    let post = {
+                      hasComments: nbComments[i] > 0 ? true : false, // just so it displays the comment accordingly to the number of comments of a post
+                      id: idPost[i],
+                      text: textPost[i],
+                      profilePicture: response.data[i].pictureUrl,
+                      numberOfComments: nbComments[i],
+                      name: response.data[i].name,
+                      username: "@"+response.data[i].username,
+                      date: datePost[i].getDay() + '/' + datePost[i].getMonth() + '/' + datePost[i].getFullYear() + ' - ' + datePost[i].getHours() + ':' + datePost[i].getMinutes() + ':' + datePost[i].getSeconds()
+                    }
+                    tmp.$data.posts.push(post) // pushing the data so they display
+                  }
+                  return true
+                })
+                .catch(function (error) {
+                  tmp.warning('Could not fetch posts. Database not reachable')
+                  console.log(error.response);
+                  return false
+                });
+            }
+            return true
+          })
+          .catch(function (error) {
+            tmp.warning('Could not connect to database')
+            console.log(error.response);
+            return false
+          });
+      } else { // if the tags that we provided do not match any post, we don't do anything
+        this.$data.posts = []
+        this.retrievePosts()
+      }
     }
   },
   beforeMount(){
