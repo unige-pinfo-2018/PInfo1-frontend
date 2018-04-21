@@ -567,7 +567,7 @@ export default {
         for (let i = 0; i<this.$data.tags.length; i++) {
           tags = tags + '&t=' + tmp.$data.tags[i]
         }
-        let query = 'http://127.0.0.1:18080/post-service/rest/posts/posts_and_comments_by_tags?n=5'+tags
+        let query = 'http://127.0.0.1:18080/post-service/rest/posts/posts_and_comments_by_tags?n=100'+tags
         /* We use these variables to store temporary data while doing the second request to the server */
         let idPost = [], textPost = [], datePost = [], nbComments = [], userIdsToQuery = []
         /* First, we retrieve the posts and their comments (to display the number of comments) of the posts that
