@@ -21,7 +21,7 @@
         clickMode="push"
       >
     </vue-particles>
-    <div id="searchbar" v-on:keyup.enter="getColor($event)">
+    <div id="searchbar" v-on:keyup.enter="switchColor($event)">
       <div class="field has-addons has-addons-centered">
         <p class="control is-expanded">
           <input id="question" class="input" type="text" placeholder="What can I do you for ?" style="height: 44px;">
@@ -82,10 +82,15 @@
               </div>
               <div class="level-left">
                 <a class="level-item">
-                  <button class="button is-outlined"
+                  <button v-show="isAuth" class="button is-outlined"
                           style="color: #2196F3; border-color: #2196F3"
                           @click="isVisible = true; answer($event)">
                     Answer
+                  </button>
+                  <button v-show="!isAuth" class="button is-outlined"
+                          style="color: #2196F3; border-color: #2196F3"
+                          @click="isVisible = true; answer($event)">
+                    Show
                   </button>
                 </a>
               </div>
@@ -192,7 +197,7 @@
                   </article>
                 </div>
               </article>
-              <article class="media" id="commentBox">
+              <article v-show="isAuth" class="media" id="commentBox">
                 <figure class="media-left">
                   <p v-for="u in user" :key="u.id" class="image is-64x64">
                     <img :src="u.profilePicture" style="border-radius: 999px">
@@ -425,21 +430,23 @@
         return false;
       }
     },
-    getColor: function (event) {
+    switchColor: function (event) {
       let tmp = this
       if (event.target.parentElement.parentElement.parentElement.getAttribute("id") === "searchbar") {
         tmp.search()
       } else {
-        /* Makes sure we never have too much tags */
-        this.$data.counter = this.$data.tags.length
-        /* Picks a random number */
-        let r = Math.floor(Math.random() * Math.floor(4))
-        /* Picks a random color */
-        let color = this.$data.colors[r];
-        /* Changes the color of the tag */
-        document.getElementById("searchbar").getElementsByClassName("myTags")[0]
-          .getElementsByClassName("taginput-container is-focusable")[0]
-          .childNodes[this.$data.counter-1].className = "tag " + color + " is-rounded"
+        if (tmp.$data.tags.length !== 0) {
+          /* Makes sure we never have too much tags */
+          this.$data.counter = this.$data.tags.length
+          /* Picks a random number */
+          let r = Math.floor(Math.random() * Math.floor(4))
+          /* Picks a random color */
+          let color = this.$data.colors[r];
+          /* Changes the color of the tag */
+          document.getElementById("searchbar").getElementsByClassName("myTags")[0]
+            .getElementsByClassName("taginput-container is-focusable")[0]
+            .childNodes[this.$data.counter-1].className = "tag " + color + " is-rounded"
+        }
       }
     },
     search: function () {
@@ -568,8 +575,23 @@
       to: 5, // where it stops fetching posts
       offset: 0, // to control the from and to requests
       isVisibleLoadMore: false, // controls the visibility of the load more button
+      isAuth: false
     }
-  }
+  },
+    beforeMount () {
+      let tmp = this
+      axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
+        .then(function (response) {
+          if (response.data === true) {
+            tmp.$data.isAuth = true
+          }
+          return true
+        })
+        .catch(function (error) {
+          console.log(error.response);
+          return false
+        });
+    }
 }
 </script>
 

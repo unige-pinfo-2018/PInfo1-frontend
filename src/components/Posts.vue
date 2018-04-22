@@ -545,16 +545,18 @@ export default {
 
     /* This function is used to change the tags color and retrieve posts that have the tag*/
     switchColor: function () {
-      /* Makes sure we never have too much tags */
-      this.$data.counter = this.$data.tags.length
-      /* Picks a random number */
-      let r = Math.floor(Math.random() * Math.floor(4))
-      /* Picks a random color */
-      let color = this.$data.colors[r];
-      /* Changes the color of the tag */
-      document.getElementById("tags").getElementsByClassName("myTags")[0]
-        .getElementsByClassName("taginput-container is-focusable")[0]
-        .childNodes[this.$data.counter-1].className = "tag " + color + " is-rounded"
+      if (tmp.$data.tags.length !== 0) {
+          /* Makes sure we never have too much tags */
+          this.$data.counter = this.$data.tags.length
+          /* Picks a random number */
+          let r = Math.floor(Math.random() * Math.floor(4))
+          /* Picks a random color */
+          let color = this.$data.colors[r];
+          /* Changes the color of the tag */
+          document.getElementById("searchbar").getElementsByClassName("myTags")[0]
+            .getElementsByClassName("taginput-container is-focusable")[0]
+            .childNodes[this.$data.counter-1].className = "tag " + color + " is-rounded"
+      }
     },
 
     /* This function is triggered when a user input tags when looking at all posts */
@@ -629,8 +631,22 @@ export default {
     }
   },
   beforeMount(){
+    let tmp = this
     /* When the component is mounted, the functions below are triggered */
-    this.retrievePosts()
+    axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
+      .then(function (response) {
+        if (response.data === true) {
+          tmp.retrievePosts()
+        } else {
+          tmp.warning('You must be logged in to access this page')
+          tmp.$router.push('/login')
+        }
+        return true
+      })
+      .catch(function (error) {
+        console.log(error.response);
+        return false
+      });
   }
 }
 </script>
