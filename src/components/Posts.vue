@@ -21,12 +21,14 @@
     >
     </vue-particles>
     <div id="tags">
-      <div id="tag" v-on:keyup.enter="getColor">
+      <div id="tag" v-on:keyup.enter="switchColor">
         <h4 style="margin-top: 20px; color: #000000;">Search for tags</h4>
         <b-taginput class="myTags" style="border-radius: 25px; max-height: 430px; margin-left: 15px; margin-top: 15px; margin-right: 15px; margin-bottom: 52px"
                     v-model="tags" rounded
                     type='color'
-                    maxtags = "20">
+                    maxtags = "20"
+                    v-on:remove="updateSearch"
+                    v-on:add="updateSearch">
         </b-taginput>
       </div>
     </div>
@@ -92,7 +94,8 @@
           <footer style="background-color: white; margin-right: auto; margin-left: auto">
             <button class="button is-outlined"
                     style="color: #2196F3; border-color: #2196F3"
-                    @click="loadmore">Load more</button>
+                    @click="loadmore"
+                    v-if="isVisibleLoadMore">Load more</button>
           </footer>
         </article>
       </div>
@@ -254,18 +257,10 @@ export default {
       ],
       user: [ // information of the current user that's logged in
         {
-          id : "1",
+          id : "2",
           username: "@theogio",
           name: "Théo Giovanna",
           profilePicture: "http://foundrysocial.com/wp-content/uploads/2016/12/Anonymous-Icon-Round-01.png"
-        }
-      ],
-      userPost: [
-        {
-          "id": 0,
-          "username": "",
-          "name": "",
-          "pictureUrl": "https://cdn5.vectorstock.com/i/thumb-large/72/44/bodybuilder-logo-icon-on-white-background-vector-18167244.jpg"
         }
       ],
       comments: [ // will contain all comments relative to a post
@@ -273,15 +268,14 @@ export default {
       nbTotalPosts: 0, // total number of posts that are stored in the DB
       from: 1, // where it starts fetching posts
       to: 5, // where it stops fetching posts
-      offset: 0 // to control the from and to requests
+      offset: 0, // to control the from and to requests
+      isVisibleLoadMore: true, // controls the visibility of the load more button
     }
   },
   methods: {
 
     // TODO: Allow users to upload pictures with Imgur API
     // TODO: Allow users to user markdown when writting posts
-    // TODO: connect to the database to retrieve the true profile picture (link) of the user logged in
-    //TODO: Need to rewrite the posts datatype: it needs to be a map between an id (fetched from the DB) and the actual post
 
     /* Function used to popup a warning with a custom message */
     warning(text) {
@@ -310,44 +304,51 @@ export default {
           return false
         });
 
-      let idPost = [], textPost = [], datePost = []
-      /* Now we retrieve a fixed amount of post by default */
-      axios.get('http://127.0.0.1:18080/post-service/rest/posts/content_by_ids?from='+this.$data.from.toString()+'&to='+this.$data.to.toString())
+      let query = 'http://127.0.0.1:18080/post-service/rest/posts/posts_and_comments_by_ids?'
+      query = query + 'id=' + (this.$data.from).toString()
+      for (let i=this.$data.from + 1; i<=this.$data.to; i++) {
+        query = query + '&id=' + i.toString()
+      }
+
+      let idPost = [], textPost = [], datePost = [], userIdsToQuery = [], nbComments = []
+
+      axios.get(query)
         .then(function (response) {
-          let p = response.data
-          let promises = [] // Requests that will have to be queried
-          for (let i=0; i<p.length; i++) {
-            /* Gets the info related to the post */
-            if (p[i].entity.parentId == null) { // Then it is a post, so we can display it
-              idPost.push(p[i].entity.id)
-              textPost.push(p[i].entity.content)
-              datePost.push(p[i].entity.datePost)
-              promises.push(axios.get('http://127.0.0.1:18080/users-service/rest/users/by_id/'+p[i].entity.userId.toString()))
-            }
+          for (let i=0; i<response.data[0].length; i++) {
+            let date = new Date(response.data[0][i].datePost)
+            datePost.push(date)
+            idPost.push(response.data[0][i].id)
+            textPost.push(response.data[0][i].content)
+            userIdsToQuery.push(response.data[0][i].userId)
+            nbComments.push(response.data[1][i].length)
           }
-          /* To retrieve the comments */
-          promises.push(axios.get('http://127.0.0.1:18080/post-service/rest/posts/getCommentsForPosts?from='+tmp.$data.from.toString()+'&to='+tmp.$data.to.toString()))
-          /* Makes the call to get user info + comments in a synchronized way */
-          axios.all(promises).then(function(results) {
-            for (let i=0; i<results.length-1; i++) {
-              let com = false
-              if (results[tmp.$data.to-tmp.$data.from+1].data[""+(i+1).toString()+""].length !== 0) { // post has comment or not
-                com = true
+
+          axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
+            "ids": userIdsToQuery
+          })
+            .then(function (response) {
+              for (let i=0; i<response.data.length; i++) {
+                let post = {
+                  hasComments: nbComments[i] > 0 ? true : false, // just so it displays the comment accordingly to the number of comments of a post
+                  id: idPost[i],
+                  text: textPost[i],
+                  profilePicture: response.data[i].pictureUrl,
+                  numberOfComments: nbComments[i],
+                  name: response.data[i].name,
+                  username: "@"+response.data[i].username,
+                  date: datePost[i].getDay() + '/' + datePost[i].getMonth() + '/' + datePost[i].getFullYear() + ' - ' + datePost[i].getHours() + ':' + datePost[i].getMinutes() + ':' + datePost[i].getSeconds()
+                }
+                tmp.$data.posts.push(post) // pushing the data so they display
               }
-              let date = new Date(datePost[i])
-              let post = {
-                hasComments: com, // just so it displays the comment accordingly to the number of comments of a post
-                id: idPost[i],
-                text: textPost[i],
-                profilePicture: results[i].data.pictureUrl,
-                numberOfComments: results[tmp.$data.to-tmp.$data.from+1].data[""+(i+1).toString()+""].length, // retrieved later
-                name: results[i].data.name,
-                username: "@"+results[i].data.username,
-                date: date.getDay() + '/' + date.getMonth() + '/' + date.getFullYear() + ' - ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
-              }
-              tmp.$data.posts.push(post)
-            }
-          });
+              return true
+            })
+            .catch(function (error) {
+              tmp.warning('Could not fetch posts. Database not reachable')
+              console.log(error.response);
+              return false
+            });
+
+          return true
         })
         .catch(function (error) {
           tmp.warning('Could not connect to database')
@@ -364,7 +365,7 @@ export default {
         .parentElement.parentElement.parentElement.parentElement
         .parentElement.getAttribute("id")
       let postNumberID = postID.match(/\d/g).join("") // Gets just the number so we can construct an id and get the post
-      console.log(postNumberID)
+
       let post
       for (let i=0; i<this.$data.posts.length; i++) {
         if (tmp.$data.posts[i].id == postNumberID) { // look for the right post to inject in the answer window
@@ -376,27 +377,35 @@ export default {
         axios.get('http://127.0.0.1:18080/post-service/rest/posts/getCommentsForPost/'+postNumberID.toString())
           .then(function (response) {
             let p = response.data
-            let promises = []
+            let userIdsToQuery = []
             for (let i=0; i<p.length; i++) {
-              /* Queries to retrive user informations for the comments */
-              promises.push(axios.get('http://127.0.0.1:18080/users-service/rest/users/by_id/' + (p[i].entity.userId).toString()))
+              /* User ids that we will have to retrieve */
+              userIdsToQuery.push(p[i].entity.userId)
             }
-            axios.all(promises).then(function(results) {
-              for (let i=0; i<results.length; i++) {
-                let date = new Date(p[i].entity.datePost)
-                let comment = {
-                  hasComments: false, // because its a comment
-                  id: p[i].entity.id,
-                  text: p[i].entity.content,
-                  profilePicture: results[i].data.pictureUrl,
-                  numberOfComments: 0, // because its a comment
-                  name: results[i].data.name,
-                  username: "@"+results[i].data.username,
-                  date: date.getDay() + '/' + date.getMonth() + '/' + date.getFullYear() + ' - ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
+            /* Now we retrieve the information of the users that commented and we display the posts */
+            axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
+              "ids": userIdsToQuery
+            }).then(function (response) {
+                for (let i=0; i<response.data.length; i++) {
+                  let date = new Date(p[i].entity.datePost)
+                  let comment = {
+                    hasComments: false, // because its a comment
+                    id: p[i].entity.id,
+                    text: p[i].entity.content,
+                    profilePicture: response.data[i].pictureUrl,
+                    numberOfComments: 0, // because its a comment
+                    name: response.data[i].name,
+                    username: "@"+response.data[i].username,
+                    date: date.getDay() + '/' + date.getMonth() + '/' + date.getFullYear() + ' - ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
+                  }
+                  tmp.$data.comments.push(comment)
                 }
-                tmp.$data.comments.push(comment)
-              }
-            });
+                return true
+              }).catch(function (error) {
+                tmp.warning('Could not fetch posts. Database not reachable')
+                console.log(error.response);
+                return false
+              });
           })
           .catch(function (error) {
             tmp.warning('Could not fetch posts. Database not reachable')
@@ -417,7 +426,6 @@ export default {
     loadmore: function () {
       let tmp = this
       this.$data.from += 5 // By default we want to display 5 more posts
-      console.log('nb posts', this.$data.nbTotalPosts)
       let diff = this.$data.nbTotalPosts - this.$data.posts.length // Checks how many posts remaining can be displayed
       if (diff >= 5){ // Then we can fetch 5 posts
         tmp.$data.to += 5
@@ -432,45 +440,41 @@ export default {
           .then(function (response) {
             let p = response.data
             let promises = []
+            let userIdsToQuery = []
             for (let i = 0; i < p.length; i++) {
               /* Gets the info related to the post */
               if (p[i].entity.parentId == null) { // Then it is a post, so we can display it
                 idPost.push(p[i].entity.id)
                 textPost.push(p[i].entity.content)
                 datePost.push(p[i].entity.datePost)
-                promises.push(axios.get('http://127.0.0.1:18080/users-service/rest/users/by_id/' + p[i].entity.userId.toString()))
+                //promises.push(axios.get('http://127.0.0.1:18080/users-service/rest/users/by_id/' + p[i].entity.userId.toString()))
+                userIdsToQuery.push(p[i].entity.userId)
               }
             }
             promises.push(axios.get('http://127.0.0.1:18080/post-service/rest/posts/getCommentsForPosts?from='+tmp.$data.from.toString()+'&to='+tmp.$data.to.toString()))
+            promises.push(axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
+              "ids": userIdsToQuery
+            }))
             /* Makes the call to get user info in a synchronized way */
             axios.all(promises).then(function (results) {
-              console.log(results)
-              for (let i = 0; i < results.length-1; i++) {
+              for (let i = 0; i < results[1].data.length; i++) {
                 let date = new Date(datePost[i])
                 let com = false
-                try{
-                  if (results[tmp.$data.to-tmp.$data.from+1].data[(idPost[i]).toString()].length !== 0) { // post has comment or not
-                    com = true
-                  }
-                  let post = {
-                    hasComments: com,
-                    id: idPost[i],
-                    text: textPost[i],
-                    profilePicture: results[i].data.pictureUrl,
-                    numberOfComments: results[tmp.$data.to-tmp.$data.from+1].data[(idPost[i]).toString()].length,
-                    name: results[i].data.name,
-                    username: "@" + results[i].data.username,
-                    date: date.getDay() + '/' + date.getMonth() + '/' + date.getFullYear() + ' - ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
-                  }
-                  tmp.$data.posts.push(post)
-                }catch(e){
-                  console.log("Caught exception",e)
+                let post = {
+                  hasComments: com,
+                  id: idPost[i],
+                  text: textPost[i],
+                  profilePicture: results[1].data[i].pictureUrl,
+                  numberOfComments: results[0].data[(idPost[0]).toString()].length,
+                  name: results[1].data[i].name,
+                  username: "@" + results[1].data[i].username,
+                  date: date.getDay() + '/' + date.getMonth() + '/' + date.getFullYear() + ' - ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
                 }
+                tmp.$data.posts.push(post)
               }
               tmp.$data.offset = idPost[idPost.length-1] - tmp.$data.to
               tmp.$data.from += tmp.$data.offset
               tmp.$data.to += tmp.$data.offset
-              console.log('from: ', tmp.$data.from, 'to: ', tmp.$data.to)
             });
           }).catch(function (error) {
           tmp.warning('Could not fetch posts. Database not reachable')
@@ -539,23 +543,110 @@ export default {
       }
     },
 
-    /* This function is used to change the tags color */
-    getColor: function () {
-      /* Makes sure we never have too much tags */
-      this.$data.counter = this.$data.tags.length
-      /* Picks a random number */
-      let r = Math.floor(Math.random() * Math.floor(4))
-      /* Picks a random color */
-      let color = this.$data.colors[r];
-      /* Changes the color of the tag */
-      document.getElementById("tags").getElementsByClassName("myTags")[0]
-        .getElementsByClassName("taginput-container is-focusable")[0]
-        .childNodes[this.$data.counter-1].className = "tag " + color + " is-rounded"
+    /* This function is used to change the tags color and retrieve posts that have the tag*/
+    switchColor: function () {
+      if (tmp.$data.tags.length !== 0) {
+          /* Makes sure we never have too much tags */
+          this.$data.counter = this.$data.tags.length
+          /* Picks a random number */
+          let r = Math.floor(Math.random() * Math.floor(4))
+          /* Picks a random color */
+          let color = this.$data.colors[r];
+          /* Changes the color of the tag */
+          document.getElementById("searchbar").getElementsByClassName("myTags")[0]
+            .getElementsByClassName("taginput-container is-focusable")[0]
+            .childNodes[this.$data.counter-1].className = "tag " + color + " is-rounded"
+      }
+    },
+
+    /* This function is triggered when a user input tags when looking at all posts */
+    updateSearch: function () {
+      let tmp = this
+      let tags = ""
+      /* First we construct a string that will be used in the request to the server */
+      if (this.$data.tags.length !== 0) {
+        this.$data.isVisibleLoadMore = false
+        for (let i = 0; i<this.$data.tags.length; i++) {
+          tags = tags + '&t=' + tmp.$data.tags[i]
+        }
+        let query = 'http://127.0.0.1:18080/post-service/rest/posts/posts_and_comments_by_tags?n=100'+tags
+        /* We use these variables to store temporary data while doing the second request to the server */
+        let idPost = [], textPost = [], datePost = [], nbComments = [], userIdsToQuery = []
+        /* First, we retrieve the posts and their comments (to display the number of comments) of the posts that
+         * match the tags */
+        axios.get(query)
+          .then(function (response) {
+            if (response.data.length !== 0) { //then we have results
+              tmp.$data.posts = [] // we remove existing posts
+              for (let i=0; i<response.data[1].length; i++) {
+                nbComments.push(response.data[1][i].length) // we save the number of comments of each post
+              }
+              /* We store temporarily the contents of the posts */
+              for (let i=response.data[0].length-1; i>=0; i--) {
+                datePost.push(new Date(response.data[0][i].datePost))
+                idPost.push(response.data[0][i].id)
+                textPost.push(response.data[0][i].content)
+                userIdsToQuery.push(response.data[0][i].userId)
+              }
+              /* Now we query the informations of the users that created the posts */
+              axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
+                "ids": userIdsToQuery
+              })
+                .then(function (response) {
+                  for (let i=0; i<response.data.length; i++) {
+                    let post = {
+                      hasComments: nbComments[i] > 0 ? true : false, // just so it displays the comment accordingly to the number of comments of a post
+                      id: idPost[i],
+                      text: textPost[i],
+                      profilePicture: response.data[i].pictureUrl,
+                      numberOfComments: nbComments[i],
+                      name: response.data[i].name,
+                      username: "@"+response.data[i].username,
+                      date: datePost[i].getDay() + '/' + datePost[i].getMonth() + '/' + datePost[i].getFullYear() + ' - ' + datePost[i].getHours() + ':' + datePost[i].getMinutes() + ':' + datePost[i].getSeconds()
+                    }
+                    tmp.$data.posts.push(post) // pushing the data so they display
+                  }
+                  return true
+                })
+                .catch(function (error) {
+                  tmp.warning('Could not fetch posts. Database not reachable')
+                  console.log(error.response);
+                  return false
+                });
+            }
+            return true
+          })
+          .catch(function (error) {
+            tmp.warning('Could not connect to database')
+            console.log(error.response);
+            return false
+          });
+      } else { // if the tags that we provided do not match any post, we don't do anything
+        this.$data.isVisibleLoadMore = true
+        this.$data.posts = []
+        this.$data.from = 1
+        this.$data.to = 5
+        this.retrievePosts()
+      }
     }
   },
   beforeMount(){
+    let tmp = this
     /* When the component is mounted, the functions below are triggered */
-    this.retrievePosts()
+    axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
+      .then(function (response) {
+        if (response.data === true) {
+          tmp.retrievePosts()
+        } else {
+          tmp.warning('You must be logged in to access this page')
+          tmp.$router.push('/login')
+        }
+        return true
+      })
+      .catch(function (error) {
+        console.log(error.response);
+        return false
+      });
   }
 }
 </script>

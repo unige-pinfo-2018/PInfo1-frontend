@@ -71,11 +71,10 @@ export default {
         axios.post('http://127.0.0.1:18080/users-service/rest/users/login', {
           "username": this.$data.model.username,
           "password": this.$data.model.password
-        })
+        }, {withCredentials: true})
           .then(function (response) {
             console.log(response)
-            //user is now authenticated
-            tmp.$store.commit('switch_auth', true)
+            tmp.$data.isAuth = true
             tmp.$router.push('/')
             return true
           })

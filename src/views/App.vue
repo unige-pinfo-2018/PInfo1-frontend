@@ -7,8 +7,8 @@
           <li class="one"><router-link to='/'>Search</router-link></li><!--
        --><li class="two"><router-link to='posts'>Latest posts</router-link></li><!--
        --><li class="three"><router-link to='ask'>Ask a question</router-link></li><!--
-       --><li v-show="isAuthenticated()" v-on:click="logout" class="four"><router-link to='/'>Logout</router-link></li><!--
-       --><li v-show="!isAuthenticated()" class="four"><router-link to='/login'>Login</router-link></li>
+       --><li v-if="isAuthenticated()" v-on:click="logout" class="four"><router-link to='/'>Logout</router-link></li><!--
+       --><li v-if="!isAuthenticated()" class="four"><router-link to='/login'>Login</router-link></li>
         <hr/>
         </ul>
         <router-view/>
@@ -65,7 +65,8 @@ export default {
       backgroundColor: '#2196F3',
       color: '#ffffff',
       position: 'bottom-right',
-      isOpenNewTab: false
+      isOpenNewTab: false,
+      isAuth: false
     }
   },
   computed: {
@@ -77,14 +78,67 @@ export default {
     }
   },
   methods: {
-    isAuthenticated () { // returns whether a user is authenticated or not
-      return this.$store.state.isAuthenticated
+    success(text) {
+      this.$dialog.alert({
+        title: 'Success',
+        message: text,
+        type: 'is-success',
+        hasIcon: true,
+        icon: 'check-circle',
+        iconPack: 'fa'
+      })
     },
     logout () {
-      alert('Successfully logged out')
-      this.$store.commit('switch_auth', false) //user is now offline
-      this.$router.push('/')
+      let tmp = this
+      axios.get('http://127.0.0.1:18080/users-service/rest/users/logout', {withCredentials: true})
+        .then(function (response) {
+          tmp.$data.isAuth = false
+          tmp.$router.push('/')
+          location.reload();
+          return true
+        })
+        .catch(function (error) {
+          tmp.$data.isAuth = false
+          tmp.$router.push('/')
+          location.reload();
+          return false
+        });
+    },
+    isAuthenticated () {
+      return this.$data.isAuth
     }
+  },
+  beforeUpdate () {
+    let tmp = this
+    axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
+      .then(function (response) {
+        if (response.data === true) {
+          tmp.$data.isAuth = true
+        } else {
+          tmp.$data.isAuth = false
+        }
+        return true
+      })
+      .catch(function (error) {
+        console.log(error.response);
+        return false
+      });
+  },
+  beforeMount () {
+    let tmp = this
+    axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
+      .then(function (response) {
+        if (response.data === true) {
+          tmp.$data.isAuth = true
+        } else {
+          tmp.$data.isAuth = false
+        }
+        return true
+      })
+      .catch(function (error) {
+        console.log(error.response);
+        return false
+      });
   }
 }
 
