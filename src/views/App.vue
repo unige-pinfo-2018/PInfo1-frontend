@@ -1,51 +1,50 @@
 <template>
   <section v-bind:style="{ background: 'url(' + this.$store.state.backgroundImagePath + ') no-repeat center center fixed' }"
            id="main-section" class="hero is-fullheight has-background">
-    <div id="app" class="hero-body">
-      <div class="container">
-        <ul>
-          <li class="one"><router-link to='/'>Search</router-link></li><!--
-       --><li class="two"><router-link to='posts'>Latest posts</router-link></li><!--
-       --><li class="three"><router-link to='ask'>Ask a question</router-link></li><!--
-       --><li v-if="isAuthenticated()" v-on:click="logout" class="four"><router-link to='/'>Logout</router-link></li><!--
-       --><li v-if="!isAuthenticated()" class="four"><router-link to='/login'>Login</router-link></li>
-        <hr/>
-        </ul>
+    <div id="hero-body" class="hero-body">
+      <ul>
+        <li class="one"><router-link to='/'>Search</router-link></li><!--
+     --><li class="two"><router-link to='posts'>Latest posts</router-link></li><!--
+     --><li class="three"><router-link to='ask'>Ask a question</router-link></li><!--
+     --><li v-if="isAuthenticated()" v-on:click="logout" class="four"><router-link to='/'>Logout</router-link></li><!--
+     --><li v-if="!isAuthenticated()" class="four"><router-link to='/login'>Login</router-link></li>
+      <hr/>
+      </ul>
+      <quick-menu v-show="isAuthenticated()" :menu-count=getCount :icon-class=icons :menu-url-list=list :background-color=backgroundColor :color=color :position=position :is-open-new-tab=getIsOpenNewTab></quick-menu>
+      <div id="social" class="text-xs-center">
+        <button class="button is-outlined is-large is-focused"
+                style="border-color: #2196F3; background-color: transparent; color: white; border-radius: 9999px"
+                onclick="window.location.href = 'https://github.com/unige-pinfo-2018/PInfo1-frontend' ">
+          <b-icon
+            pack="fa"
+            icon="facebook"
+          >
+          </b-icon>
+        </button>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button class="button is-outlined is-large is-focused"
+                style="border-color: #2196F3; background-color: transparent; color: white; border-radius: 9999px"
+                onclick="window.location.href = 'https://twitter.com/' ">
+          <b-icon
+            pack="fa"
+            icon="twitter"
+          >
+          </b-icon>
+        </button>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button class="button is-outlined is-large is-focused"
+                style="border-color: #2196F3; background-color: transparent; color: white; border-radius: 9999px"
+                onclick="window.location.href = 'https://linkedin.com/' ">
+          <b-icon
+            pack="fa"
+            icon="linkedin"
+          >
+          </b-icon>
+        </button>
+      </div>
+      <div id="body" class="container">
         <router-view/>
       </div>
-    </div>
-    <quick-menu v-show="isAuthenticated()" :menu-count=getCount :icon-class=icons :menu-url-list=list :background-color=backgroundColor :color=color :position=position :is-open-new-tab=getIsOpenNewTab></quick-menu>
-
-    <div id="social" class="text-xs-center">
-      <button class="button is-outlined is-large is-focused"
-              style="border-color: #2196F3; background-color: transparent; color: white; border-radius: 9999px"
-              onclick="window.location.href = 'https://github.com/unige-pinfo-2018/PInfo1-frontend' ">
-        <b-icon
-          pack="fa"
-          icon="facebook"
-        >
-        </b-icon>
-      </button>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      <button class="button is-outlined is-large is-focused"
-              style="border-color: #2196F3; background-color: transparent; color: white; border-radius: 9999px"
-              onclick="window.location.href = 'https://twitter.com/' ">
-        <b-icon
-          pack="fa"
-          icon="twitter"
-        >
-        </b-icon>
-      </button>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      <button class="button is-outlined is-large is-focused"
-              style="border-color: #2196F3; background-color: transparent; color: white; border-radius: 9999px"
-              onclick="window.location.href = 'https://linkedin.com/' ">
-        <b-icon
-          pack="fa"
-          icon="linkedin"
-        >
-        </b-icon>
-      </button>
     </div>
   </section>
 </template>
@@ -57,7 +56,7 @@ import quickMenu from 'vue-quick-menu'
 Vue.component(quickMenu.name, quickMenu)
 export default {
   name: 'App',
-  data () {
+  data() {
     return {
       count: 4,
       icons: ['fa fa-user', 'fa fa-comment', 'fa fa-envelope', 'fa fa-question'],
@@ -70,10 +69,10 @@ export default {
     }
   },
   computed: {
-    getCount () {
+    getCount() {
       return Number(this.count)
     },
-    getIsOpenNewTab () {
+    getIsOpenNewTab() {
       return Boolean(this.isOpenNewTab)
     }
   },
@@ -141,26 +140,46 @@ export default {
       });
   }
 }
-
 </script>
 
 <style>
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow-y: hidden;
+}
 
-#app {
+#hero-body {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+}
+
+#body {
+  position: absolute;
+  top: 70px;
+  right: 0px;
+  bottom: 85px;
+  left: 0px;
+  max-width: none;
 }
 
 /* CSS used for the social media links */
 
 #social {
-  bottom: 10%;
   width: 100%;
+  height: 60px;
   text-align: center;
   position: fixed;
+  bottom: 0;
+  margin-top: 5px;
+  margin-bottom: 20px;
 }
 
 /* CSS used for the navigation bar */
@@ -186,13 +205,17 @@ body {
 }
 
 ul {
-  position: fixed;
-  top: 20px;
   width: 100%;
+  height: 45px;
+  position: fixed;
+  top: 0;
   left: 0;
+  padding-top: 20px;
+  margin-bottom: 25px;
 }
 
 ul li {
+  height: 50%;
   display: inline;
   text-align: center;
 }
@@ -208,10 +231,10 @@ a {
 hr {
   height: .25rem;
   width: 25%;
-  margin-left: 0%;
+  margin: 21px 0 4px 0;
   background: #2196F3;
   border: none;
-  transition: .5s ease-in-out;
+  transition: .35s ease-in-out;
 }
 
 a:hover {

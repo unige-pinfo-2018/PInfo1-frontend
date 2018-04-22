@@ -652,73 +652,73 @@ export default {
 </script>
 
 <style>
-  #tags {
-    bottom: 23%;
-    width: 100%;
-    height: 60%;
-    text-align: center;
-    position: fixed;
-    left: 10%;
-  }
+#tags {
+  bottom: 23%;
+  width: 100%;
+  height: 60%;
+  text-align: center;
+  position: fixed;
+  left: 10%;
+}
 
-  #tag {
-    background-color: white;
-    color: black;
-    border-radius: 25px;
-    border: 2px solid #FFFFFF;
-    max-width: 400px;
-    max-height: 400px;
-    position: fixed;
-    left: 5%;
-    top: 25%;
-  }
+#tag {
+  background-color: white;
+  color: black;
+  border-radius: 25px;
+  border: 2px solid #FFFFFF;
+  max-width: 400px;
+  max-height: 400px;
+  position: fixed;
+  left: 5%;
+  top: 25%;
+}
 
-  #posts {
-    background-color: white;
-    border-radius: 25px;
-    width: 700px;
-    left: 40%;
-    top: 25%;
-    max-height: 400px;
-    position: fixed;
-    overflow-y: scroll;
-  }
+#posts {
+  background-color: white;
+  border-radius: 25px;
+  width: 700px;
+  left: 40%;
+  top: 25%;
+  max-height: 400px;
+  position: fixed;
+  overflow-y: scroll;
+}
 
-  .modal-mask {
-    position: fixed;
-    z-index: 9998;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, .5);
-    display: table;
-    transition: opacity .3s ease;
-  }
+.modal-mask {
+  position: fixed;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .5);
+  display: table;
+  transition: opacity .3s ease;
+}
 
-  .modal-wrapper {
-    display: table-cell;
-    vertical-align: middle;
-    width: 700px;
-  }
+.modal-wrapper {
+  display: table-cell;
+  vertical-align: middle;
+  width: 700px;
+}
 
-  .modal-container {
-    width: 700px;
-    margin: 0px auto;
-    padding: 20px 30px;
-    background-color: #fff;
-    border-radius: 25px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
-    transition: all .3s ease;
-    font-family: Helvetica, Arial, sans-serif;
-    max-height: 400px;
-    overflow-y: scroll;
-  }
+.modal-container {
+  width: 700px;
+  margin: 0px auto;
+  padding: 20px 30px;
+  background-color: #fff;
+  border-radius: 25px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+  transition: all .3s ease;
+  font-family: Helvetica, Arial, sans-serif;
+  max-height: 400px;
+  overflow-y: scroll;
+}
 
-  .modal-enter .modal-container,
-  .modal-leave-active .modal-container {
-    -webkit-transform: scale(1.1);
-    transform: scale(1.1);
-  }
+.modal-enter .modal-container,
+.modal-leave-active .modal-container {
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
+}
 
 </style>
