@@ -73,8 +73,6 @@ export default {
           "password": this.$data.model.password
         })
           .then(function (response) {
-            console.log(response)
-            //user is now authenticated
             tmp.$store.commit('switch_auth', true)
             tmp.$router.push('/')
             return true

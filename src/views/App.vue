@@ -77,11 +77,30 @@ export default {
     }
   },
   methods: {
+    success(text) {
+      this.$dialog.alert({
+        title: 'Success',
+        message: text,
+        type: 'is-success',
+        hasIcon: true,
+        icon: 'check-circle',
+        iconPack: 'fa'
+      })
+    },
     isAuthenticated () { // returns whether a user is authenticated or not
       return this.$store.state.isAuthenticated
     },
     logout () {
-      alert('Successfully logged out')
+/*      axios.get('http://127.0.0.1:18080/users-service/rest/users/logout')
+        .then(function (response) {
+          console.log(response.data)
+          return true
+        })
+        .catch(function (error) {
+          console.log(error.response);
+          return false
+        });*/
+      this.success('Successfully logged out')
       this.$store.commit('switch_auth', false) //user is now offline
       this.$router.push('/')
     }

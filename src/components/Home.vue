@@ -44,7 +44,7 @@
       </b-taginput>
     </div>
     <div v-if="isResultVisible" class="columns is-mobile">
-      <div class="column" id="posts">
+      <div class="column" id="postsRes">
         <article v-for="post in posts" :key="post.id" class="media" :id="post.id">
           <figure class="media-left">
             <p class="image is-64x64">
@@ -580,7 +580,7 @@
     top: 17%;
     position: fixed;
   }
-  #posts {
+  #postsRes {
     background-color: white;
     border-radius: 25px;
     width: 60%;

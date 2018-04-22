@@ -622,6 +622,8 @@ export default {
       } else { // if the tags that we provided do not match any post, we don't do anything
         this.$data.isVisibleLoadMore = true
         this.$data.posts = []
+        this.$data.from = 1
+        this.$data.to = 5
         this.retrievePosts()
       }
     }
