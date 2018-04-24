@@ -175,14 +175,14 @@ export default {
       })
     },
     empty: function (str) {
-      if (typeof str == 'undefined' || !str || str.length === 0 || str === "" || !/[^\s]/.test(str) || /^\s*$/.test(str) || str.replace(/\s/g,"") === "") {
+      if (typeof str == 'undefined' || !str || str.length === 0 || str === "" || !/[^\s]/.test(str) || /^\s*$/.test(str) || str.replace(/\s/g, "") === "") {
         return true;
       } else {
         return false;
       }
     },
     postMessage: function () {
-      if (!this.empty(this.$data.model.message)) { // Checks that there's something in the text-field area
+      if (this.form.$valid) { // Checks that there's something in the text-field area
         let tmp = this
         let msg = this.$data.model.message // Gets the message
         axios.put('http://127.0.0.1:18080/post-service/rest/posts/addPost', {
@@ -191,7 +191,25 @@ export default {
         })
           .then(function (response) {
             tmp.success('Message successfully created')
-            tmp.$data.model.message = []
+            let id = response.data
+            if (tmp.$data.tags.length !== 0) {
+              let query = 'http://localhost:18080/post-service/rest/tags/addTags?postId=' + id
+              for (let i = 0; i < tmp.$data.tags.length; i++) {
+                query = query + '&names=' + tmp.$data.tags[i]
+              }
+              axios.put(query)
+                .then(function (response) {
+                  console.log(response)
+                  return true
+                })
+                .catch(function (error) {
+                  tmp.warning('Could not connect to database')
+                  console.log(error.response);
+                  return false
+                });
+            }
+            console.log(response.data)
+            tmp.$data.model.message = ""
             return true
           })
           .catch(function (error) {
@@ -228,26 +246,27 @@ export default {
           .getElementsByClassName("taginput-container is-focusable")[0]
           .childNodes[tmp.$data.counter - 1].className = "tag " + color + " is-rounded"
       }
-    },
-    beforeMount() {
-      let tmp = this
-      /* When the component is mounted, the functions below are triggered */
-      axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
-        .then(function (response) {
-          if (response.data === false) {
-            tmp.warning('You must be logged in to access this page')
-            tmp.$router.push('/login')
-          }
-          return true
-        })
-        .catch(function (error) {
-          console.log(error.response);
-          return false
-        });
-    },
-    created: function () {
-      this.$store.commit('switch_background', require('../assets/bg-black.jpg'))
     }
+  },
+  beforeMount() {
+    let tmp = this
+    /* When the component is mounted, the functions below are triggered */
+    axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
+      .then(function (response) {
+        if (response.data === false) {
+          console.log(response.data)
+          tmp.warning('You must be logged in to access this page')
+          tmp.$router.push('/login')
+        }
+        return true
+      })
+      .catch(function (error) {
+        console.log(error.response);
+        return false
+      });
+  },
+  created: function () {
+    this.$store.commit('switch_background', require('../assets/bg-black.jpg'))
   }
 }
 </script>
