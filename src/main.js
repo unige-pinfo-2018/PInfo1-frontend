@@ -20,7 +20,10 @@ import VueFormly from 'vue-formly'
 import VueFormlyBuefy from 'vue-formly-buefy'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
+import 'highlight.js/styles/default.css'
+import Highlight from 'vue-markdown-highlight'
 
+Vue.use(Highlight)
 Vue.use(VueAxios, axios)
 Vue.use(Buefy)
 Vue.use(VueFormly)
