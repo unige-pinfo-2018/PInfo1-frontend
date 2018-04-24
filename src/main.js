@@ -20,10 +20,7 @@ import VueFormly from 'vue-formly'
 import VueFormlyBuefy from 'vue-formly-buefy'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
-import 'highlight.js/styles/default.css'
-import Highlight from 'vue-markdown-highlight'
 
-Vue.use(Highlight)
 Vue.use(VueAxios, axios)
 Vue.use(Buefy)
 Vue.use(VueFormly)
@@ -41,11 +38,27 @@ window.axios = require('axios')
 
 const store = new Vuex.Store({
   state: {
-    backgroundImagePath: require('./assets/bg.jpg')
+    backgroundImagePath: require('./assets/bg.jpg'),
+    userID: '2',
+    userNAME: 'Théo Giovanna',
+    userUSR: '@theogio',
+    userPic: 'http://foundrysocial.com/wp-content/uploads/2016/12/Anonymous-Icon-Round-01.png'
   },
   mutations: { // possible transformations
     switch_background (state, image) {
       state.backgroundImagePath = image
+    },
+    switch_id (state, id) {
+      state.userID = id
+    },
+    switch_name (state, name) {
+      state.userNAME = name
+    },
+    switch_usr (state, username) {
+      state.userUSR = state.userUSR + username
+    },
+    switch_pic (state, pic) {
+      state.userPic = pic
     }
   }
 })
