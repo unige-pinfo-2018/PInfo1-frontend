@@ -92,8 +92,7 @@
           <footer style="background-color: white; margin-right: auto; margin-left: auto">
             <button class="button is-outlined"
                     style="color: #2196F3; border-color: #2196F3"
-                    @click="retrievePosts"
-                    v-if="isVisibleLoadMore">Load more</button>
+                    v-if="this.$data.posts.length===0">No posts yet!</button>
           </footer>
         </article>
       </div>
@@ -255,21 +254,19 @@ export default {
       ],
       user: [ // information of the current user that's logged in
         {
-          id : "2",
-          username: "@theogio",
-          name: "Théo Giovanna",
-          profilePicture: "http://foundrysocial.com/wp-content/uploads/2016/12/Anonymous-Icon-Round-01.png"
+          id : this.$store.state.userID,
+          username: this.$store.state.userUSR,
+          name: this.$store.state.userNAME,
+          profilePicture: this.$store.state.userPic
         }
       ],
       comments: [ // will contain all comments relative to a post
-      ],
-      isVisibleLoadMore: true, // controls the visibility of the load more button
+      ]
     }
   },
   methods: {
 
     // TODO: Allow users to upload pictures with Imgur API
-    // TODO: Allow users to user markdown when writting posts
 
     /* Function used to popup a warning with a custom message */
     warning(text) {
@@ -287,16 +284,17 @@ export default {
     retrievePosts: function () {
       let tmp = this
       let idPost = [], textPost = [], datePost = [], userIdsToQuery = [], nbComments = []
-      axios.get('http://127.0.0.1:18080/post-service/rest/posts/contents?nbPost='+this.$data.posts.length)
+      axios.get('http://127.0.0.1:18080/post-service/rest/posts/contents')
         .then(function (response) {
-          if (response.data.length !== 1) {
-            for (let i=0; i<response.data.length-1; i++) {
-              let date = new Date(response.data[i].datePost)
+          console.log(response.data[0].length)
+          if (response.data[0].length !== 0) {
+            for (let i=0; i<response.data[0].length; i++) {
+              let date = new Date(response.data[0][i].datePost)
               datePost.push(date)
-              idPost.push(response.data[i].id)
-              textPost.push(response.data[i].content)
-              userIdsToQuery.push(response.data[i].userId)
-              nbComments.push(response.data[response.data.length-1][i].length)
+              idPost.push(response.data[0][i].id)
+              textPost.push(response.data[0][i].content)
+              userIdsToQuery.push(response.data[0][i].userId)
+              nbComments.push(response.data[1][i].length)
             }
 
             axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
@@ -339,6 +337,7 @@ export default {
     /* When the button answer is clicked, it fires this function that retrieves the post
      * from which the button was clicked, and pushes it to the answer window in order to display it */
     answer: function (event) {
+      console.log(this.$data.user)
       let tmp = this
       let postID = event.target // Gets which post fired the answer function
         .parentElement.parentElement.parentElement.parentElement

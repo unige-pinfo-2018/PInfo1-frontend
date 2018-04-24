@@ -57,7 +57,9 @@
                 <strong>{{post.name}}</strong> <small>{{post.username}}</small> <small>{{post.date}}</small>
                 <br>
               </p>
-              <vue-markdown> {{post.text}} </vue-markdown>
+              <p>
+                {{post.text}}
+              </p>
             </div>
             <nav class="level is-mobile">
               <div class="level-right">
@@ -131,7 +133,9 @@
                       <strong>{{ans.name}}</strong> <small>{{ans.username}}</small> <small>{{ans.date}}</small>
                       <br>
                     </p>
-                    <vue-markdown> {{ans.text}} </vue-markdown>
+                    <p>
+                      {{ans.text}}
+                    </p>
                   </div>
                   <nav class="level is-mobile">
                     <div class="level-right">
@@ -165,7 +169,9 @@
                           <strong>{{com.name}}</strong> <small>{{com.username}}</small> <small>{{com.date}}</small>
                           <br>
                         </p>
-                        <vue-markdown> {{com.text}} </vue-markdown>
+                        <p>
+                          {{com.text}}
+                        </p>
                       </div>
                       <nav class="level is-mobile">
                         <div class="level-right">
@@ -225,12 +231,8 @@
 
 <script>
 /* eslint-disable */
-import VueMarkdown from 'vue-markdown'
   export default {
   name: 'Home',
-  components: {
-    VueMarkdown
-  },
   created: function () {
     this.$store.commit('switch_background', require('../assets/bg.jpg'))
   },
@@ -560,10 +562,10 @@ import VueMarkdown from 'vue-markdown'
       ],
       user: [ // information of the current user that's logged in
         {
-          id : "2",
-          username: "@theogio",
-          name: "Théo Giovanna",
-          profilePicture: "http://foundrysocial.com/wp-content/uploads/2016/12/Anonymous-Icon-Round-01.png"
+          id : this.$store.userID,
+          username: this.$store.userUSR,
+          name: this.$store.userNAME,
+          profilePicture: this.$store.userPic
         }
       ],
       comments: [ // will contain all comments relative to a post

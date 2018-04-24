@@ -97,10 +97,10 @@ export default {
     return {
       user: [ // information of the current user that's logged in
         {
-          id : "2",
-          username: "@theogio",
-          name: "Théo Giovanna",
-          profilePicture: "http://foundrysocial.com/wp-content/uploads/2016/12/Anonymous-Icon-Round-01.png"
+          id : this.$store.state.userID,
+          username: this.$store.state.userUSR,
+          name: this.$store.state.userNAME,
+          profilePicture: this.$store.state.userPic
         }
       ],
       model: {},
@@ -217,6 +217,8 @@ export default {
             console.log(error.response);
             return false
           });
+      } else {
+        tmp.warning('Please correct your entries')
       }
     },
     renderMessage() {
