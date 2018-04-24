@@ -46,9 +46,7 @@
                 <strong>{{post.name}}</strong> <small>{{post.username}}</small> <small>{{post.date}}</small>
                 <br>
               </p>
-              <p>
-                {{post.text}}
-              </p>
+              <vue-markdown> {{post.text}} </vue-markdown>
             </div>
             <nav class="level is-mobile">
               <div class="level-right">
@@ -117,9 +115,7 @@
                       <strong>{{ans.name}}</strong> <small>{{ans.username}}</small> <small>{{ans.date}}</small>
                       <br>
                     </p>
-                    <p>
-                      {{ans.text}}
-                    </p>
+                    <vue-markdown> {{ans.text}} </vue-markdown>
                   </div>
                   <nav class="level is-mobile">
                     <div class="level-right">
@@ -153,9 +149,7 @@
                           <strong>{{com.name}}</strong> <small>{{com.username}}</small> <small>{{com.date}}</small>
                           <br>
                         </p>
-                        <p>
-                          {{com.text}}
-                        </p>
+                        <vue-markdown> {{com.text}} </vue-markdown>
                       </div>
                       <nav class="level is-mobile">
                         <div class="level-right">
@@ -215,9 +209,13 @@
 
 <script>
 /* eslint-disable */
+import VueMarkdown from 'vue-markdown'
 export default {
   /* eslint-disable */
   name: 'Posts',
+  components: {
+    VueMarkdown
+  },
   created: function () {
     this.$store.commit('switch_background', require('../assets/bg-black.jpg'))
   },
