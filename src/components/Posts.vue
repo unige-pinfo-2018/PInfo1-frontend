@@ -354,6 +354,7 @@ export default {
       if (post.hasComments) {
         axios.get('http://127.0.0.1:18080/post-service/rest/posts/getCommentsForPost/'+postNumberID.toString())
           .then(function (response) {
+            console.log(response.data)
             let p = response.data
             let userIdsToQuery = []
             for (let i=0; i<p.length; i++) {
@@ -551,7 +552,12 @@ export default {
     /* When the component is mounted, the functions below are triggered */
     axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
       .then(function (response) {
-        if (response.data === true) {
+        console.log(response.data[1])
+        if (response.data[0] === true) {
+          tmp.$store.commit('switch_id', response.data[1].id)
+          tmp.$store.commit('switch_name', response.data[1].name)
+          tmp.$store.commit('switch_usr', '@'+response.data[1].username)
+          tmp.$store.commit('switch_pic', response.data[1].pictureUrl)
           tmp.retrievePosts()
         } else {
           tmp.warning('You must be logged in to access this page')

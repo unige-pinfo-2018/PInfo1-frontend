@@ -55,7 +55,7 @@ const store = new Vuex.Store({
       state.userNAME = name
     },
     switch_usr (state, username) {
-      state.userUSR = state.userUSR + username
+      state.userUSR = username
     },
     switch_pic (state, pic) {
       state.userPic = pic

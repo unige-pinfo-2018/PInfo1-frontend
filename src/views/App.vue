@@ -112,8 +112,13 @@ export default {
     let tmp = this
     axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
       .then(function (response) {
-        if (response.data === true) {
+        console.log(response.data[1])
+        if (response.data[0] === true) {
           tmp.$data.isAuth = true
+          tmp.$store.commit('switch_id', response.data[1].id)
+          tmp.$store.commit('switch_name', response.data[1].name)
+          tmp.$store.commit('switch_usr', '@'+response.data[1].username)
+          tmp.$store.commit('switch_pic', response.data[1].pictureUrl)
         } else {
           tmp.$data.isAuth = false
         }
@@ -128,8 +133,12 @@ export default {
     let tmp = this
     axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
       .then(function (response) {
-        if (response.data === true) {
+        if (response.data[0] === true) {
           tmp.$data.isAuth = true
+          tmp.$store.commit('switch_id', response.data[1].id)
+          tmp.$store.commit('switch_name', response.data[1].name)
+          tmp.$store.commit('switch_usr', '@'+response.data[1].username)
+          tmp.$store.commit('switch_pic', response.data[1].pictureUrl)
         } else {
           tmp.$data.isAuth = false
         }

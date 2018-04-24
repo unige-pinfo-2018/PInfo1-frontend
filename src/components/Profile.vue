@@ -47,9 +47,14 @@ export default {
     /* When the component is mounted, the functions below are triggered */
     axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
       .then(function (response) {
-        if (response.data === false) {
+        if (response.data[0] === false) {
           tmp.warning('You must be logged in to access this page')
           tmp.$router.push('/login')
+        } else {
+          tmp.$store.commit('switch_id', response.data[1].id)
+          tmp.$store.commit('switch_name', response.data[1].name)
+          tmp.$store.commit('switch_usr', '@'+response.data[1].username)
+          tmp.$store.commit('switch_pic', response.data[1].pictureUrl)
         }
         return true
       })

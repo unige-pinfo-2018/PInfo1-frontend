@@ -54,16 +54,16 @@
           <div class="modal-mask">
             <div class="modal-wrapper">
               <div class="modal-container">
-                <article class="media">
+                <article v-for="u in user" :key="u.id" class="media">
                   <figure class="media-left">
                     <p class="image is-64x64">
-                      <img src="http://foundrysocial.com/wp-content/uploads/2016/12/Anonymous-Icon-Round-01.png" style="border-radius: 50%;">
+                      <img :src="u.profilePicture" style="border-radius: 50%;">
                     </p>
                   </figure>
                   <div class="media-content">
                     <div class="content">
                       <p>
-                        <strong>Théo Giovanna</strong> <small>@theogio</small> <small>now</small>
+                        <strong>{{u.name}}</strong> <small>{{u.username}}</small> <small>now</small>
                         <br>
                       </p>
                       <vue-markdown :source="source"></vue-markdown>
@@ -222,6 +222,25 @@ export default {
       }
     },
     renderMessage() {
+      axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
+        .then(function (response) {
+          console.log(response.data[1])
+          if (response.data[0] === false) {
+            console.log(response.data)
+            tmp.warning('You must be logged in to access this page')
+            tmp.$router.push('/login')
+          } else {
+            tmp.$store.commit('switch_id', response.data[1].id)
+            tmp.$store.commit('switch_name', response.data[1].name)
+            tmp.$store.commit('switch_usr', '@'+response.data[1].username)
+            tmp.$store.commit('switch_pic', response.data[1].pictureUrl)
+          }
+          return true
+        })
+        .catch(function (error) {
+          console.log(error.response);
+          return false
+        });
       this.$data.source = this.$data.model.message
     },
     warning(text) {
@@ -255,10 +274,16 @@ export default {
     /* When the component is mounted, the functions below are triggered */
     axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
       .then(function (response) {
-        if (response.data === false) {
+        console.log(response.data[1])
+        if (response.data[0] === false) {
           console.log(response.data)
           tmp.warning('You must be logged in to access this page')
           tmp.$router.push('/login')
+        } else {
+          tmp.$store.commit('switch_id', response.data[1].id)
+          tmp.$store.commit('switch_name', response.data[1].name)
+          tmp.$store.commit('switch_usr', '@'+response.data[1].username)
+          tmp.$store.commit('switch_pic', response.data[1].pictureUrl)
         }
         return true
       })
