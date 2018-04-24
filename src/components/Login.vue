@@ -73,7 +73,20 @@ export default {
           "password": this.$data.model.password
         }, {withCredentials: true})
           .then(function (response) {
-            console.log(response)
+            axios.get('http://127.0.0.1:18080/users-service/rest/users/by_username/'+tmp.$data.model.username, {withCredentials: true})
+              .then(function (response) {
+                console.log(response.data.pictureUrl)
+                tmp.$store.commit('switch_id', response.data.id)
+                tmp.$store.commit('switch_name', response.data.name)
+                tmp.$store.commit('switch_usr', response.data.username)
+                tmp.$store.commit('switch_pic', response.data.pictureUrl)
+                return true
+              })
+              .catch(function (error) {
+                tmp.warning('Please check your credentials')
+                console.log(error.response);
+                return false
+              });
             tmp.$data.isAuth = true
             tmp.$router.push('/')
             return true

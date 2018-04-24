@@ -562,10 +562,10 @@
       ],
       user: [ // information of the current user that's logged in
         {
-          id : "2",
-          username: "@theogio",
-          name: "Théo Giovanna",
-          profilePicture: "http://foundrysocial.com/wp-content/uploads/2016/12/Anonymous-Icon-Round-01.png"
+          id : this.$store.userID,
+          username: this.$store.userUSR,
+          name: this.$store.userNAME,
+          profilePicture: this.$store.userPic
         }
       ],
       comments: [ // will contain all comments relative to a post

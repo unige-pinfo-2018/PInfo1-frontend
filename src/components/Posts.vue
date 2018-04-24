@@ -46,9 +46,7 @@
                 <strong>{{post.name}}</strong> <small>{{post.username}}</small> <small>{{post.date}}</small>
                 <br>
               </p>
-              <p>
-                {{post.text}}
-              </p>
+              <vue-markdown> {{post.text}} </vue-markdown>
             </div>
             <nav class="level is-mobile">
               <div class="level-right">
@@ -94,8 +92,7 @@
           <footer style="background-color: white; margin-right: auto; margin-left: auto">
             <button class="button is-outlined"
                     style="color: #2196F3; border-color: #2196F3"
-                    @click="loadmore"
-                    v-if="isVisibleLoadMore">Load more</button>
+                    v-if="this.$data.posts.length===0">No posts yet!</button>
           </footer>
         </article>
       </div>
@@ -117,9 +114,7 @@
                       <strong>{{ans.name}}</strong> <small>{{ans.username}}</small> <small>{{ans.date}}</small>
                       <br>
                     </p>
-                    <p>
-                      {{ans.text}}
-                    </p>
+                    <vue-markdown> {{ans.text}} </vue-markdown>
                   </div>
                   <nav class="level is-mobile">
                     <div class="level-right">
@@ -153,9 +148,7 @@
                           <strong>{{com.name}}</strong> <small>{{com.username}}</small> <small>{{com.date}}</small>
                           <br>
                         </p>
-                        <p>
-                          {{com.text}}
-                        </p>
+                        <vue-markdown> {{com.text}} </vue-markdown>
                       </div>
                       <nav class="level is-mobile">
                         <div class="level-right">
@@ -215,9 +208,13 @@
 
 <script>
 /* eslint-disable */
+import VueMarkdown from 'vue-markdown'
 export default {
   /* eslint-disable */
   name: 'Posts',
+  components: {
+    VueMarkdown
+  },
   created: function () {
     this.$store.commit('switch_background', require('../assets/bg-black.jpg'))
   },
@@ -257,25 +254,19 @@ export default {
       ],
       user: [ // information of the current user that's logged in
         {
-          id : "2",
-          username: "@theogio",
-          name: "Théo Giovanna",
-          profilePicture: "http://foundrysocial.com/wp-content/uploads/2016/12/Anonymous-Icon-Round-01.png"
+          id : this.$store.state.userID,
+          username: this.$store.state.userUSR,
+          name: this.$store.state.userNAME,
+          profilePicture: this.$store.state.userPic
         }
       ],
       comments: [ // will contain all comments relative to a post
-      ],
-      nbTotalPosts: 0, // total number of posts that are stored in the DB
-      from: 1, // where it starts fetching posts
-      to: 5, // where it stops fetching posts
-      offset: 0, // to control the from and to requests
-      isVisibleLoadMore: true, // controls the visibility of the load more button
+      ]
     }
   },
   methods: {
 
     // TODO: Allow users to upload pictures with Imgur API
-    // TODO: Allow users to user markdown when writting posts
 
     /* Function used to popup a warning with a custom message */
     warning(text) {
@@ -292,62 +283,48 @@ export default {
     /* Retrieves posts from the DB. This function is called as soon as the component is mounted */
     retrievePosts: function () {
       let tmp = this
-      /* First we retrieve how many posts we have in the DB */
-      axios.get('http://127.0.0.1:18080/post-service/rest/posts/nbPosts/')
-        .then(function (response) {
-          tmp.$data.nbTotalPosts = response.data.nbPosts // sets number of posts that are in the DB
-          return true
-        })
-        .catch(function (error) {
-          tmp.warning('Could not connect to database')
-          console.log(error.response);
-          return false
-        });
-
-      let query = 'http://127.0.0.1:18080/post-service/rest/posts/posts_and_comments_by_ids?'
-      query = query + 'id=' + (this.$data.from).toString()
-      for (let i=this.$data.from + 1; i<=this.$data.to; i++) {
-        query = query + '&id=' + i.toString()
-      }
-
       let idPost = [], textPost = [], datePost = [], userIdsToQuery = [], nbComments = []
-
-      axios.get(query)
+      axios.get('http://127.0.0.1:18080/post-service/rest/posts/contents')
         .then(function (response) {
-          for (let i=0; i<response.data[0].length; i++) {
-            let date = new Date(response.data[0][i].datePost)
-            datePost.push(date)
-            idPost.push(response.data[0][i].id)
-            textPost.push(response.data[0][i].content)
-            userIdsToQuery.push(response.data[0][i].userId)
-            nbComments.push(response.data[1][i].length)
-          }
+          console.log(response.data[0].length)
+          if (response.data[0].length !== 0) {
+            for (let i=0; i<response.data[0].length; i++) {
+              let date = new Date(response.data[0][i].datePost)
+              datePost.push(date)
+              idPost.push(response.data[0][i].id)
+              textPost.push(response.data[0][i].content)
+              userIdsToQuery.push(response.data[0][i].userId)
+              nbComments.push(response.data[1][i].length)
+            }
 
-          axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
-            "ids": userIdsToQuery
-          })
-            .then(function (response) {
-              for (let i=0; i<response.data.length; i++) {
-                let post = {
-                  hasComments: nbComments[i] > 0 ? true : false, // just so it displays the comment accordingly to the number of comments of a post
-                  id: idPost[i],
-                  text: textPost[i],
-                  profilePicture: response.data[i].pictureUrl,
-                  numberOfComments: nbComments[i],
-                  name: response.data[i].name,
-                  username: "@"+response.data[i].username,
-                  date: datePost[i].getDay() + '/' + datePost[i].getMonth() + '/' + datePost[i].getFullYear() + ' - ' + datePost[i].getHours() + ':' + datePost[i].getMinutes() + ':' + datePost[i].getSeconds()
-                }
-                tmp.$data.posts.push(post) // pushing the data so they display
-              }
-              return true
+            axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
+              "ids": userIdsToQuery
             })
-            .catch(function (error) {
-              tmp.warning('Could not fetch posts. Database not reachable')
-              console.log(error.response);
-              return false
-            });
+              .then(function (response) {
+                for (let i=0; i<response.data.length; i++) {
+                  let post = {
+                    hasComments: nbComments[i] > 0 ? true : false, // just so it displays the comment accordingly to the number of comments of a post
+                    id: idPost[i],
+                    text: textPost[i],
+                    profilePicture: response.data[i].pictureUrl,
+                    numberOfComments: nbComments[i],
+                    name: response.data[i].name,
+                    username: "@"+response.data[i].username,
+                    date: datePost[i].getDay() + '/' + datePost[i].getMonth() + '/' + datePost[i].getFullYear() + ' - ' + datePost[i].getHours() + ':' + datePost[i].getMinutes() + ':' + datePost[i].getSeconds()
+                  }
+                  tmp.$data.posts.push(post) // pushing the data so they display
+                }
+                return true
+              })
+              .catch(function (error) {
+                tmp.warning('Could not fetch posts. Database not reachable')
+                console.log(error.response);
+                return false
+              });
 
+          } else {
+            tmp.warning("No more posts to fetch")
+          }
           return true
         })
         .catch(function (error) {
@@ -360,6 +337,7 @@ export default {
     /* When the button answer is clicked, it fires this function that retrieves the post
      * from which the button was clicked, and pushes it to the answer window in order to display it */
     answer: function (event) {
+      console.log(this.$data.user)
       let tmp = this
       let postID = event.target // Gets which post fired the answer function
         .parentElement.parentElement.parentElement.parentElement
@@ -419,69 +397,6 @@ export default {
     deletePost: function () {
       this.$data.answerTo.splice(0,1) // removes the first (and unique) element of array answerTo
       this.$data.comments = []
-    },
-
-    /* This function is triggered by a user wishing to load more post. It will fetch posts that are yet not
-     * displayed in the database and push them onto the screen */
-    loadmore: function () {
-      let tmp = this
-      this.$data.from += 5 // By default we want to display 5 more posts
-      let diff = this.$data.nbTotalPosts - this.$data.posts.length // Checks how many posts remaining can be displayed
-      if (diff >= 5){ // Then we can fetch 5 posts
-        tmp.$data.to += 5
-      } else if (diff > 0) { // We can only fetch whats left
-        tmp.$data.to += diff
-      } else {
-        tmp.warning("No more posts to load") // No more posts in the databse
-      }
-      if ((diff>0)){ // Then we can call the database
-        let idPost = [], textPost = [], datePost = []
-        axios.get('http://127.0.0.1:18080/post-service/rest/posts/content_by_ids?from='+this.$data.from.toString()+'&to='+this.$data.to.toString())
-          .then(function (response) {
-            let p = response.data
-            let promises = []
-            let userIdsToQuery = []
-            for (let i = 0; i < p.length; i++) {
-              /* Gets the info related to the post */
-              if (p[i].entity.parentId == null) { // Then it is a post, so we can display it
-                idPost.push(p[i].entity.id)
-                textPost.push(p[i].entity.content)
-                datePost.push(p[i].entity.datePost)
-                //promises.push(axios.get('http://127.0.0.1:18080/users-service/rest/users/by_id/' + p[i].entity.userId.toString()))
-                userIdsToQuery.push(p[i].entity.userId)
-              }
-            }
-            promises.push(axios.get('http://127.0.0.1:18080/post-service/rest/posts/getCommentsForPosts?from='+tmp.$data.from.toString()+'&to='+tmp.$data.to.toString()))
-            promises.push(axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
-              "ids": userIdsToQuery
-            }))
-            /* Makes the call to get user info in a synchronized way */
-            axios.all(promises).then(function (results) {
-              for (let i = 0; i < results[1].data.length; i++) {
-                let date = new Date(datePost[i])
-                let com = false
-                let post = {
-                  hasComments: com,
-                  id: idPost[i],
-                  text: textPost[i],
-                  profilePicture: results[1].data[i].pictureUrl,
-                  numberOfComments: results[0].data[(idPost[0]).toString()].length,
-                  name: results[1].data[i].name,
-                  username: "@" + results[1].data[i].username,
-                  date: date.getDay() + '/' + date.getMonth() + '/' + date.getFullYear() + ' - ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
-                }
-                tmp.$data.posts.push(post)
-              }
-              tmp.$data.offset = idPost[idPost.length-1] - tmp.$data.to
-              tmp.$data.from += tmp.$data.offset
-              tmp.$data.to += tmp.$data.offset
-            });
-          }).catch(function (error) {
-          tmp.warning('Could not fetch posts. Database not reachable')
-          console.log(error.response);
-          return false
-        });
-      }
     },
 
     /* Checks if a string is empty or undefined or only contains white spaces */
@@ -545,17 +460,18 @@ export default {
 
     /* This function is used to change the tags color and retrieve posts that have the tag*/
     switchColor: function () {
+      let tmp = this
       if (tmp.$data.tags.length !== 0) {
           /* Makes sure we never have too much tags */
-          this.$data.counter = this.$data.tags.length
+          tmp.$data.counter = tmp.$data.tags.length
           /* Picks a random number */
           let r = Math.floor(Math.random() * Math.floor(4))
           /* Picks a random color */
-          let color = this.$data.colors[r];
+          let color = tmp.$data.colors[r];
           /* Changes the color of the tag */
-          document.getElementById("searchbar").getElementsByClassName("myTags")[0]
+          document.getElementById("tags").getElementsByClassName("myTags")[0]
             .getElementsByClassName("taginput-container is-focusable")[0]
-            .childNodes[this.$data.counter-1].className = "tag " + color + " is-rounded"
+            .childNodes[tmp.$data.counter-1].className = "tag " + color + " is-rounded"
       }
     },
 
