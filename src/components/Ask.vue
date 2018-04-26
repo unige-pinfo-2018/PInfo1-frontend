@@ -220,6 +220,7 @@ export default {
       }
     },
     renderMessage() {
+      let tmp = this
       axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
         .then(function (response) {
           if (response.data[0] === false) {
@@ -230,6 +231,7 @@ export default {
             tmp.$store.commit('switch_name', response.data[1].name)
             tmp.$store.commit('switch_usr', '@'+response.data[1].username)
             tmp.$store.commit('switch_pic', response.data[1].pictureUrl)
+            tmp.$data.source = tmp.$data.model.message
           }
           return true
         })
@@ -237,7 +239,6 @@ export default {
           console.log(error.response);
           return false
         });
-      this.$data.source = this.$data.model.message
     },
     warning(text) {
       this.$dialog.alert({
