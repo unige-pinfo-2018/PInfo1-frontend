@@ -340,6 +340,7 @@ export default {
       axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
         .then(function (response) {
           if (response.data[0] === true) {
+            console.log(response.data[1])
             tmp.$store.commit('switch_id', response.data[1].id)
             tmp.$store.commit('switch_name', response.data[1].name)
             tmp.$store.commit('switch_usr', '@'+response.data[1].username)
@@ -348,14 +349,13 @@ export default {
               .parentElement.parentElement.parentElement.parentElement
               .parentElement.getAttribute("id")
             let postNumberID = postID.match(/\d/g).join("") // Gets just the number so we can construct an id and get the post
-
             let post
-            for (let i=0; i<this.$data.posts.length; i++) {
+            for (let i=0; i<tmp.$data.posts.length; i++) {
               if (tmp.$data.posts[i].id == postNumberID) { // look for the right post to inject in the answer window
                 post = tmp.$data.posts[i]
               }
             }
-            this.$data.answerTo.push(post) // Pushes it to the answer window
+            tmp.$data.answerTo.push(post) // Pushes it to the answer window
             if (post.hasComments) {
               axios.get('http://127.0.0.1:18080/post-service/rest/posts/getCommentsForPost/'+postNumberID.toString())
                 .then(function (response) {
@@ -396,6 +396,7 @@ export default {
                   return false
                 });
             }
+
           } else {
             tmp.warning('You must be logged in to access this page')
             tmp.$router.push('/login')
