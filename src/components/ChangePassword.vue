@@ -77,7 +77,6 @@ export default {
           "password": this.$data.model.password
         })
           .then(function (response) {
-            console.log(response)
             tmp.success('Success. You can now login.')
             tmp.$router.push('/login')
             return true

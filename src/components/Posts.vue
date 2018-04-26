@@ -286,7 +286,6 @@ export default {
       let idPost = [], textPost = [], datePost = [], userIdsToQuery = [], nbComments = []
       axios.get('http://127.0.0.1:18080/post-service/rest/posts/contents')
         .then(function (response) {
-          console.log(response.data[0].length)
           if (response.data[0].length !== 0) {
             for (let i=0; i<response.data[0].length; i++) {
               let date = new Date(response.data[0][i].datePost)
@@ -337,7 +336,6 @@ export default {
     /* When the button answer is clicked, it fires this function that retrieves the post
      * from which the button was clicked, and pushes it to the answer window in order to display it */
     answer: function (event) {
-      console.log(this.$data.user)
       let tmp = this
       let postID = event.target // Gets which post fired the answer function
         .parentElement.parentElement.parentElement.parentElement
@@ -354,7 +352,6 @@ export default {
       if (post.hasComments) {
         axios.get('http://127.0.0.1:18080/post-service/rest/posts/getCommentsForPost/'+postNumberID.toString())
           .then(function (response) {
-            console.log(response.data)
             let p = response.data
             let userIdsToQuery = []
             for (let i=0; i<p.length; i++) {
@@ -447,7 +444,6 @@ export default {
           "parentId": postNumberID
         })
           .then(function (response) {
-            console.log(response)
             return true
           })
           .catch(function (error) {
@@ -552,7 +548,6 @@ export default {
     /* When the component is mounted, the functions below are triggered */
     axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
       .then(function (response) {
-        console.log(response.data[1])
         if (response.data[0] === true) {
           tmp.$store.commit('switch_id', response.data[1].id)
           tmp.$store.commit('switch_name', response.data[1].name)

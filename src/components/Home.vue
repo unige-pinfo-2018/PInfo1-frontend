@@ -408,7 +408,6 @@
           "parentId": postNumberID
         })
           .then(function (response) {
-            console.log(response)
             return true
           })
           .catch(function (error) {
@@ -466,7 +465,6 @@
          * match the tags */
         axios.get(query)
           .then(function (response) {
-            console.log(response)
             if (response.data.length !== 0) { //then we have results
               tmp.$data.isResultVisible = true
               tmp.$data.posts = [] // we remove existing posts
@@ -582,7 +580,6 @@
       let tmp = this
       axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
         .then(function (response) {
-          console.log(response.data[1])
           if (response.data[0] === true) {
             tmp.$store.commit('switch_id', response.data[1].id)
             tmp.$store.commit('switch_name', response.data[1].name)

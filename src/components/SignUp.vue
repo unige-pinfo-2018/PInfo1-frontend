@@ -91,7 +91,6 @@ import confirmSignUp from '@/components/ConfirmSignUp.vue'
             "password": this.$data.model1.password
           })
             .then(function (response) {
-              console.log(response);
               tmp.success('Please check your inbox')
               tmp.$router.push('/confirmSignUp')
             })

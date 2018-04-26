@@ -199,7 +199,6 @@ export default {
               }
               axios.put(query)
                 .then(function (response) {
-                  console.log(response)
                   return true
                 })
                 .catch(function (error) {
@@ -208,7 +207,6 @@ export default {
                   return false
                 });
             }
-            console.log(response.data)
             tmp.$data.model.message = ""
             return true
           })
@@ -224,9 +222,7 @@ export default {
     renderMessage() {
       axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
         .then(function (response) {
-          console.log(response.data[1])
           if (response.data[0] === false) {
-            console.log(response.data)
             tmp.warning('You must be logged in to access this page')
             tmp.$router.push('/login')
           } else {
@@ -274,9 +270,7 @@ export default {
     /* When the component is mounted, the functions below are triggered */
     axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
       .then(function (response) {
-        console.log(response.data[1])
         if (response.data[0] === false) {
-          console.log(response.data)
           tmp.warning('You must be logged in to access this page')
           tmp.$router.push('/login')
         } else {

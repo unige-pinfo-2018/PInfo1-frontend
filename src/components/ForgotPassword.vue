@@ -72,7 +72,6 @@ export default {
       if (this.form.$valid){ //check if fields are correctly filled
         axios.get('http://127.0.0.1:18080:18080/users-service/rest/users/request_password_reset?email='+this.$data.model.email)
           .then(function (response) {
-            console.log(response)
             tmp.success('Please check your inbox')
             tmp.$router.push('/newpassword')
             return true

@@ -4,12 +4,12 @@
     <div id="app" class="hero-body">
       <div class="container">
         <ul>
-          <li class="one"><router-link to='/'>Search</router-link></li><!--
-       --><li class="two"><router-link to='posts'>Latest posts</router-link></li><!--
-       --><li class="three"><router-link to='ask'>Ask a question</router-link></li><!--
-       --><li v-if="isAuthenticated()" v-on:click="logout" class="four"><router-link to='/'>Logout</router-link></li><!--
-       --><li v-if="!isAuthenticated()" class="four"><router-link to='/login'>Login</router-link></li>
-        <hr/>
+          <li class="one"><router-link style="color: white" to='/'>Search</router-link></li><!--
+       --><li class="two"><router-link style="color: white" to='posts'>Latest posts</router-link></li><!--
+       --><li class="three"><router-link style="color: white" to='ask'>Ask a question</router-link></li><!--
+       --><li v-if="isAuthenticated()" v-on:click="logout" class="four"><router-link style="color: white" to='/'>Logout</router-link></li><!--
+       --><li v-if="!isAuthenticated()" class="four"><router-link style="color: white" to='/login'>Login</router-link></li>
+          <hr/>
         </ul>
         <router-view/>
       </div>
@@ -112,7 +112,6 @@ export default {
     let tmp = this
     axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
       .then(function (response) {
-        console.log(response.data[1])
         if (response.data[0] === true) {
           tmp.$data.isAuth = true
           tmp.$store.commit('switch_id', response.data[1].id)

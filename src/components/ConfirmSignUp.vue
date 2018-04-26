@@ -68,7 +68,6 @@ export default {
       if (this.form.$valid){ //check if fields are correctly filled
         axios.get('http://127.0.0.1:18080:18080/users-service/rest/users/confirm?email='+this.$data.model.code)
           .then(function (response) {
-            console.log(response)
             tmp.success('Account confirmation successfull. You can now login.')
             tmp.$router.push('/login')
             return true
