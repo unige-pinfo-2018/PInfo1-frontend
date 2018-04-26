@@ -193,7 +193,7 @@ export default {
             tmp.success('Message successfully created')
             let id = response.data
             if (tmp.$data.tags.length !== 0) {
-              let query = 'http://localhost:18080/post-service/rest/tags/addTags?postId=' + id
+              let query = 'http://127.0.0.1:18080:18080/post-service/rest/tags/addTags?postId=' + id
               for (let i = 0; i < tmp.$data.tags.length; i++) {
                 query = query + '&names=' + tmp.$data.tags[i]
               }
