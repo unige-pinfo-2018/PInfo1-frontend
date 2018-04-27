@@ -133,10 +133,10 @@ export default {
       dropFiles: [],
       user: [ // information of the current user that's logged in
         {
-          id : this.$store.state.userID,
-          username: this.$store.state.userUSR,
-          name: this.$store.state.userNAME,
-          profilePicture: this.$store.state.userPic
+          id: '1',
+          username: '@theogio',
+          name: 'Théo Giovanna',
+          profilePicture: 'http://foundrysocial.com/wp-content/uploads/2016/12/Anonymous-Icon-Round-01.png'
         }
       ],
       model: {},
@@ -258,33 +258,41 @@ export default {
       let tmp = this
       if (this.form.$valid) { // Checks that there's something in the text-field area
         let msg = this.$data.model.message // Gets the message
-        axios.put('http://127.0.0.1:18080/post-service/rest/posts/addPost', {
-          "userId": tmp.$data.user[0].id,
-          "content": msg
-        })
+        axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
           .then(function (response) {
-            tmp.success('Message successfully created')
-            let id = response.data
-            if (tmp.$data.tags.length !== 0) {
-              let query = 'http://127.0.0.1:18080/post-service/rest/tags/addTags?postId=' + id
-              for (let i = 0; i < tmp.$data.tags.length; i++) {
-                query = query + '&names=' + tmp.$data.tags[i]
-              }
-              axios.put(query)
-                .then(function (response) {
-                  return true
-                })
-                .catch(function (error) {
-                  tmp.warning('Could not connect to database')
-                  console.log(error.response);
-                  return false
-                });
-            }
-            tmp.$data.model.message = ""
+            axios.put('http://127.0.0.1:18080/post-service/rest/posts/addPost', {
+              "userId": response.data[1].id,
+              "content": msg
+            })
+              .then(function (response) {
+                tmp.success('Message successfully created')
+                let id = response.data
+                if (tmp.$data.tags.length !== 0) {
+                  let query = 'http://127.0.0.1:18080/post-service/rest/tags/addTags?postId=' + id
+                  for (let i = 0; i < tmp.$data.tags.length; i++) {
+                    query = query + '&names=' + tmp.$data.tags[i]
+                  }
+                  axios.put(query)
+                    .then(function (response) {
+                      return true
+                    })
+                    .catch(function (error) {
+                      tmp.warning('Could not connect to database')
+                      console.log(error.response);
+                      return false
+                    });
+                }
+                tmp.$data.model.message = ""
+                return true
+              })
+              .catch(function (error) {
+                tmp.warning('Could not connect to database')
+                console.log(error.response);
+                return false
+              });
             return true
           })
           .catch(function (error) {
-            tmp.warning('Could not connect to database')
             console.log(error.response);
             return false
           });
@@ -300,10 +308,10 @@ export default {
             tmp.warning('You must be logged in to access this page')
             tmp.$router.push('/login')
           } else {
-            tmp.$store.commit('switch_id', response.data[1].id)
-            tmp.$store.commit('switch_name', response.data[1].name)
-            tmp.$store.commit('switch_usr', '@'+response.data[1].username)
-            tmp.$store.commit('switch_pic', response.data[1].pictureUrl)
+            tmp.$data.user.id = response.data[1].id
+            tmp.$data.user.username = response.data[1].username
+            tmp.$data.user.name = response.data[1].name
+            tmp.$data.user.profilePicture = response.data[1].pictureUrl
             tmp.$data.source = tmp.$data.model.message
           }
           return true
@@ -350,10 +358,10 @@ export default {
           tmp.warning('You must be logged in to access this page')
           tmp.$router.push('/login')
         } else {
-          tmp.$store.commit('switch_id', response.data[1].id)
-          tmp.$store.commit('switch_name', response.data[1].name)
-          tmp.$store.commit('switch_usr', '@'+response.data[1].username)
-          tmp.$store.commit('switch_pic', response.data[1].pictureUrl)
+          tmp.$data.user.id = response.data[1].id
+          tmp.$data.user.username = response.data[1].username
+          tmp.$data.user.name = response.data[1].name
+          tmp.$data.user.profilePicture = response.data[1].pictureUrl
         }
         return true
       })

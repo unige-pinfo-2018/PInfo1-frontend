@@ -59,6 +59,14 @@ export default {
   name: 'App',
   data () {
     return {
+      user: [ // information of the current user that's logged in
+        {
+          id: '1',
+          username: '@theogio',
+          name: 'Théo Giovanna',
+          profilePicture: 'http://foundrysocial.com/wp-content/uploads/2016/12/Anonymous-Icon-Round-01.png'
+        }
+      ],
       count: 4,
       icons: ['fa fa-user', 'fa fa-comment', 'fa fa-envelope', 'fa fa-question'],
       list: ['/#/profile', '/#/posts', '/#/', '/#/ask'],
@@ -114,10 +122,10 @@ export default {
       .then(function (response) {
         if (response.data[0] === true) {
           tmp.$data.isAuth = true
-          tmp.$store.commit('switch_id', response.data[1].id)
-          tmp.$store.commit('switch_name', response.data[1].name)
-          tmp.$store.commit('switch_usr', '@'+response.data[1].username)
-          tmp.$store.commit('switch_pic', response.data[1].pictureUrl)
+          tmp.$data.user.id = response.data[1].id
+          tmp.$data.user.username = response.data[1].username
+          tmp.$data.user.name = response.data[1].name
+          tmp.$data.user.profilePicture = response.data[1].pictureUrl
         } else {
           tmp.$data.isAuth = false
         }
@@ -134,10 +142,10 @@ export default {
       .then(function (response) {
         if (response.data[0] === true) {
           tmp.$data.isAuth = true
-          tmp.$store.commit('switch_id', response.data[1].id)
-          tmp.$store.commit('switch_name', response.data[1].name)
-          tmp.$store.commit('switch_usr', '@'+response.data[1].username)
-          tmp.$store.commit('switch_pic', response.data[1].pictureUrl)
+          tmp.$data.user.id = response.data[1].id
+          tmp.$data.user.username = response.data[1].username
+          tmp.$data.user.name = response.data[1].name
+          tmp.$data.user.profilePicture = response.data[1].pictureUrl
         } else {
           tmp.$data.isAuth = false
         }

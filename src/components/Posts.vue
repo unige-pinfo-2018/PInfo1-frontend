@@ -262,10 +262,10 @@ export default {
       ],
       user: [ // information of the current user that's logged in
         {
-          id : this.$store.state.userID,
-          username: this.$store.state.userUSR,
-          name: this.$store.state.userNAME,
-          profilePicture: this.$store.state.userPic
+          id: '1',
+          username: '@theogio',
+          name: 'Théo Giovanna',
+          profilePicture: 'http://foundrysocial.com/wp-content/uploads/2016/12/Anonymous-Icon-Round-01.png'
         }
       ],
       comments: [ // will contain all comments relative to a post
@@ -381,11 +381,10 @@ export default {
       axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
         .then(function (response) {
           if (response.data[0] === true) {
-            console.log(response.data[1])
-            tmp.$store.commit('switch_id', response.data[1].id)
-            tmp.$store.commit('switch_name', response.data[1].name)
-            tmp.$store.commit('switch_usr', '@'+response.data[1].username)
-            tmp.$store.commit('switch_pic', response.data[1].pictureUrl)
+            tmp.$data.user.id = response.data[1].id
+            tmp.$data.user.username = response.data[1].username
+            tmp.$data.user.name = response.data[1].name
+            tmp.$data.user.profilePicture = response.data[1].pictureUrl
             let postID = event.target // Gets which post fired the answer function
               .parentElement.parentElement.parentElement.parentElement
               .parentElement.getAttribute("id")
@@ -497,20 +496,32 @@ export default {
         this.$data.comments.push(comment) // pushing it so it displays
         this.$data.model = {} // reinit the comment box
 
-        axios.put('http://127.0.0.1:18080/post-service/rest/posts/addPost', {
-          "userId": tmp.$data.user[0].id,
-          "content": msg,
-          "parentId": postNumberID
-        })
+        axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
           .then(function (response) {
+            if (response.data[0] === false) {
+              tmp.warning('You must be logged in to access this page')
+              tmp.$router.push('/login')
+            } else {
+              axios.put('http://127.0.0.1:18080/post-service/rest/posts/addPost', {
+                "userId": response.data[1].id,
+                "content": msg,
+                "parentId": postNumberID
+              })
+                .then(function (response) {
+                  return true
+                })
+                .catch(function (error) {
+                  tmp.warning('Could not fetch posts. Database not reachable')
+                  console.log(error.response);
+                  return false
+                });
+            }
             return true
           })
           .catch(function (error) {
-            tmp.warning('Could not fetch posts. Database not reachable')
             console.log(error.response);
             return false
           });
-
       }
     },
 
@@ -608,10 +619,10 @@ export default {
     axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
       .then(function (response) {
         if (response.data[0] === true) {
-          tmp.$store.commit('switch_id', response.data[1].id)
-          tmp.$store.commit('switch_name', response.data[1].name)
-          tmp.$store.commit('switch_usr', '@'+response.data[1].username)
-          tmp.$store.commit('switch_pic', response.data[1].pictureUrl)
+          tmp.$data.user.id = response.data[1].id
+          tmp.$data.user.username = response.data[1].username
+          tmp.$data.user.name = response.data[1].name
+          tmp.$data.user.profilePicture = response.data[1].pictureUrl
           tmp.retrievePosts()
         } else {
           tmp.warning('You must be logged in to access this page')

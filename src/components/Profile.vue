@@ -51,10 +51,10 @@ export default {
           tmp.warning('You must be logged in to access this page')
           tmp.$router.push('/login')
         } else {
-          tmp.$store.commit('switch_id', response.data[1].id)
-          tmp.$store.commit('switch_name', response.data[1].name)
-          tmp.$store.commit('switch_usr', '@'+response.data[1].username)
-          tmp.$store.commit('switch_pic', response.data[1].pictureUrl)
+          tmp.$data.user.id = response.data[1].id
+          tmp.$data.user.username = response.data[1].username
+          tmp.$data.user.name = response.data[1].name
+          tmp.$data.user.profilePicture = response.data[1].pictureUrl
         }
         return true
       })
