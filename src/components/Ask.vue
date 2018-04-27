@@ -300,7 +300,10 @@ export default {
         tmp.warning('Please correct your entries')
       }
     },
-    renderMessage() {
+    renderMessage: async function () {
+      let userLoggedIn = await this.updateUserInfo()
+      this.$data.user = []
+      this.$data.user.push(userLoggedIn)
       let tmp = this
       axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
         .then(function (response) {
@@ -308,10 +311,6 @@ export default {
             tmp.warning('You must be logged in to access this page')
             tmp.$router.push('/login')
           } else {
-            tmp.$data.user.id = response.data[1].id
-            tmp.$data.user.username = response.data[1].username
-            tmp.$data.user.name = response.data[1].name
-            tmp.$data.user.profilePicture = response.data[1].pictureUrl
             tmp.$data.source = tmp.$data.model.message
           }
           return true
@@ -347,6 +346,30 @@ export default {
             .childNodes[tmp.$data.counter - 1].className = "tag " + color + " is-rounded"
         }
       }
+    },
+    updateUserInfo: async function () {
+      let tmp = this
+      let b = []
+      await
+        axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
+          .then(function (response) {
+            if (response.data[0] === true) {
+              b =  {
+                id: response.data[1].id,
+                username: response.data[1].username,
+                name: response.data[1].name,
+                profilePicture: response.data[1].pictureUrl
+              }
+            } else {
+              tmp.warning('You must be logged in to access this page')
+              tmp.$router.push('/login')
+            }
+          })
+          .catch(function (error) {
+            console.log(error.response);
+            return false
+          });
+      return b
     }
   },
   beforeMount() {
@@ -357,11 +380,6 @@ export default {
         if (response.data[0] === false) {
           tmp.warning('You must be logged in to access this page')
           tmp.$router.push('/login')
-        } else {
-          tmp.$data.user.id = response.data[1].id
-          tmp.$data.user.username = response.data[1].username
-          tmp.$data.user.name = response.data[1].name
-          tmp.$data.user.profilePicture = response.data[1].pictureUrl
         }
         return true
       })

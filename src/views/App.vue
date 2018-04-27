@@ -114,7 +114,7 @@ export default {
     },
     isAuthenticated () {
       return this.$data.isAuth
-    }
+    },
   },
   beforeUpdate () {
     let tmp = this
