@@ -193,7 +193,7 @@
                                 v-on:input="handleUpload">
                         <a class="button is-primary">
                           <b-icon icon="upload"></b-icon>
-                          <span>Upload an image</span>
+                          <span>Upload</span>
                         </a>
                       </b-upload>
                     </p>
