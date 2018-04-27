@@ -14,7 +14,10 @@
         <router-view/>
       </div>
     </div>
-    <quick-menu v-show="isAuthenticated()" :menu-count=getCount :icon-class=icons :menu-url-list=list :background-color=backgroundColor :color=color :position=position :is-open-new-tab=getIsOpenNewTab></quick-menu>
+    <b-icon id="notifications" icon="numeric-1-box" size="is-medium"></b-icon>
+    <quick-menu v-show="isAuthenticated()" :menu-count=getCount :icon-class=icons :menu-url-list=list
+                :background-color=backgroundColor :color=color :position=position
+                :is-open-new-tab=getIsOpenNewTab></quick-menu>
 
     <div id="social" class="text-xs-center">
       <button class="button is-outlined is-large is-focused"
@@ -244,5 +247,19 @@ a:hover {
 
 .four:hover ~ hr {
   margin-left: 75%;
+}
+
+#notifications {
+  position: absolute;
+  background-color: orangered;
+  color: whitesmoke;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  bottom: 30px;
+  left: 30px;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
 }
 </style>
