@@ -38,11 +38,19 @@ window.axios = require('axios')
 
 const store = new Vuex.Store({
   state: {
+    userIsLoggedIn: false,
+    user: null,
     backgroundImagePath: require('./assets/bg.jpg')
   },
   mutations: { // possible transformations
     switch_background (state, image) {
       state.backgroundImagePath = image
+    },
+    setLoggedIn (state, isLoggedIn) {
+      state.userIsLoggedIn = isLoggedIn
+    },
+    setUser (state, user) {
+      state.user = user
     }
   }
 })
