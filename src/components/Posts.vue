@@ -189,6 +189,13 @@
                   <div class="field">
                     <p class="control">
                       <button class="button" v-on:click="postComment($event)">Post comment</button>
+                      <b-upload v-model="files"
+                                v-on:input="handleUpload">
+                        <a class="button is-primary">
+                          <b-icon icon="upload"></b-icon>
+                          <span>Upload an image</span>
+                        </a>
+                      </b-upload>
                     </p>
                   </div>
                 </div>
@@ -220,6 +227,7 @@ export default {
   },
   data() {
     return {
+      files: [],
       model: {},
       form: {},
       fields: [
@@ -265,9 +273,42 @@ export default {
     }
   },
   methods: {
+    handleUpload() {
+      console.log('clicked')
+      let tmp = this
+      let promises = []
+      let formData = new FormData();
+      formData.append('image', tmp.$data.files[0])
+      const config = {
+        baseURL: 'https://api.imgur.com',
+        headers: {
+          'Authorization': 'Client-ID ' + '254c66d26ff90cc'
+        }
+      }
+      promises.push(axios.post('/3/image', formData, config))
+      axios.all(promises)
+        .then((result) => {
+          for (let i=0; i<result.length; i++) {
+            tmp.$data.model.message += '![img]('+result[i].data.data.link+')'
+          }
+          tmp.$data.dropFiles = []
+        })
+        .catch((error) => {
+          console.log('image post error')
+          console.log(error)
+        })
+    },
 
-    // TODO: Allow users to upload pictures with Imgur API
-
+    success(text) {
+      this.$dialog.alert({
+        title: 'Success',
+        message: text,
+        type: 'is-success',
+        hasIcon: true,
+        icon: 'check-circle',
+        iconPack: 'fa'
+      })
+    },
     /* Function used to popup a warning with a custom message */
     warning(text) {
       this.$dialog.alert({
