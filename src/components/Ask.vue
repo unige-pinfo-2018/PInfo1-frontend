@@ -23,9 +23,9 @@
       >
       </vue-particles>
       <div id="ask">
-        <div id="askBox" v-on:keyup.enter="switchColor">
+        <div id="askBox" v-on:keyup.enter="switchColor($event)">
           <div class="columns">
-            <div class="column" style="max-width: 100px">
+            <div id="askTags" class="column" style="max-width: 100px">
               <b-taginput class="myTags" style="border-radius: 25px; width: fit-content; border: none; max-height: 400px; top: 14%"
                           v-model="tags" rounded
                           type='color'
@@ -35,8 +35,43 @@
             </div>
             <div class="column">
               <b-field horizontal>
-                <formly-form :form="form" :model="model" :fields="fields" style="border: none"></formly-form>
+                <formly-form :form="form" :model="model" :fields="fields" style="border: none; width: 550px; margin-left: 15%;"></formly-form>
               </b-field>
+            </div>
+            <div class="column">
+              <section>
+                <b-field>
+                  <b-upload v-model="dropFiles"
+                            multiple
+                            drag-drop
+                            style="margin-left: 30%"
+                            v-on:input="handleUpload">
+                    <section class="section">
+                      <div class="content has-text-centered">
+                        <p>
+                          <b-icon
+                            icon="upload"
+                            size="is-large">
+                          </b-icon>
+                        </p>
+                        <p>Drop your files here or click to upload</p>
+                      </div>
+                    </section>
+                  </b-upload>
+                </b-field>
+                <div class="files">
+                  <span v-for="(file, index) in dropFiles"
+                  :key="index"
+                  class="tag is-primary"
+                  style="margin-left: 30%">
+                {{file.name}}
+                    <button class="delete is-small"
+                        type="button"
+                        @click="deleteDropFile(index)">
+                    </button>
+                  </span>
+                </div>
+              </section>
             </div>
           </div>
 
@@ -95,6 +130,7 @@ export default {
   },
   data() {
     return {
+      dropFiles: [],
       user: [ // information of the current user that's logged in
         {
           id : this.$store.state.userID,
@@ -164,6 +200,43 @@ export default {
     }
   },
   methods: {
+    handleUpload() {
+      let tmp = this
+      let files = this.$data.dropFiles;
+      let promises = []
+      if (files.length !== 0) {
+        if (files.length <= 5) {
+          tmp.success('Upload in progress.... Links will automatically appear in your post when it is uploaded')
+          for (let i = 0; i < tmp.$data.dropFiles.length; i++) {
+            let formData = new FormData();
+            formData.append('image', tmp.$data.dropFiles[i])
+            const config = {
+              baseURL: 'https://api.imgur.com',
+              headers: {
+                'Authorization': 'Client-ID ' + '254c66d26ff90cc'
+                }
+              }
+            promises.push(axios.post('/3/image', formData, config))
+          }
+          axios.all(promises)
+            .then((result) => {
+              for (let i=0; i<result.length; i++) {
+                tmp.$data.model.message += '![img]('+result[i].data.data.link+')'
+              }
+              tmp.$data.dropFiles = []
+            })
+            .catch((error) => {
+              console.log('image post error')
+              console.log(error)
+            })
+        } else {
+          tmp.warning('Cannot upload more than 5 files at a time')
+        }
+      }
+    },
+    deleteDropFile(index) {
+      this.dropFiles.splice(index, 1)
+    },
     success(text) {
       this.$dialog.alert({
         title: 'Success',
@@ -182,8 +255,8 @@ export default {
       }
     },
     postMessage: function () {
+      let tmp = this
       if (this.form.$valid) { // Checks that there's something in the text-field area
-        let tmp = this
         let msg = this.$data.model.message // Gets the message
         axios.put('http://127.0.0.1:18080/post-service/rest/posts/addPost', {
           "userId": tmp.$data.user[0].id,
@@ -193,7 +266,7 @@ export default {
             tmp.success('Message successfully created')
             let id = response.data
             if (tmp.$data.tags.length !== 0) {
-              let query = 'http://127.0.0.1:18080:18080/post-service/rest/tags/addTags?postId=' + id
+              let query = 'http://127.0.0.1:18080/post-service/rest/tags/addTags?postId=' + id
               for (let i = 0; i < tmp.$data.tags.length; i++) {
                 query = query + '&names=' + tmp.$data.tags[i]
               }
@@ -250,19 +323,21 @@ export default {
         iconPack: 'fa'
       })
     },
-    switchColor: function () {
-      let tmp = this
-      if (tmp.$data.tags.length !== 0) {
-        /* Makes sure we never have too much tags */
-        tmp.$data.counter = tmp.$data.tags.length
-        /* Picks a random number */
-        let r = Math.floor(Math.random() * Math.floor(4))
-        /* Picks a random color */
-        let color = tmp.$data.colors[r];
-        /* Changes the color of the tag */
-        document.getElementById("askBox").getElementsByClassName("myTags")[0]
-          .getElementsByClassName("taginput-container is-focusable")[0]
-          .childNodes[tmp.$data.counter - 1].className = "tag " + color + " is-rounded"
+    switchColor: function (event) {
+      if (event.target.parentElement.parentElement.parentElement.parentElement.parentElement.getAttribute("id") === "askTags") {
+        let tmp = this
+        if (tmp.$data.tags.length !== 0) {
+          /* Makes sure we never have too much tags */
+          tmp.$data.counter = tmp.$data.tags.length
+          /* Picks a random number */
+          let r = Math.floor(Math.random() * Math.floor(4))
+          /* Picks a random color */
+          let color = tmp.$data.colors[r];
+          /* Changes the color of the tag */
+          document.getElementById("askBox").getElementsByClassName("myTags")[0]
+            .getElementsByClassName("taginput-container is-focusable")[0]
+            .childNodes[tmp.$data.counter - 1].className = "tag " + color + " is-rounded"
+        }
       }
     }
   },
@@ -297,8 +372,8 @@ export default {
   #ask {
     background-color: white;
     border-radius: 25px;
-    width: 900px;
-    left: 25%;
+    width: 1200px;
+    left: 10%;
     top: 25%;
     height: 400px;
     position: fixed;
@@ -307,7 +382,7 @@ export default {
   #askBox {
     margin-top: 7%;
     margin-left: 7%;
-    max-width: 700px;
+    max-width: 1000px;
   }
 
   .modal-mask {

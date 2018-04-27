@@ -71,7 +71,7 @@ export default {
     changePassword: function () {
       let tmp = this
       if (this.form.$valid){ //check if fields are correctly filled
-        axios.post('http://127.0.0.1:18080:18080/users-service/rest/users/reset_password', {
+        axios.post('http://127.0.0.1:18080/users-service/rest/users/reset_password', {
           "email": this.$data.model.email,
           "id": this.$data.model.code,
           "password": this.$data.model.password
