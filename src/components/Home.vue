@@ -310,79 +310,68 @@
         this.$data.isResultVisible = false
       }
     },
-    answer: function (event) {
+    answer: async function (event) {
+      let userLoggedIn = await this.updateUserInfo()
+      this.$data.user = []
+      this.$data.user.push(userLoggedIn)
       let tmp = this
-      axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
-        .then(function (response) {
-          if (response.data[0] === true) {
-            tmp.$data.user.id = response.data[1].id
-            tmp.$data.user.username = response.data[1].username
-            tmp.$data.user.name = response.data[1].name
-            tmp.$data.user.profilePicture = response.data[1].pictureUrl
-            let postID = event.target // Gets which post fired the answer function
-              .parentElement.parentElement.parentElement.parentElement
-              .parentElement.getAttribute("id")
-            let postNumberID = postID.match(/\d/g).join("") // Gets just the number so we can construct an id and get the post
+      let postID = event.target // Gets which post fired the answer function
+        .parentElement.parentElement.parentElement.parentElement
+        .parentElement.getAttribute("id")
+      let postNumberID = postID.match(/\d/g).join("") // Gets just the number so we can construct an id and get the post
 
-            let post
-            for (let i=0; i<this.$data.posts.length; i++) {
-              if (tmp.$data.posts[i].id == postNumberID) { // look for the right post to inject in the answer window
-                post = tmp.$data.posts[i]
+      let post
+      for (let i=0; i<this.$data.posts.length; i++) {
+        if (tmp.$data.posts[i].id == postNumberID) { // look for the right post to inject in the answer window
+          post = tmp.$data.posts[i]
+        }
+      }
+      this.$data.answerTo.push(post) // Pushes it to the answer window
+      if (post.hasComments) {
+        axios.get('http://127.0.0.1:18080/post-service/rest/posts/getCommentsForPost/' + postNumberID.toString())
+          .then(function (response) {
+            let p = response.data
+            let userIdsToQuery = []
+            for (let i = 0; i < p.length; i++) {
+              /* User ids that we will have to retrieve */
+              userIdsToQuery.push(p[i].entity.userId)
+            }
+            /* Now we retrieve the information of the users that commented and we display the posts */
+            axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
+              "ids": userIdsToQuery
+            }).then(function (response) {
+              for (let i = 0; i < response.data.length; i++) {
+                let date = new Date(p[i].entity.datePost)
+                let comment = {
+                  hasComments: false, // because its a comment
+                  id: p[i].entity.id,
+                  text: p[i].entity.content,
+                  profilePicture: response.data[i].pictureUrl,
+                  numberOfComments: 0, // because its a comment
+                  name: response.data[i].name,
+                  username: "@" + response.data[i].username,
+                  date: date.getDay() + '/' + date.getMonth() + '/' + date.getFullYear() + ' - ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
+                }
+                tmp.$data.comments.push(comment)
               }
-            }
-            this.$data.answerTo.push(post) // Pushes it to the answer window
-            if (post.hasComments) {
-              axios.get('http://127.0.0.1:18080/post-service/rest/posts/getCommentsForPost/'+postNumberID.toString())
-                .then(function (response) {
-                  let p = response.data
-                  let userIdsToQuery = []
-                  for (let i=0; i<p.length; i++) {
-                    /* User ids that we will have to retrieve */
-                    userIdsToQuery.push(p[i].entity.userId)
-                  }
-                  /* Now we retrieve the information of the users that commented and we display the posts */
-                  axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
-                    "ids": userIdsToQuery
-                  }).then(function (response) {
-                    for (let i=0; i<response.data.length; i++) {
-                      let date = new Date(p[i].entity.datePost)
-                      let comment = {
-                        hasComments: false, // because its a comment
-                        id: p[i].entity.id,
-                        text: p[i].entity.content,
-                        profilePicture: response.data[i].pictureUrl,
-                        numberOfComments: 0, // because its a comment
-                        name: response.data[i].name,
-                        username: "@"+response.data[i].username,
-                        date: date.getDay() + '/' + date.getMonth() + '/' + date.getFullYear() + ' - ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
-                      }
-                      tmp.$data.comments.push(comment)
-                    }
-                    return true
-                  }).catch(function (error) {
-                    tmp.warning('Could not fetch posts. Database not reachable')
-                    console.log(error.response);
-                    return false
-                  });
-                })
-                .catch(function (error) {
-                  tmp.warning('Could not fetch posts. Database not reachable')
-                  console.log(error.response);
-                  return false
-                });
-            }
-          } else {
-            tmp.warning('You must be logged in to access this page')
-            tmp.$router.push('/login')
-          }
-          return true
-        })
-        .catch(function (error) {
-          console.log(error.response);
-          return false
-        });
+              return true
+            }).catch(function (error) {
+              tmp.warning('Could not fetch posts. Database not reachable')
+              console.log(error.response);
+              return false
+            });
+          })
+          .catch(function (error) {
+            tmp.warning('Could not fetch posts. Database not reachable')
+            console.log(error.response);
+            return false
+          });
+      }
     },
-    postComment: function (event) {
+    postComment: async function (event) {
+      let userLoggedIn = await this.updateUserInfo()
+      this.$data.user = []
+      this.$data.user.push(userLoggedIn)
       if (!this.empty(this.$data.model.message)) { // Checks that there's something in the text-field area
         let tmp = this
         let msg = this.$data.model.message // Gets the message
@@ -532,7 +521,31 @@
             this.$data.isResultVisible = false
           }
         }
-      }
+      },
+    updateUserInfo: async function () {
+      let tmp = this
+      let b = []
+      await
+        axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
+          .then(function (response) {
+            if (response.data[0] === true) {
+              b =  {
+                id: response.data[1].id,
+                username: response.data[1].username,
+                name: response.data[1].name,
+                profilePicture: response.data[1].pictureUrl
+              }
+            } else {
+              tmp.warning('You must be logged in to access this page')
+              tmp.$router.push('/login')
+            }
+          })
+          .catch(function (error) {
+            console.log(error.response);
+            return false
+          });
+      return b
+    }
   },
   data() {
     return {
@@ -570,12 +583,6 @@
       posts: [ // contains all the post displayed on screen
       ],
       user: [ // information of the current user that's logged in
-        {
-          id: '1',
-          username: '@theogio',
-          name: 'Théo Giovanna',
-          profilePicture: 'http://foundrysocial.com/wp-content/uploads/2016/12/Anonymous-Icon-Round-01.png'
-        }
       ],
       comments: [ // will contain all comments relative to a post
       ],
@@ -592,10 +599,6 @@
       axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
         .then(function (response) {
           if (response.data[0] === true) {
-            tmp.$data.user.id = response.data[1].id
-            tmp.$data.user.username = response.data[1].username
-            tmp.$data.user.name = response.data[1].name
-            tmp.$data.user.profilePicture = response.data[1].pictureUrl
             tmp.$data.isAuth = true
           }
           return true
