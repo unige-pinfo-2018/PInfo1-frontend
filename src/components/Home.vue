@@ -224,9 +224,13 @@
 </template>
 
 <script>
+import VueMarkdown from 'vue-markdown'
 /* eslint-disable */
   export default {
   name: 'Home',
+  components: {
+    VueMarkdown
+  },
   created: function () {
     this.$store.commit('switch_background', require('../assets/bg.jpg'))
   },
@@ -330,22 +334,22 @@
       if (post.hasComments) {
         axios.get('http://127.0.0.1:18080/post-service/rest/posts/getCommentsForPost/' + postNumberID.toString())
           .then(function (response) {
-            let p = response.data
+            let p = response.data[0]
             let userIdsToQuery = []
             for (let i = 0; i < p.length; i++) {
               /* User ids that we will have to retrieve */
-              userIdsToQuery.push(p[i].entity.userId)
+              userIdsToQuery.push(p[i].userId)
             }
             /* Now we retrieve the information of the users that commented and we display the posts */
             axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
               "ids": userIdsToQuery
             }).then(function (response) {
               for (let i = 0; i < response.data.length; i++) {
-                let date = new Date(p[i].entity.datePost)
+                let date = new Date(p[i].datePost)
                 let comment = {
                   hasComments: false, // because its a comment
-                  id: p[i].entity.id,
-                  text: p[i].entity.content,
+                  id: p[i].id,
+                  text: p[i].content,
                   profilePicture: response.data[i].pictureUrl,
                   numberOfComments: 0, // because its a comment
                   name: response.data[i].name,
@@ -451,7 +455,7 @@
     search: function () {
       let tmp = this
       let s = document.getElementById('question').value
-      if (!tmp.empty(s) && this.$data.tags.length !== 0) {
+      if (!tmp.empty(s)) {
         s = s.replace(/ /g,"+")
         let query = 'http://127.0.0.1:18080/post-service/rest/posts/searchPost?q='+s+'&n=100'
 
@@ -466,37 +470,53 @@
         axios.get(query)
           .then(function (response) {
             if (response.data.length !== 0) { //then we have results
-              tmp.$data.isResultVisible = true
-              tmp.$data.posts = [] // we remove existing posts
-              for (let i=0; i<response.data[1].length; i++) {
-                nbComments.push(response.data[1][i].length) // we save the number of comments of each post
+              //console.log(response.data.length)
+              let query = "?id="+response.data[0]
+              if (response.data.length > 1) {
+                for (let i=1; i<response.data.length; i++) {
+                  query = query + '&id='+response.data[i]
+                }
               }
-              /* We store temporarily the contents of the posts */
-              for (let i=response.data[0].length-1; i>=0; i--) {
-                datePost.push(new Date(response.data[0][i].datePost))
-                idPost.push(response.data[0][i].id)
-                textPost.push(response.data[0][i].content)
-                userIdsToQuery.push(response.data[0][i].userId)
-              }
-              /* Now we query the informations of the users that created the posts */
-              axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
-                "ids": userIdsToQuery
-              })
+              console.log(query)
+              axios.get('http://127.0.0.1:18080/post-service/rest/posts/posts_and_comments_by_ids/'+query)
                 .then(function (response) {
-                  for (let i=0; i<response.data.length; i++) {
-                    let post = {
-                      hasComments: nbComments[i] > 0 ? true : false, // just so it displays the comment accordingly to the number of comments of a post
-                      id: idPost[i],
-                      text: textPost[i],
-                      profilePicture: response.data[i].pictureUrl,
-                      numberOfComments: nbComments[i],
-                      name: response.data[i].name,
-                      username: "@"+response.data[i].username,
-                      date: datePost[i].getDay() + '/' + datePost[i].getMonth() + '/' + datePost[i].getFullYear() + ' - ' + datePost[i].getHours() + ':' + datePost[i].getMinutes() + ':' + datePost[i].getSeconds()
-                    }
-                    tmp.$data.posts.push(post) // pushing the data so they display
+                  console.log(response)
+                  for (let i=0; i<response.data[0].length; i++) {
+                    nbComments.push(response.data[1][i].length)
+                    idPost.push(response.data[0][i].id)
+                    textPost.push(response.data[0][i].content)
+                    datePost.push(response.data[0][i].datePost)
+                    userIdsToQuery.push(response.data[0][i].userId)
                   }
-                  return true
+                  axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
+                    "ids": userIdsToQuery
+                  })
+                    .then(function (response) {
+                      console.log(response)
+                      tmp.$data.isResultVisible = true
+                      tmp.$data.posts = [] // we remove existing posts
+                      for (let i=0; i<response.data.length; i++) {
+                        //console.log(datePost[i])
+                        let date = new Date(datePost[i])
+                        let post = {
+                          hasComments: nbComments[i] > 0 ? true : false, // just so it displays the comment accordingly to the number of comments of a post
+                          id: idPost[i],
+                          text: textPost[i],
+                          profilePicture: response.data[i].pictureUrl,
+                          numberOfComments: nbComments[i],
+                          name: response.data[i].name,
+                          username: "@"+response.data[i].username,
+                          date: date.getDay() + '/' + date.getMonth() + '/' + date.getFullYear() + ' - ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
+                        }
+                        tmp.$data.posts.push(post) // pushing the data so they display
+                      }
+                      return true
+                    })
+                    .catch(function (error) {
+                      tmp.warning('Could not fetch posts. Database not reachable')
+                      console.log(error.response);
+                      return false
+                    });
                 })
                 .catch(function (error) {
                   tmp.warning('Could not fetch posts. Database not reachable')
@@ -509,13 +529,13 @@
             return true
           })
           .catch(function (error) {
-            tmp.warning('Could not connect to database')
+            tmp.warning('No results match your query')
             console.log(error.response);
             return false
           });
         } else { // if the tags that we provided do not match any post, we don't do anything
           if (this.$data.tags.length !== 0) {
-            tmp.updateSearch()
+            //tmp.updateSearch()
           } else {
             tmp.$data.posts = []
             this.$data.isResultVisible = false
