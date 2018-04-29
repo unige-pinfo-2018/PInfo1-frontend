@@ -481,7 +481,7 @@ import VueMarkdown from 'vue-markdown'
               axios.get('http://127.0.0.1:18080/post-service/rest/posts/posts_and_comments_by_ids/'+query)
                 .then(function (response) {
                   console.log(response)
-                  for (let i=0; i<response.data[0].length; i++) {
+                  for (let i=response.data[0].length - 1 ; i>=0; i--) {
                     nbComments.push(response.data[1][i].length)
                     idPost.push(response.data[0][i].id)
                     textPost.push(response.data[0][i].content)
