@@ -12,6 +12,15 @@
             <br>
             <span style="font-size: 0.8rem;">Created: {{ notification.dateCreated }}</span>
           </p>
+          <p  id="load-more" ref="loadButton" v-on:click="loadMore">
+            <b-icon
+              v-if="loading"
+              pack="fa"
+              icon="refresh"
+              custom-class="fa-spin">
+            </b-icon>
+            <span v-if="!loading">{{ loadMoreStr }}</span>
+          </p>
         </div>
       </div>
       <b-icon id="notifications" @click.native="markAllAsRead" v-bind:icon="getNotificationIcon()" slot="trigger"
@@ -39,11 +48,36 @@ export default {
     return {
       userNotifications: [],
       notificationSocket: null,
-      read: false
+      read: false,
+      lastNotificationIndex: 0,
+      loadMoreStr: 'Load more..',
+      loading: false
     }
   },
   methods: {
-    updateNotifications (socket) {
+    loadMore () {
+      this.$data.loading = true
+      let startIndex = this.$data.lastNotificationIndex + 1
+      let endIndex = startIndex + 5
+      let socket = this.$data.notificationSocket
+      let self = this
+      socket.send(JSON.stringify({
+        messageType: 'GET',
+        body: 'range ' + startIndex + '-' + endIndex
+      }))
+      socket.onmessage = function (event) {
+        if (event.data != null && JSON.parse(event.data).length > 0) {
+          let newNotifications = JSON.parse(event.data)
+          self.$data.lastNotificationIndex += newNotifications.length
+          self.$data.userNotifications = self.$data.userNotifications.concat(newNotifications)
+        } else {
+          self.$refs.loadButton.style.cursor = 'default'
+          self.$data.loadMoreStr = 'No more notifications to show'
+        }
+        self.$data.loading = false
+      }
+    },
+    getLastNotifications (socket) {
       let self = this
       socket.send(JSON.stringify({
         messageType: 'GET',
@@ -51,6 +85,7 @@ export default {
       }))
       socket.onmessage = function (event) {
         self.$data.userNotifications = JSON.parse(event.data)
+        self.$data.lastNotificationIndex = self.$data.userNotifications.length - 1
       }
     },
     getUnreadNotificationsCount () {
@@ -79,7 +114,7 @@ export default {
           }))
         }
         this.$data.read = true
-        this.updateNotifications(notificationSocket)
+        this.getLastNotifications(notificationSocket)
       }
     }
   },
@@ -112,7 +147,7 @@ export default {
       let notificationSocket = this.$data.notificationSocket
       let self = this
       notificationSocket.onopen = function (event) {
-        self.updateNotifications(notificationSocket)
+        self.getLastNotifications(notificationSocket)
       }
     }
   }
@@ -132,6 +167,7 @@ export default {
     width: 60px;
     height: 60px;
     cursor: pointer;
+    z-index: 9999;
   }
 
   #notification-center {
@@ -147,7 +183,7 @@ export default {
     -moz-border-radius: 20px;
     border-radius: 2px;
     padding: 10px;
-    max-width: 40%;
+    max-width: 60%;
   }
 
   #notification-center .content hr {
@@ -162,6 +198,13 @@ export default {
     color: dimgray;
     font-size: 1.2em;
     margin-bottom: 0;
+  }
+
+  #load-more {
+    text-align: center;
+    cursor: pointer;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
   }
 
   .notification {
