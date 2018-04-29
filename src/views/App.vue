@@ -119,11 +119,13 @@ export default {
     axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
       .then(function (response) {
         if (response.data[0] === true) {
+          tmp.$store.commit('setLoggedIn', true)
           tmp.$data.isAuth = true
           tmp.$data.user.id = response.data[1].id
           tmp.$data.user.username = response.data[1].username
           tmp.$data.user.name = response.data[1].name
           tmp.$data.user.profilePicture = response.data[1].pictureUrl
+          tmp.$store.commit('setUser', tmp.$data.user)
         } else {
           tmp.$data.isAuth = false
         }

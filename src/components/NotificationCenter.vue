@@ -6,56 +6,114 @@
         <div class="content">
           <h3 id="notification-center-header">Inbox</h3>
           <hr>
-          <p class="notification">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-          </p>
-          <p class="notification">
-            Nulla accumsan, metus ultrices eleifend gravida, nulla nunc varius lectus, nec rutrum justo nibh eu lectus.
-
-          </p>
-          <p class="notification">
-            Ut vulputate semper dui. Fusce erat odio, sollicitudin vel erat vel, interdum mattis neque.
-          </p>
-          <p class="notification">
-            Ut vulputate semper dui. Fusce erat odio, sollicitudin vel erat vel, interdum mattis neque.
-          </p>
-          <p class="notification">
-            Ut vulputate semper dui. Fusce erat odio, sollicitudin vel erat vel, interdum mattis neque.
-          </p>
-          <p class="notification">
-            Ut vulputate semper dui. Fusce erat odio, sollicitudin vel erat vel, interdum mattis neque.
+          <p class="notification" v-bind:key="notification.id"
+             v-for="notification in userNotifications">
+            {{ notification.content }}
+            <br>
+            <span style="font-size: 0.8rem;">Created: {{ notification.dateCreated }}</span>
           </p>
         </div>
       </div>
-      <b-icon id="notifications" v-bind:icon="getNotificationIcon()" slot="trigger" size="is-medium"></b-icon>
+      <b-icon id="notifications" @click.native="markAllAsRead" v-bind:icon="getNotificationIcon()" slot="trigger"
+              size="is-medium" v-bind:class="{ unread : getUnreadNotificationsCount() > 0 }"></b-icon>
     </b-collapse>
 
   </section>
 </template>
 
 <script>
-import Vue from 'vue'
-import VueWebsocket from 'vue-websocket'
+// import * as axios from 'axios'
 
-function getNbrNotifications () {
-  return 3
-}
+/* function getWebsocketSessionId (callback) {
+  axios.get('http://127.0.0.1:18080/notifications-service/rest/authenticator/getSessionId', {
+    withCredentials: true
+  }).then(function (response) {
+    let wsSessionId = response.data
+    callback(wsSessionId)
+  })
+} */
 
 export default {
   name: 'NotificationCenter',
+  data () {
+    return {
+      userNotifications: [],
+      notificationSocket: null,
+      read: false
+    }
+  },
   methods: {
+    updateNotifications (socket) {
+      let self = this
+      socket.send(JSON.stringify({
+        messageType: 'GET',
+        body: 'last'
+      }))
+      socket.onmessage = function (event) {
+        self.$data.userNotifications = JSON.parse(event.data)
+      }
+    },
+    getUnreadNotificationsCount () {
+      let nbrUnreadNotifications = 0
+      let notifications = this.$data.userNotifications
+      for (let i = 0; i < notifications.length; i++) {
+        if (!notifications[i].isRead) {
+          nbrUnreadNotifications++
+        }
+      }
+      return nbrUnreadNotifications
+    },
     getNotificationIcon () {
-      let nbrNotifs = getNbrNotifications()
-      if (nbrNotifs > 9) { return 'numeric-9-plus-box' }
-      return 'numeric-' + nbrNotifs + '-box'
+      let nbrUnreadNotifications = this.getUnreadNotificationsCount()
+      if (nbrUnreadNotifications > 9) { return 'numeric-9-plus-box' }
+      return 'numeric-' + nbrUnreadNotifications + '-box'
+    },
+    markAllAsRead: function (event) {
+      if (!this.$data.read) {
+        let notificationSocket = this.$data.notificationSocket
+        if (this.$store.state.userIsLoggedIn && (notificationSocket != null) &&
+          (notificationSocket.readyState === notificationSocket.OPEN)) {
+          notificationSocket.send(JSON.stringify({
+            messageType: 'UPDATE',
+            body: 'read'
+          }))
+        }
+        this.$data.read = true
+        this.updateNotifications(notificationSocket)
+      }
     }
   },
   created: function () {
-    if (this.$store.state.userIsLoggedIn) {
-      console.log(this.$store.state.user.username)
-      Vue.use(VueWebsocket, 'ws://127.0.0.1:18080/notifications/' + this.$store.state.user.username, {
-        reconnection: false
+    /* if (this.$store.state.userIsLoggedIn && this.$store.state.user != null) {
+      getWebsocketSessionId((sessionId) => {
+        const notificationSocket = new WebSocket('ws://127.0.0.1:18080/notifications-service/notifications/' +
+          this.$store.state.user.username + '/' + sessionId)
+        notificationSocket.onopen = function (event) {
+          console.log('sending message')
+          notificationSocket.send(JSON.stringify({
+            messageType: 'GET',
+            body: 'last'
+            messageType: 'CREATE',
+            body: JSON.stringify({
+              recipient: 'arthurdeschamps',
+              content: 'Hello there'
+            })
+          }))
+        }
+        notificationSocket.onmessage = function (event) {
+          console.log('receiving message')
+          console.log(event.data)
+        }
       })
+    } */
+    if (this.$store.state.userIsLoggedIn && this.$store.state.user != null) {
+      this.$data.notificationSocket = new WebSocket('ws://127.0.0.1:18080/notifications-service/notifications/' +
+        this.$store.state.user.username + '/dooedke')
+      let notificationSocket = this.$data.notificationSocket
+      let self = this
+      notificationSocket.onopen = function (event) {
+        self.updateNotifications(notificationSocket)
+      }
     }
   }
 }
@@ -64,7 +122,7 @@ export default {
 <style scoped>
   #notifications {
     position: absolute;
-    background-color: orangered;
+    background-color: gray;
     color: whitesmoke;
     -webkit-border-radius: 50%;
     -moz-border-radius: 50%;
@@ -109,5 +167,9 @@ export default {
   .notification {
     border-bottom: 1px solid gray;
     margin-bottom: 5px !important;
+  }
+
+  .unread {
+    background-color: orangered !important;
   }
 </style>
