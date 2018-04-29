@@ -389,22 +389,22 @@ export default {
       if (post.hasComments) {
         axios.get('http://127.0.0.1:18080/post-service/rest/posts/getCommentsForPost/'+postNumberID.toString())
           .then(function (response) {
-            let p = response.data
+            let p = response.data[0]
             let userIdsToQuery = []
             for (let i=0; i<p.length; i++) {
               /* User ids that we will have to retrieve */
-              userIdsToQuery.push(p[i].entity.userId)
+              userIdsToQuery.push(p[i].userId)
             }
             /* Now we retrieve the information of the users that commented and we display the posts */
             axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
               "ids": userIdsToQuery
             }).then(function (response) {
               for (let i=0; i<response.data.length; i++) {
-                let date = new Date(p[i].entity.datePost)
+                let date = new Date(p[i].datePost)
                 let comment = {
                   hasComments: false, // because its a comment
-                  id: p[i].entity.id,
-                  text: p[i].entity.content,
+                  id: p[i].id,
+                  text: p[i].content,
                   profilePicture: response.data[i].pictureUrl,
                   numberOfComments: 0, // because its a comment
                   name: response.data[i].name,
