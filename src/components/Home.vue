@@ -268,9 +268,19 @@ import VueMarkdown from 'vue-markdown'
               "postId": postID
             })
             .then(function (response) {
-              //if successfull, we update the post
-              post.vote += 1
-              post.colorUpVote = "#ff9100"
+              axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+tmp.$data.user[0].id, {
+                "idPosts": [post.id]
+              })
+                .then(function (response) {
+                  post.vote = response.data[0][0]
+                  post.colorUpVote = "#ff9100"
+                  return true
+                })
+                .catch(function (error) {
+                  tmp.warning('Could not fetch posts. Database not reachable')
+                  console.log(error.response);
+                  return false
+                });
               return true
             })
             .catch(function (error) {
@@ -285,9 +295,19 @@ import VueMarkdown from 'vue-markdown'
                 "postId": postID
               })
               .then(function (response) {
-                //if successfull, we update the post
-                post.vote -= 1
-                post.colorUpVote = "#dddddd"
+                axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+tmp.$data.user[0].id, {
+                  "idPosts": [post.id]
+                })
+                  .then(function (response) {
+                    post.vote = response.data[0][0]
+                    post.colorUpVote = "#dddddd"
+                    return true
+                  })
+                  .catch(function (error) {
+                    tmp.warning('Could not fetch posts. Database not reachable')
+                    console.log(error.response);
+                    return false
+                  });
                 return true
               })
               .catch(function (error) {
@@ -306,9 +326,19 @@ import VueMarkdown from 'vue-markdown'
               "postId": postID
             })
             .then(function (response) {
-              //if successfull, we update the post
-              post.vote -= 1
-              post.colorDownVote = "#ff9100"
+              axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+tmp.$data.user[0].id, {
+                "idPosts": [post.id]
+              })
+                .then(function (response) {
+                  post.vote = response.data[0][0]
+                  post.colorDownVote = "#ff9100"
+                  return true
+                })
+                .catch(function (error) {
+                  tmp.warning('Could not fetch posts. Database not reachable')
+                  console.log(error.response);
+                  return false
+                });
               return true
             })
             .catch(function (error) {
@@ -323,9 +353,19 @@ import VueMarkdown from 'vue-markdown'
                 "postId": postID
               })
               .then(function (response) {
-                //if successfull, we update the post
-                post.vote += 1
-                post.colorDownVote = "#dddddd"
+                axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+tmp.$data.user[0].id, {
+                  "idPosts": [post.id]
+                })
+                  .then(function (response) {
+                    post.vote = response.data[0][0]
+                    post.colorDownVote = "#dddddd"
+                    return true
+                  })
+                  .catch(function (error) {
+                    tmp.warning('Could not fetch posts. Database not reachable')
+                    console.log(error.response);
+                    return false
+                  });
                 return true
               })
               .catch(function (error) {
