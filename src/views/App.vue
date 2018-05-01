@@ -14,7 +14,10 @@
         <router-view/>
       </div>
     </div>
-    <quick-menu v-show="isAuthenticated()" :menu-count=getCount :icon-class=icons :menu-url-list=list :background-color=backgroundColor :color=color :position=position :is-open-new-tab=getIsOpenNewTab></quick-menu>
+    <notification-center v-if="isAuthenticated()"></notification-center>
+    <quick-menu v-show="isAuthenticated()" :menu-count=getCount :icon-class=icons :menu-url-list=list
+                :background-color=backgroundColor :color=color :position=position
+                :is-open-new-tab=getIsOpenNewTab></quick-menu>
 
     <div id="social" class="text-xs-center">
       <button class="button is-outlined is-large is-focused"
@@ -54,19 +57,14 @@
 /* eslint-disable */
 import Vue from 'vue'
 import quickMenu from 'vue-quick-menu'
+import NotificationCenter from '../components/NotificationCenter'
 Vue.component(quickMenu.name, quickMenu)
 export default {
   name: 'App',
+  components: {NotificationCenter},
   data () {
     return {
-      user: [ // information of the current user that's logged in
-        {
-          id: '1',
-          username: '@theogio',
-          name: 'Théo Giovanna',
-          profilePicture: 'http://foundrysocial.com/wp-content/uploads/2016/12/Anonymous-Icon-Round-01.png'
-        }
-      ],
+      user: [],
       count: 4,
       icons: ['fa fa-user', 'fa fa-comment', 'fa fa-envelope', 'fa fa-question'],
       list: ['/#/profile', '/#/posts', '/#/', '/#/ask'],
@@ -114,18 +112,20 @@ export default {
     },
     isAuthenticated () {
       return this.$data.isAuth
-    },
+    }
   },
   beforeUpdate () {
     let tmp = this
     axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
       .then(function (response) {
         if (response.data[0] === true) {
+          tmp.$store.commit('setLoggedIn', true)
           tmp.$data.isAuth = true
           tmp.$data.user.id = response.data[1].id
           tmp.$data.user.username = response.data[1].username
           tmp.$data.user.name = response.data[1].name
           tmp.$data.user.profilePicture = response.data[1].pictureUrl
+          tmp.$store.commit('setUser', tmp.$data.user)
         } else {
           tmp.$data.isAuth = false
         }
@@ -141,13 +141,16 @@ export default {
     axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
       .then(function (response) {
         if (response.data[0] === true) {
+          tmp.$store.commit('setLoggedIn', true)
           tmp.$data.isAuth = true
           tmp.$data.user.id = response.data[1].id
           tmp.$data.user.username = response.data[1].username
           tmp.$data.user.name = response.data[1].name
           tmp.$data.user.profilePicture = response.data[1].pictureUrl
+          tmp.$store.commit('setUser', tmp.$data.user)
         } else {
           tmp.$data.isAuth = false
+          tmp.$store.commit('setLoggedIn', false)
         }
         return true
       })
