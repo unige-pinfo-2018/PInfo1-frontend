@@ -16,7 +16,7 @@ before_deploy:
 deploy:
   provider: script
   skip_cleanup: true
-  script: ssh martijs0@129.194.69.128 rm -f /opt/docker-frontend-deploy/* && scp dist/*
+  script: ssh martijs0@129.194.69.128 rm -f /opt/docker-frontend-deploy/* && scp -r dist/*
     martijs0@129.194.69.128:/opt/docker-frontend-deploy/
   on:
     branch: master
