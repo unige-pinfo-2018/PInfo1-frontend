@@ -679,7 +679,7 @@ import VueMarkdown from 'vue-markdown'
                           return true
                         })
                         .catch(function (error) {
-                          tmp.warning('martin pu la merde')
+                          tmp.warning('Could not fetch posts. Database not reachable')
                           console.log(error.response);
                           return false
                         });
