@@ -780,9 +780,6 @@ import VueMarkdown from 'vue-markdown'
       comments: [ // will contain all comments relative to a post
       ],
       nbTotalPosts: 0, // total number of posts that are stored in the DB
-      from: 1, // where it starts fetching posts
-      to: 5, // where it stops fetching posts
-      offset: 0, // to control the from and to requests
       isVisibleLoadMore: false, // controls the visibility of the load more button
       isAuth: false
     }

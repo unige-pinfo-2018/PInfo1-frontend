@@ -66,7 +66,7 @@ export default {
     return {
       user: [],
       count: 4,
-      icons: ['fa fa-user', 'fa fa-comment', 'fa fa-envelope', 'fa fa-question'],
+      icons: ['fa fa-user', 'fa fa-comment', 'fa fa-search', 'fa fa-question'],
       list: ['/#/profile', '/#/posts', '/#/', '/#/ask'],
       backgroundColor: '#2196F3',
       color: '#ffffff',
