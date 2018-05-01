@@ -311,7 +311,7 @@ export default {
             });
         } else {
           if (post.colorDownVote != "#ff9100") {
-            axios.put('http://127.0.0.1:18080/post-service/rest/dislikes/addDislike',
+            axios.put('http://127.0.0.1:18080/post-service/rest/likes/addLike',
               {
                 "userId": tmp.$data.user[0].id,
                 "postId": postID
@@ -349,7 +349,7 @@ export default {
             });
         } else {
           if (post.colorUpVote != "#ff9100") {
-            axios.put('http://127.0.0.1:18080/post-service/rest/likes/addLike',
+            axios.put('http://127.0.0.1:18080/post-service/rest/dislikes/addDislike',
               {
                 "userId": tmp.$data.user[0].id,
                 "postId": postID
@@ -417,7 +417,10 @@ export default {
     },
 
     /* Retrieves posts from the DB. This function is called as soon as the component is mounted */
-    retrievePosts: function () {
+    retrievePosts: async function () {
+      let userLoggedIn = await this.updateUserInfo()
+      this.$data.user = []
+      this.$data.user.push(userLoggedIn)
       let tmp = this
       let idPost = [], textPost = [], datePost = [], userIdsToQuery = [], nbComments = []
       let profilePictures = [], names = [], usernames = []
@@ -442,12 +445,12 @@ export default {
                   names.push(response.data[i].name)
                   usernames.push(response.data[i].username)
                 }
-                axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids', {
+                axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+tmp.$data.user[0].id, {
                   "idPosts": idPost
                 })
                   .then(function (response) {
-                    console.log(response.data)
-                    for (let i=0; i<response.data.length; i++) {
+                    console.log(response.data[1][0].like)
+                    for (let i=0; i<response.data[0].length; i++) {
                       let post = {
                         hasComments: nbComments[i] > 0 ? true : false, // just so it displays the comment accordingly to the number of comments of a post
                         id: idPost[i],
@@ -457,11 +460,9 @@ export default {
                         name: names[i],
                         username: "@"+usernames[i],
                         date: datePost[i].getDay() + '/' + datePost[i].getMonth() + '/' + datePost[i].getFullYear() + ' - ' + datePost[i].getHours() + ':' + datePost[i].getMinutes() + ':' + datePost[i].getSeconds(),
-                        colorUpVote: "#dddddd",
-                        colorDownVote: "#dddddd",
-                        showUpVote: true,
-                        showDownVote: true,
-                        vote: response.data[i]
+                        colorUpVote: response.data[1][i].like == false ? "#dddddd" : "#ff9100",
+                        colorDownVote: response.data[1][i].dislike == false ? "#dddddd" : "#ff9100",
+                        vote: response.data[0][i]
                       }
                       tmp.$data.posts.push(post) // pushing the data so they display
                     }
@@ -531,11 +532,11 @@ export default {
                 names.push(response.data[i].name)
                 usernames.push(response.data[i].username)
               }
-              axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids', {
+              axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+tmp.$data.user[0].id, {
                 "idPosts": postIdsToQuery
               })
                 .then(function (response) {
-                  for (let i=0; i<response.data.length; i++) {
+                  for (let i=0; i<response.data[0].length; i++) {
                     let date = new Date(datePost[i])
                     let comment = {
                       hasComments: false, // just so it displays the comment accordingly to the number of comments of a post
@@ -546,9 +547,9 @@ export default {
                       name: names[i],
                       username: "@"+usernames[i],
                       date: date.getDay() + '/' + date.getMonth() + '/' + date.getFullYear() + ' - ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds(),
-                      colorUpVote: "#dddddd",
-                      colorDownVote: "#dddddd",
-                      vote: response.data[i]
+                      colorUpVote: response.data[1][i].like == false ? "#dddddd" : "#ff9100",
+                      colorDownVote: response.data[1][i].dislike == false ? "#dddddd" : "#ff9100",
+                      vote: response.data[0][i]
                     }
                     tmp.$data.comments.push(comment) // pushing the data so they display
                   }
@@ -674,7 +675,10 @@ export default {
     },
 
     /* This function is triggered when a user input tags when looking at all posts */
-    updateSearch: function () {
+    updateSearch: async function () {
+      let userLoggedIn = await this.updateUserInfo()
+      this.$data.user = []
+      this.$data.user.push(userLoggedIn)
       let tmp = this
       let tags = ""
       /* First we construct a string that will be used in the request to the server */
@@ -713,12 +717,12 @@ export default {
                     names.push(response.data[i].name)
                     usernames.push(response.data[i].username)
                   }
-                  axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids', {
+                  axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+tmp.$data.user[0].id, {
                     "idPosts": idPost
                   })
                     .then(function (response) {
-                      console.log(response.data)
-                      for (let i=0; i<response.data.length; i++) {
+                      console.log(response.data[1][0].like)
+                      for (let i=0; i<response.data[0].length; i++) {
                         let post = {
                           hasComments: nbComments[i] > 0 ? true : false, // just so it displays the comment accordingly to the number of comments of a post
                           id: idPost[i],
@@ -728,9 +732,9 @@ export default {
                           name: names[i],
                           username: "@"+usernames[i],
                           date: datePost[i].getDay() + '/' + datePost[i].getMonth() + '/' + datePost[i].getFullYear() + ' - ' + datePost[i].getHours() + ':' + datePost[i].getMinutes() + ':' + datePost[i].getSeconds(),
-                          colorUpVote: "#dddddd",
-                          colorDownVote: "#dddddd",
-                          vote: response.data[i]
+                          colorUpVote: response.data[1][i].like == false ? "#dddddd" : "#ff9100",
+                          colorDownVote: response.data[1][i].dislike == false ? "#dddddd" : "#ff9100",
+                          vote: response.data[0][i]
                         }
                         tmp.$data.posts.push(post) // pushing the data so they display
                       }

@@ -279,7 +279,7 @@ import VueMarkdown from 'vue-markdown'
             });
         } else {
           if (post.colorDownVote != "#ff9100") {
-            axios.put('http://127.0.0.1:18080/post-service/rest/dislikes/addDislike',
+            axios.put('http://127.0.0.1:18080/post-service/rest/likes/addLike',
               {
                 "userId": tmp.$data.user[0].id,
                 "postId": postID
@@ -317,7 +317,7 @@ import VueMarkdown from 'vue-markdown'
             });
         } else {
           if (post.colorUpVote != "#ff9100") {
-            axios.put('http://127.0.0.1:18080/post-service/rest/likes/addLike',
+            axios.put('http://127.0.0.1:18080/post-service/rest/dislikes/addDislike',
               {
                 "userId": tmp.$data.user[0].id,
                 "postId": postID
@@ -386,11 +386,12 @@ import VueMarkdown from 'vue-markdown'
                     names.push(response.data[i].name)
                     usernames.push(response.data[i].username)
                   }
-                  axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids', {
+                  axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+tmp.$data.user[0].id, {
                     "idPosts": idPost
                   })
                     .then(function (response) {
-                      for (let i=0; i<response.data.length; i++) {
+                      console.log(response.data[1][0].like)
+                      for (let i=0; i<response.data[0].length; i++) {
                         let post = {
                           hasComments: nbComments[i] > 0 ? true : false, // just so it displays the comment accordingly to the number of comments of a post
                           id: idPost[i],
@@ -400,9 +401,9 @@ import VueMarkdown from 'vue-markdown'
                           name: names[i],
                           username: "@"+usernames[i],
                           date: datePost[i].getDay() + '/' + datePost[i].getMonth() + '/' + datePost[i].getFullYear() + ' - ' + datePost[i].getHours() + ':' + datePost[i].getMinutes() + ':' + datePost[i].getSeconds(),
-                          colorUpVote: "#dddddd",
-                          colorDownVote: "#dddddd",
-                          vote: response.data[i]
+                          colorUpVote: response.data[1][i].like == false ? "#dddddd" : "#ff9100",
+                          colorDownVote: response.data[1][i].dislike == false ? "#dddddd" : "#ff9100",
+                          vote: response.data[0][i]
                         }
                         tmp.$data.posts.push(post) // pushing the data so they display
                       }
@@ -473,11 +474,11 @@ import VueMarkdown from 'vue-markdown'
                 names.push(response.data[i].name)
                 usernames.push(response.data[i].username)
               }
-              axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids', {
+              axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+tmp.$data.user[0].id, {
                 "idPosts": postIdsToQuery
               })
                 .then(function (response) {
-                  for (let i=0; i<response.data.length; i++) {
+                  for (let i=0; i<response.data[0].length; i++) {
                     let date = new Date(datePost[i])
                     let comment = {
                       hasComments: false, // just so it displays the comment accordingly to the number of comments of a post
@@ -488,9 +489,9 @@ import VueMarkdown from 'vue-markdown'
                       name: names[i],
                       username: "@"+usernames[i],
                       date: date.getDay() + '/' + date.getMonth() + '/' + date.getFullYear() + ' - ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds(),
-                      colorUpVote: "#dddddd",
-                      colorDownVote: "#dddddd",
-                      vote: response.data[i]
+                      colorUpVote: response.data[1][i].like == false ? "#dddddd" : "#ff9100",
+                      colorDownVote: response.data[1][i].dislike == false ? "#dddddd" : "#ff9100",
+                      vote: response.data[0][i]
                     }
                     tmp.$data.comments.push(comment) // pushing the data so they display
                   }
@@ -610,7 +611,10 @@ import VueMarkdown from 'vue-markdown'
         }
       }
     },
-    search: function () {
+    search: async function () {
+      let userLoggedIn = await this.updateUserInfo()
+      this.$data.user = []
+      this.$data.user.push(userLoggedIn)
       let tmp = this
       let s = document.getElementById('question').value
       if (!tmp.empty(s)) {
@@ -656,11 +660,12 @@ import VueMarkdown from 'vue-markdown'
                         names.push(response.data[i].name)
                         usernames.push(response.data[i].username)
                       }
-                      axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids', {
+                      axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+tmp.$data.user[0].id, {
                         "idPosts": idPost
                       })
                         .then(function (response) {
-                          for (let i=0; i<response.data.length; i++) {
+                          console.log(response.data[1][0].like)
+                          for (let i=0; i<response.data[0].length; i++) {
                             let post = {
                               hasComments: nbComments[i] > 0 ? true : false, // just so it displays the comment accordingly to the number of comments of a post
                               id: idPost[i],
@@ -670,9 +675,9 @@ import VueMarkdown from 'vue-markdown'
                               name: names[i],
                               username: "@"+usernames[i],
                               date: datePost[i].getDay() + '/' + datePost[i].getMonth() + '/' + datePost[i].getFullYear() + ' - ' + datePost[i].getHours() + ':' + datePost[i].getMinutes() + ':' + datePost[i].getSeconds(),
-                              colorUpVote: "#dddddd",
-                              colorDownVote: "#dddddd",
-                              vote: response.data[i]
+                              colorUpVote: response.data[1][i].like == false ? "#dddddd" : "#ff9100",
+                              colorDownVote: response.data[1][i].dislike == false ? "#dddddd" : "#ff9100",
+                              vote: response.data[0][i]
                             }
                             tmp.$data.posts.push(post) // pushing the data so they display
                           }
