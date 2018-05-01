@@ -386,7 +386,10 @@ import VueMarkdown from 'vue-markdown'
         iconPack: 'fa'
       })
     },
-    updateSearch: function () {
+    updateSearch: async function () {
+      let userLoggedIn = await this.updateUserInfo()
+      this.$data.user = []
+      this.$data.user.push(userLoggedIn)
       let tmp = this
       let tags = ""
       /* First we construct a string that will be used in the request to the server */
@@ -578,21 +581,6 @@ import VueMarkdown from 'vue-markdown'
           post.hasComments = true
         }
         post.numberOfComments ++
-        let comment = { // creating the comment
-          hasComments: false, // a comment cannot have comments
-          id: "comment"+(id).toString(),
-          text: msg,
-          profilePicture: tmp.$data.user[0].profilePicture,
-          name: tmp.$data.user[0].name,
-          username: "@"+tmp.$data.user[0].username,
-          date: "now",
-          colorUpVote: "#dddddd",
-          colorDownVote: "#dddddd",
-          vote: 0
-        }
-        this.$data.comments.push(comment) // pushing it so it displays
-        this.$data.model = {} // reinit the comment box
-
         axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
           .then(function (response) {
             if (response.data[0] === false) {
@@ -605,6 +593,20 @@ import VueMarkdown from 'vue-markdown'
                 "parentId": postNumberID
               })
                 .then(function (response) {
+                  let comment = { // creating the comment
+                    hasComments: false, // a comment cannot have comments
+                    id: response.data,
+                    text: msg,
+                    profilePicture: tmp.$data.user[0].profilePicture,
+                    name: tmp.$data.user[0].name,
+                    username: "@"+tmp.$data.user[0].username,
+                    date: "now",
+                    colorUpVote: "#dddddd",
+                    colorDownVote: "#dddddd",
+                    vote: 0
+                  }
+                  tmp.$data.comments.push(comment) // pushing it so it displays
+                  tmp.$data.model = {} // reinit the comment box
                   return true
                 })
                 .catch(function (error) {
