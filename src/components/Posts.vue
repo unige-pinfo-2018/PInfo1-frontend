@@ -302,13 +302,13 @@ export default {
             .then(function (response) {
               //if successfull, we update the post
               post.vote += 1
+              post.colorUpVote = "#ff9100"
               return true
             })
             .catch(function (error) {
               console.log(error.response);
               return false
             });
-          post.colorUpVote = "#ff9100"
         } else {
           if (post.colorDownVote != "#ff9100") {
             axios.put('http://127.0.0.1:18080/post-service/rest/dislikes/addDislike',
@@ -319,13 +319,13 @@ export default {
               .then(function (response) {
                 //if successfull, we update the post
                 post.vote -= 1
+                post.colorUpVote = "#dddddd"
                 return true
               })
               .catch(function (error) {
                 console.log(error.response);
                 return false
               });
-            post.colorUpVote = "#dddddd"
           }
         }
       }
@@ -340,13 +340,13 @@ export default {
             .then(function (response) {
               //if successfull, we update the post
               post.vote -= 1
+              post.colorDownVote = "#ff9100"
               return true
             })
             .catch(function (error) {
               console.log(error.response);
               return false
             });
-          post.colorDownVote = "#ff9100"
         } else {
           if (post.colorUpVote != "#ff9100") {
             axios.put('http://127.0.0.1:18080/post-service/rest/likes/addLike',
@@ -357,13 +357,13 @@ export default {
               .then(function (response) {
                 //if successfull, we update the post
                 post.vote += 1
+                post.colorDownVote = "#dddddd"
                 return true
               })
               .catch(function (error) {
                 console.log(error.response);
                 return false
               });
-            post.colorDownVote = "#dddddd"
           }
         }
       }
