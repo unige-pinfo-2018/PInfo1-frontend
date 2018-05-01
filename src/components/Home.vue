@@ -61,22 +61,23 @@
             </div>
             <nav class="level is-mobile">
               <div class="level-right">
-                <a class="level-item">
+                <a id="upVote1" class="level-item" v-on:click="handleVote($event)">
                   <b-icon
-                    pack="fa"
-                    icon="heart"
-                    style="color: orangered;"
+                    v-bind:style="{color: post.colorUpVote}"
+                    id = 'votes'
+                    icon="arrow-up"
                   >
                   </b-icon>
                 </a>
-                <a class="level-item">
+                <a id="downVote1" class="level-item" v-on:click="handleVote($event)">
                   <b-icon
-                    pack="fa"
-                    icon="thumbs-down"
-                    style="color: #000"
+                    v-bind:style="{color: post.colorDownVote}"
+                    id = 'votes'
+                    icon="arrow-down"
                   >
                   </b-icon>
                 </a>
+                <p>{{post.vote}}</p>
               </div>
               <div class="level-left">
                 <a class="level-item">
@@ -135,22 +136,23 @@
                   </div>
                   <nav class="level is-mobile">
                     <div class="level-right">
-                      <a class="level-item">
+                      <a id="upVote2" class="level-item" v-on:click="handleVote($event)">
                         <b-icon
-                          pack="fa"
-                          icon="heart"
-                          style="color: orangered;"
+                          v-bind:style="{color: ans.colorUpVote}"
+                          id = 'votes'
+                          icon="arrow-up"
                         >
                         </b-icon>
                       </a>
-                      <a class="level-item">
+                      <a id="downVote2" class="level-item" v-on:click="handleVote($event)">
                         <b-icon
-                          pack="fa"
-                          icon="thumbs-down"
-                          style="color: #000"
+                          v-bind:style="{color: ans.colorDownVote}"
+                          id = 'votes'
+                          icon="arrow-down"
                         >
                         </b-icon>
                       </a>
+                      <p>{{ans.vote}}</p>
                     </div>
                   </nav>
                   <article v-if="ans.hasComments" v-for="com in comments" :key="com.id" class="media" :id="com.id">
@@ -169,22 +171,23 @@
                       </div>
                       <nav class="level is-mobile">
                         <div class="level-right">
-                          <a class="level-item">
+                          <a id="upVote3" class="level-item" v-on:click="handleVote($event)">
                             <b-icon
-                              pack="fa"
-                              icon="heart"
-                              style="color: orangered;"
+                              v-bind:style="{color: com.colorUpVote}"
+                              id = 'votes'
+                              icon="arrow-up"
                             >
                             </b-icon>
                           </a>
-                          <a class="level-item">
+                          <a id="downVote3" class="level-item" v-on:click="handleVote($event)">
                             <b-icon
-                              pack="fa"
-                              icon="thumbs-down"
-                              style="color: #000"
+                              v-bind:style="{color: com.colorDownVote}"
+                              id = 'votes'
+                              icon="arrow-down"
                             >
                             </b-icon>
                           </a>
+                          <p>{{com.vote}}</p>
                         </div>
                       </nav>
                     </div>
@@ -234,7 +237,105 @@ import VueMarkdown from 'vue-markdown'
   created: function () {
     this.$store.commit('switch_background', require('../assets/bg.jpg'))
   },
-  methods: { //all these methods are defined in posts
+  methods: {
+    handleVote: async function (event) {
+      let userLoggedIn = await this.updateUserInfo()
+      this.$data.user = []
+      this.$data.user.push(userLoggedIn)
+      let tmp = this
+      let action = event.target.parentElement.parentElement.getAttribute("id")
+      let postID = event.target // Gets the id for the parent post
+        .parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.getAttribute("id")
+      let post = null
+      for (let i=0; i<tmp.$data.posts.length; i++) {
+        if (tmp.$data.posts[i].id == postID) { // look for the right post to inject in the answer window
+          post = tmp.$data.posts[i]
+        }
+      }
+      if (post == null) { // then we look for a comment
+        for (let i = 0; i < tmp.$data.comments.length; i++) {
+          if (tmp.$data.comments[i].id == postID) { // look for the right post to inject in the answer window
+            post = tmp.$data.comments[i]
+          }
+        }
+      }
+
+      if (action == "upVote1" || action == "upVote2" || action == "upVote3") {
+        if (post.colorUpVote == "#dddddd" && post.colorDownVote != "#ff9100" ) {
+          axios.put('http://127.0.0.1:18080/post-service/rest/likes/addLike',
+            {
+              "userId": tmp.$data.user[0].id,
+              "postId": postID
+            })
+            .then(function (response) {
+              //if successfull, we update the post
+              post.vote += 1
+              return true
+            })
+            .catch(function (error) {
+              console.log(error.response);
+              return false
+            });
+          post.colorUpVote = "#ff9100"
+        } else {
+          if (post.colorDownVote != "#ff9100") {
+            axios.put('http://127.0.0.1:18080/post-service/rest/dislikes/addDislike',
+              {
+                "userId": tmp.$data.user[0].id,
+                "postId": postID
+              })
+              .then(function (response) {
+                //if successfull, we update the post
+                post.vote -= 1
+                return true
+              })
+              .catch(function (error) {
+                console.log(error.response);
+                return false
+              });
+            post.colorUpVote = "#dddddd"
+          }
+        }
+      }
+
+      if (action == "downVote1" || action == "downVote2" || action == "downVote3") {
+        if (post.colorDownVote == "#dddddd" && post.colorUpVote != "#ff9100") {
+          axios.put('http://127.0.0.1:18080/post-service/rest/dislikes/addDislike',
+            {
+              "userId": tmp.$data.user[0].id,
+              "postId": postID
+            })
+            .then(function (response) {
+              //if successfull, we update the post
+              post.vote -= 1
+              return true
+            })
+            .catch(function (error) {
+              console.log(error.response);
+              return false
+            });
+          post.colorDownVote = "#ff9100"
+        } else {
+          if (post.colorUpVote != "#ff9100") {
+            axios.put('http://127.0.0.1:18080/post-service/rest/likes/addLike',
+              {
+                "userId": tmp.$data.user[0].id,
+                "postId": postID
+              })
+              .then(function (response) {
+                //if successfull, we update the post
+                post.vote += 1
+                return true
+              })
+              .catch(function (error) {
+                console.log(error.response);
+                return false
+              });
+            post.colorDownVote = "#dddddd"
+          }
+        }
+      }
+    },
     warning(text) {
       this.$dialog.alert({
         title: 'Error',
@@ -257,6 +358,7 @@ import VueMarkdown from 'vue-markdown'
         let query = 'http://127.0.0.1:18080/post-service/rest/posts/posts_and_comments_by_tags?n=100'+tags
         /* We use these variables to store temporary data while doing the second request to the server */
         let idPost = [], textPost = [], datePost = [], nbComments = [], userIdsToQuery = []
+        let names = [], usernames = [], profilePictures = []
         /* First, we retrieve the posts and their comments (to display the number of comments) of the posts that
          * match the tags */
         axios.get(query)
@@ -280,18 +382,37 @@ import VueMarkdown from 'vue-markdown'
               })
                 .then(function (response) {
                   for (let i=0; i<response.data.length; i++) {
-                    let post = {
-                      hasComments: nbComments[i] > 0 ? true : false, // just so it displays the comment accordingly to the number of comments of a post
-                      id: idPost[i],
-                      text: textPost[i],
-                      profilePicture: response.data[i].pictureUrl,
-                      numberOfComments: nbComments[i],
-                      name: response.data[i].name,
-                      username: "@"+response.data[i].username,
-                      date: datePost[i].getDay() + '/' + datePost[i].getMonth() + '/' + datePost[i].getFullYear() + ' - ' + datePost[i].getHours() + ':' + datePost[i].getMinutes() + ':' + datePost[i].getSeconds()
-                    }
-                    tmp.$data.posts.push(post) // pushing the data so they display
+                    profilePictures.push(response.data[i].pictureUrl)
+                    names.push(response.data[i].name)
+                    usernames.push(response.data[i].username)
                   }
+                  axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids', {
+                    "idPosts": idPost
+                  })
+                    .then(function (response) {
+                      for (let i=0; i<response.data.length; i++) {
+                        let post = {
+                          hasComments: nbComments[i] > 0 ? true : false, // just so it displays the comment accordingly to the number of comments of a post
+                          id: idPost[i],
+                          text: textPost[i],
+                          profilePicture: profilePictures[i],
+                          numberOfComments: nbComments[i],
+                          name: names[i],
+                          username: "@"+usernames[i],
+                          date: datePost[i].getDay() + '/' + datePost[i].getMonth() + '/' + datePost[i].getFullYear() + ' - ' + datePost[i].getHours() + ':' + datePost[i].getMinutes() + ':' + datePost[i].getSeconds(),
+                          colorUpVote: "#dddddd",
+                          colorDownVote: "#dddddd",
+                          vote: response.data[i]
+                        }
+                        tmp.$data.posts.push(post) // pushing the data so they display
+                      }
+                      return true
+                    })
+                    .catch(function (error) {
+                      tmp.warning('Could not fetch posts. Database not reachable')
+                      console.log(error.response);
+                      return false
+                    });
                   return true
                 })
                 .catch(function (error) {
@@ -332,32 +453,54 @@ import VueMarkdown from 'vue-markdown'
       }
       this.$data.answerTo.push(post) // Pushes it to the answer window
       if (post.hasComments) {
-        axios.get('http://127.0.0.1:18080/post-service/rest/posts/getCommentsForPost/' + postNumberID.toString())
+        axios.get('http://127.0.0.1:18080/post-service/rest/posts/getCommentsForPost/'+postNumberID.toString())
           .then(function (response) {
             let p = response.data[0]
-            let userIdsToQuery = []
-            for (let i = 0; i < p.length; i++) {
+            let userIdsToQuery = [], postIdsToQuery = [], datePost = []
+            for (let i=0; i<p.length; i++) {
               /* User ids that we will have to retrieve */
               userIdsToQuery.push(p[i].userId)
+              postIdsToQuery.push(p[i].id)
+              datePost.push(p[i].datePost)
             }
+            let profilePictures = [], names = [], usernames = []
             /* Now we retrieve the information of the users that commented and we display the posts */
             axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
               "ids": userIdsToQuery
             }).then(function (response) {
-              for (let i = 0; i < response.data.length; i++) {
-                let date = new Date(p[i].datePost)
-                let comment = {
-                  hasComments: false, // because its a comment
-                  id: p[i].id,
-                  text: p[i].content,
-                  profilePicture: response.data[i].pictureUrl,
-                  numberOfComments: 0, // because its a comment
-                  name: response.data[i].name,
-                  username: "@" + response.data[i].username,
-                  date: date.getDay() + '/' + date.getMonth() + '/' + date.getFullYear() + ' - ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
-                }
-                tmp.$data.comments.push(comment)
+              for (let i=response.data.length-1; i>=0; i--) {
+                profilePictures.push(response.data[i].pictureUrl)
+                names.push(response.data[i].name)
+                usernames.push(response.data[i].username)
               }
+              axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids', {
+                "idPosts": postIdsToQuery
+              })
+                .then(function (response) {
+                  for (let i=0; i<response.data.length; i++) {
+                    let date = new Date(datePost[i])
+                    let comment = {
+                      hasComments: false, // just so it displays the comment accordingly to the number of comments of a post
+                      id: p[i].id,
+                      text: p[i].content,
+                      profilePicture: profilePictures[i],
+                      numberOfComments: 0,
+                      name: names[i],
+                      username: "@"+usernames[i],
+                      date: date.getDay() + '/' + date.getMonth() + '/' + date.getFullYear() + ' - ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds(),
+                      colorUpVote: "#dddddd",
+                      colorDownVote: "#dddddd",
+                      vote: response.data[i]
+                    }
+                    tmp.$data.comments.push(comment) // pushing the data so they display
+                  }
+                  return true
+                })
+                .catch(function (error) {
+                  tmp.warning('Could not fetch posts. Database not reachable')
+                  console.log(error.response);
+                  return false
+                });
               return true
             }).catch(function (error) {
               tmp.warning('Could not fetch posts. Database not reachable')
@@ -400,26 +543,41 @@ import VueMarkdown from 'vue-markdown'
           text: msg,
           profilePicture: tmp.$data.user[0].profilePicture,
           name: tmp.$data.user[0].name,
-          username: tmp.$data.user[0].username,
-          date: "1min"
+          username: "@"+tmp.$data.user[0].username,
+          date: "now",
+          colorUpVote: "#dddddd",
+          colorDownVote: "#dddddd",
+          vote: 0
         }
         this.$data.comments.push(comment) // pushing it so it displays
         this.$data.model = {} // reinit the comment box
 
-        axios.put('http://127.0.0.1:18080/post-service/rest/posts/addPost', {
-          "userId": tmp.$data.user[0].id,
-          "content": msg,
-          "parentId": postNumberID
-        })
+        axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
           .then(function (response) {
+            if (response.data[0] === false) {
+              tmp.warning('You must be logged in to access this page')
+              tmp.$router.push('/login')
+            } else {
+              axios.put('http://127.0.0.1:18080/post-service/rest/posts/addPost', {
+                "userId": response.data[1].id,
+                "content": msg,
+                "parentId": postNumberID
+              })
+                .then(function (response) {
+                  return true
+                })
+                .catch(function (error) {
+                  tmp.warning('Could not fetch posts. Database not reachable')
+                  console.log(error.response);
+                  return false
+                });
+            }
             return true
           })
           .catch(function (error) {
-            tmp.warning('Could not fetch posts. Database not reachable')
             console.log(error.response);
             return false
           });
-
       }
     },
     deletePost: function () {
@@ -465,12 +623,14 @@ import VueMarkdown from 'vue-markdown'
 
         /* We use these variables to store temporary data while doing the second request to the server */
         let idPost = [], textPost = [], datePost = [], nbComments = [], userIdsToQuery = []
+        let names = [], usernames = [], profilePictures = []
         /* First, we retrieve the posts and their comments (to display the number of comments) of the posts that
          * match the tags */
         axios.get(query)
           .then(function (response) {
             if (response.data.length !== 0) { //then we have results
-              //console.log(response.data.length)
+              tmp.$data.isResultVisible = true
+              tmp.$data.posts = [] // we remove existing posts
               let query = "?id="+response.data[0]
               if (response.data.length > 1) {
                 for (let i=1; i<response.data.length; i++) {
@@ -480,36 +640,49 @@ import VueMarkdown from 'vue-markdown'
               console.log(query)
               axios.get('http://127.0.0.1:18080/post-service/rest/posts/posts_and_comments_by_ids/'+query)
                 .then(function (response) {
-                  console.log(response)
                   for (let i=response.data[0].length - 1 ; i>=0; i--) {
                     nbComments.push(response.data[1][i].length)
                     idPost.push(response.data[0][i].id)
                     textPost.push(response.data[0][i].content)
-                    datePost.push(response.data[0][i].datePost)
+                    datePost.push(new Date(response.data[0][i].datePost))
                     userIdsToQuery.push(response.data[0][i].userId)
                   }
                   axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
                     "ids": userIdsToQuery
                   })
                     .then(function (response) {
-                      console.log(response)
-                      tmp.$data.isResultVisible = true
-                      tmp.$data.posts = [] // we remove existing posts
                       for (let i=0; i<response.data.length; i++) {
-                        //console.log(datePost[i])
-                        let date = new Date(datePost[i])
-                        let post = {
-                          hasComments: nbComments[i] > 0 ? true : false, // just so it displays the comment accordingly to the number of comments of a post
-                          id: idPost[i],
-                          text: textPost[i],
-                          profilePicture: response.data[i].pictureUrl,
-                          numberOfComments: nbComments[i],
-                          name: response.data[i].name,
-                          username: "@"+response.data[i].username,
-                          date: date.getDay() + '/' + date.getMonth() + '/' + date.getFullYear() + ' - ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
-                        }
-                        tmp.$data.posts.push(post) // pushing the data so they display
+                        profilePictures.push(response.data[i].pictureUrl)
+                        names.push(response.data[i].name)
+                        usernames.push(response.data[i].username)
                       }
+                      axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids', {
+                        "idPosts": idPost
+                      })
+                        .then(function (response) {
+                          for (let i=0; i<response.data.length; i++) {
+                            let post = {
+                              hasComments: nbComments[i] > 0 ? true : false, // just so it displays the comment accordingly to the number of comments of a post
+                              id: idPost[i],
+                              text: textPost[i],
+                              profilePicture: profilePictures[i],
+                              numberOfComments: nbComments[i],
+                              name: names[i],
+                              username: "@"+usernames[i],
+                              date: datePost[i].getDay() + '/' + datePost[i].getMonth() + '/' + datePost[i].getFullYear() + ' - ' + datePost[i].getHours() + ':' + datePost[i].getMinutes() + ':' + datePost[i].getSeconds(),
+                              colorUpVote: "#dddddd",
+                              colorDownVote: "#dddddd",
+                              vote: response.data[i]
+                            }
+                            tmp.$data.posts.push(post) // pushing the data so they display
+                          }
+                          return true
+                        })
+                        .catch(function (error) {
+                          tmp.warning('martin pu la merde')
+                          console.log(error.response);
+                          return false
+                        });
                       return true
                     })
                     .catch(function (error) {
