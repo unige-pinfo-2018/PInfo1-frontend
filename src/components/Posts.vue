@@ -98,11 +98,11 @@
         </article>
       </div>
     </div>
-    <div id="answer" v-show="isVisible && updateUserInfo()">
+    <div id="answer" v-show="isVisible">
       <transition name="modal">
         <div class="modal-mask">
           <div class="modal-wrapper">
-            <div class="modal-container">
+            <div class="modal-container" v-on-clickaway="away">
               <article v-for="ans in answerTo" :key="ans.id" class="media" :id="ans.id">
                 <figure class="media-left">
                   <p class="image is-64x64">
@@ -219,7 +219,11 @@
 <script>
 /* eslint-disable */
 import VueMarkdown from 'vue-markdown'
+import { directive as onClickaway } from 'vue-clickaway';
 export default {
+  directives: {
+    onClickaway: onClickaway,
+  },
   /* eslint-disable */
   name: 'Posts',
   components: {
@@ -270,6 +274,13 @@ export default {
     }
   },
   methods: {
+    away: function() {
+      let self = this
+      if (this.$data.answerTo.length !== 0) {
+        self.deletePost();
+        self.$data.isVisible=false
+      }
+    },
     handleVote: async function (event) {
       let userLoggedIn = await this.updateUserInfo()
       this.$data.user = []
@@ -409,7 +420,6 @@ export default {
       }
     },
     handleUpload() {
-      console.log('clicked')
       let tmp = this
       let promises = []
       let formData = new FormData();
@@ -429,7 +439,6 @@ export default {
           tmp.$data.dropFiles = []
         })
         .catch((error) => {
-          console.log('image post error')
           console.log(error)
         })
     },
@@ -489,7 +498,6 @@ export default {
                   "idPosts": idPost
                 })
                   .then(function (response) {
-                    console.log(response.data[1][0].like)
                     for (let i=0; i<response.data[0].length; i++) {
                       let post = {
                         hasComments: nbComments[i] > 0 ? true : false, // just so it displays the comment accordingly to the number of comments of a post
@@ -760,7 +768,6 @@ export default {
                     "idPosts": idPost
                   })
                     .then(function (response) {
-                      console.log(response.data[1][0].like)
                       for (let i=0; i<response.data[0].length; i++) {
                         let post = {
                           hasComments: nbComments[i] > 0 ? true : false, // just so it displays the comment accordingly to the number of comments of a post

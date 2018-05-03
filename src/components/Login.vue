@@ -73,7 +73,6 @@ export default {
           "password": this.$data.model.password
         }, {withCredentials: true})
           .then(function (response) {
-            console.log(response)
             axios.get('http://127.0.0.1:18080/users-service/rest/users/by_username/'+tmp.$data.model.username, {withCredentials: true})
               .then(function (response) {
                 return true

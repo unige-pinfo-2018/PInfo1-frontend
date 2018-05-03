@@ -119,7 +119,7 @@
       <transition name="modal">
         <div class="modal-mask">
           <div class="modal-wrapper">
-            <div class="modal-container">
+            <div class="modal-container" v-on-clickaway="away">
               <article v-for="ans in answerTo" :key="ans.id" class="media" :id="ans.id">
                 <figure class="media-left">
                   <p class="image is-64x64">
@@ -227,9 +227,13 @@
 </template>
 
 <script>
-import VueMarkdown from 'vue-markdown'
 /* eslint-disable */
-  export default {
+import VueMarkdown from 'vue-markdown'
+import { directive as onClickaway } from 'vue-clickaway'
+export default {
+  directives: {
+    onClickaway: onClickaway,
+  },
   name: 'Home',
   components: {
     VueMarkdown
@@ -238,6 +242,13 @@ import VueMarkdown from 'vue-markdown'
     this.$store.commit('switch_background', require('../assets/bg.jpg'))
   },
   methods: {
+    away: function() {
+      let self = this
+      if (this.$data.answerTo.length !== 0) {
+        self.deletePost();
+        self.$data.isVisible=false
+      }
+    },
     handleVote: async function (event) {
       let userLoggedIn = await this.updateUserInfo()
       this.$data.user = []
@@ -433,7 +444,6 @@ import VueMarkdown from 'vue-markdown'
                     "idPosts": idPost
                   })
                     .then(function (response) {
-                      console.log(response.data[1][0].like)
                       for (let i=0; i<response.data[0].length; i++) {
                         let post = {
                           hasComments: nbComments[i] > 0 ? true : false, // just so it displays the comment accordingly to the number of comments of a post
@@ -683,7 +693,6 @@ import VueMarkdown from 'vue-markdown'
                   query = query + '&id='+response.data[i]
                 }
               }
-              console.log(query)
               axios.get('http://127.0.0.1:18080/post-service/rest/posts/posts_and_comments_by_ids/'+query)
                 .then(function (response) {
                   for (let i=response.data[0].length - 1 ; i>=0; i--) {
@@ -706,7 +715,6 @@ import VueMarkdown from 'vue-markdown'
                         "idPosts": idPost
                       })
                         .then(function (response) {
-                          console.log(response.data[1][0].like)
                           for (let i=0; i<response.data[0].length; i++) {
                             let post = {
                               hasComments: nbComments[i] > 0 ? true : false, // just so it displays the comment accordingly to the number of comments of a post
