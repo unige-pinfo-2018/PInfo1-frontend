@@ -68,7 +68,7 @@ export default {
       count: 4,
       icons: ['fa fa-user', 'fa fa-comment', 'fa fa-search', 'fa fa-question'],
       list: ['/#/profile', '/#/posts', '/#/', '/#/ask'],
-      backgroundColor: '#2196F3',
+      backgroundColor: '#6F3219',
       color: '#ffffff',
       position: 'bottom-right',
       isOpenNewTab: false,
