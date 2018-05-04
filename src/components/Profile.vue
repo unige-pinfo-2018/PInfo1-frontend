@@ -2,6 +2,24 @@
 <!-- This file controls the particuls that are on screen -->
 <template>
   <section id="app">
+    <vue-particles
+      color="#FFFFFF"
+      :particleOpacity="0.7"
+      :particlesNumber="80"
+      shapeType="circle"
+      :particleSize="4"
+      linesColor="#dedede"
+      :linesWidth="1"
+      :lineLinked="true"
+      :lineOpacity="0.4"
+      :linesDistance="150"
+      :moveSpeed="3"
+      :hoverEffect="true"
+      hoverMode="grab"
+      :clickEffect="true"
+      clickMode="push"
+    >
+    </vue-particles>
     <div id="profile" class="container">
       <div class="notification is-white">
         <div id="pierre" class="columns">
@@ -20,16 +38,16 @@
                 <!-- Tile of the personal infos -->
                 <article v-for="u in user" :key="u.id" class="tile is-child notification box is-white">
                   <div id="personal-infos" class="content">
-                    <!-- <p><i class="fa fa-bookmark"></i>&ensp;{{u.name}}</p>
+                    <p><i class="fa fa-bookmark"></i>&ensp;{{u.name}}</p>
                     <p><i class="fa fa-user"></i>&ensp;{{u.username}}</p>
                     <p><i class="fa fa-university"></i>&ensp;{{u.university}}</p>
                     <p><i class="fa fa-desktop"></i>&ensp;{{u.field}}</p>
-                    <p><i class="fa fa-graduation-cap"></i>&ensp;{{u.cursus}}</p> -->
-                    <p><i class="fa fa-bookmark"></i>&ensp;Steve Hostettler</p>
+                    <p><i class="fa fa-graduation-cap"></i>&ensp;{{u.cursus}}</p>
+                    <!--<p><i class="fa fa-bookmark"></i>&ensp;Steve Hostettler</p>
                     <p><i class="fa fa-user"></i>&ensp;Best_Prof_ever</p>
                     <p><i class="fa fa-university"></i>&ensp;University of Geneva</p>
                     <p><i class="fa fa-desktop"></i>&ensp;Computer Science</p>
-                    <p><i class="fa fa-graduation-cap"></i>&ensp;Professor</p>
+                    <p><i class="fa fa-graduation-cap"></i>&ensp;Professor</p>-->
                   </div>
                 </article>
               </div>

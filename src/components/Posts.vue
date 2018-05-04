@@ -98,7 +98,7 @@
         </article>
       </div>
     </div>
-    <div id="answer" v-show="isVisible">
+    <div id="answer" v-show="isVisible && updateUserInfo()">
       <transition name="modal">
         <div class="modal-mask">
           <div class="modal-wrapper">
