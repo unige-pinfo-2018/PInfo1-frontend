@@ -568,8 +568,9 @@ export default {
               /* User ids that we will have to retrieve */
               userIdsToQuery.push(p[i].userId)
               postIdsToQuery.push(p[i].id)
-              datePost.push(p[i].datePost)
+              datePost.push(new Date(p[i].datePost))
             }
+            datePost.reverse()
             let profilePictures = [], names = [], usernames = []
             /* Now we retrieve the information of the users that commented and we display the posts */
             axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
@@ -585,7 +586,6 @@ export default {
               })
                 .then(function (response) {
                   for (let i=response.data[0].length-1; i>=0; i--) {
-                    let date = new Date(datePost[i])
                     let comment = {
                       hasComments: false, // just so it displays the comment accordingly to the number of comments of a post
                       id: p[i].id,
@@ -594,7 +594,7 @@ export default {
                       numberOfComments: 0,
                       name: names[i],
                       username: "@"+usernames[i],
-                      date: date.getDay() + '/' + date.getMonth() + '/' + date.getFullYear() + ' - ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds(),
+                      date: datePost[i].getDay() + '/' + datePost[i].getMonth() + '/' + datePost[i].getFullYear() + ' - ' + datePost[i].getHours() + ':' + datePost[i].getMinutes() + ':' + datePost[i].getSeconds(),
                       colorUpVote: response.data[1][i].like == false ? "#dddddd" : "#ff9100",
                       colorDownVote: response.data[1][i].dislike == false ? "#dddddd" : "#ff9100",
                       vote: response.data[0][i]
