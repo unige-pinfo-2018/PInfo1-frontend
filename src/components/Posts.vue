@@ -558,7 +558,7 @@ export default {
           post = tmp.$data.posts[i]
         }
       }
-      tmp.$data.answerTo.push(post) // Pushes it to the answer window
+      tmp.$data.answerTo.push(post) //Pushes it to the answer window
       if (post.hasComments) {
         axios.get('http://127.0.0.1:18080/post-service/rest/posts/getCommentsForPost/'+postNumberID.toString())
           .then(function (response) {
