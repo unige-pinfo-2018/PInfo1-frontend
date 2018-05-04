@@ -511,7 +511,7 @@ export default {
           .then(function (response) {
             let p = response.data[0]
             let userIdsToQuery = [], postIdsToQuery = [], datePost = []
-            for (let i=0; i<p.length; i++) {
+            for (let i=p.length-1; i>=0; i--) {
               /* User ids that we will have to retrieve */
               userIdsToQuery.push(p[i].userId)
               postIdsToQuery.push(p[i].id)
@@ -522,7 +522,7 @@ export default {
             axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
               "ids": userIdsToQuery
             }).then(function (response) {
-              for (let i=0; i<response.data.length; i++) {
+              for (let i=response.data.length-1; i>=0; i--) {
                 profilePictures.push(response.data[i].pictureUrl)
                 names.push(response.data[i].name)
                 usernames.push(response.data[i].username)
@@ -531,7 +531,7 @@ export default {
                 "idPosts": postIdsToQuery
               })
                 .then(function (response) {
-                  for (let i=0; i<response.data[0].length; i++) {
+                  for (let i=response.data[0].length-1; i>=0; i--) {
                     let date = new Date(datePost[i])
                     let comment = {
                       hasComments: false, // just so it displays the comment accordingly to the number of comments of a post
