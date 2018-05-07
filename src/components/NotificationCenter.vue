@@ -34,14 +34,15 @@
 /* eslint-disable */
  import * as axios from 'axios'
 
- /*function getWebsocketSessionId (callback) {
+function getWebsocketSessionId (callback) {
   axios.get('http://127.0.0.1:18080/notifications-service/rest/authenticator/getSessionId', {
     withCredentials: true
   }).then(function (response) {
     let wsSessionId = response.data
+    console.log(wsSessionId)
     callback(wsSessionId)
   })
-}*/
+}
 
 export default {
   name: 'NotificationCenter',
@@ -120,10 +121,11 @@ export default {
     }
   },
   created: function () {
-     /*if (this.$store.state.userIsLoggedIn && this.$store.state.user != null) {
+    let self = this
+     if (this.$store.state.userIsLoggedIn && this.$store.state.user != null) {
       getWebsocketSessionId((sessionId) => {
         const notificationSocket = new WebSocket('ws://127.0.0.1:18080/notifications-service/notifications/' +
-          this.$store.state.user.username + '/' + sessionId)
+          self.$store.state.user.username + '/' + sessionId)
         notificationSocket.onopen = function (event) {
           console.log('sending message')
           notificationSocket.send(JSON.stringify({
@@ -141,12 +143,11 @@ export default {
           console.log(event.data)
         }
       })
-    }*/
+    }
     if (this.$store.state.userIsLoggedIn && this.$store.state.user != null) {
-      this.$data.notificationSocket = new WebSocket('ws://127.0.0.1:18080/notifications-service/notifications/' +
-        this.$store.state.user.username + '/dooedke')
-      let notificationSocket = this.$data.notificationSocket
-      let self = this
+      self.$data.notificationSocket = new WebSocket('ws://127.0.0.1:18080/notifications-service/notifications/' +
+        self.$store.state.user.username + '/dooedke')
+      let notificationSocket = self.$data.notificationSocket
       notificationSocket.onopen = function (event) {
         self.getLastNotifications(notificationSocket)
       }

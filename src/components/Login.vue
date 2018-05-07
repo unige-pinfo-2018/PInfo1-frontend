@@ -73,8 +73,25 @@ export default {
           "password": this.$data.model.password
         }, {withCredentials: true})
           .then(function (response) {
-            axios.get('http://127.0.0.1:18080/users-service/rest/users/by_username/'+tmp.$data.model.username, {withCredentials: true})
+            axios.post('http://127.0.0.1:18080/notifications-service/rest/authenticator/login', {
+              "username": tmp.$data.model.username,
+              "password": tmp.$data.model.password
+            }, {withCredentials: true})
               .then(function (response) {
+                axios.post('http://127.0.0.1:18080/notifications-service/rest/authenticator/login', {
+                  "username": tmp.$data.model.username,
+                  "password": tmp.$data.model.password
+                }, {withCredentials: true})
+                  .then(function (response) {
+                    tmp.$data.isAuth = true
+                    tmp.$router.push('/')
+                    return true
+                  })
+                  .catch(function (error) {
+                    tmp.warning('Please check your credentials')
+                    console.log(error.response);
+                    return false
+                  });
                 return true
               })
               .catch(function (error) {
@@ -82,8 +99,6 @@ export default {
                 console.log(error.response);
                 return false
               });
-            tmp.$data.isAuth = true
-            tmp.$router.push('/')
             return true
           })
           .catch(function (error) {

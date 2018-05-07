@@ -475,6 +475,7 @@ export default {
       let profilePictures = [], names = [], usernames = []
       axios.get('http://127.0.0.1:18080/post-service/rest/posts/contents')
         .then(function (response) {
+          console.log(response)
           if (response.data[0].length !== 0) {
             for (let i=0; i<response.data[0].length; i++) {
               let date = new Date(response.data[0][i].datePost)
@@ -485,10 +486,12 @@ export default {
               nbComments.push(response.data[1][i].length)
             }
 
+            //console.log(userIdsToQuery)
             axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
               "ids": userIdsToQuery
-            })
+            }, {withCredentials: true})
               .then(function (response) {
+                console.log(response)
                 for (let i=0; i<response.data.length; i++) {
                   profilePictures.push(response.data[i].pictureUrl)
                   names.push(response.data[i].name)
@@ -498,6 +501,7 @@ export default {
                   "idPosts": idPost
                 })
                   .then(function (response) {
+                    console.log(response)
                     for (let i=0; i<response.data[0].length; i++) {
                       let post = {
                         hasComments: nbComments[i] > 0 ? true : false, // just so it displays the comment accordingly to the number of comments of a post
@@ -526,6 +530,7 @@ export default {
               .catch(function (error) {
                 tmp.warning('Could not fetch posts. Database not reachable')
                 console.log(error.response);
+                console.log(error)
                 return false
               });
 
