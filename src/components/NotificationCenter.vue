@@ -39,7 +39,6 @@ function getWebsocketSessionId (callback) {
     withCredentials: true
   }).then(function (response) {
     let wsSessionId = response.data
-    console.log(wsSessionId)
     callback(wsSessionId)
   })
 }
@@ -126,31 +125,11 @@ export default {
       getWebsocketSessionId((sessionId) => {
         const notificationSocket = new WebSocket('ws://127.0.0.1:18080/notifications-service/notifications/' +
           self.$store.state.user.username + '/' + sessionId)
-        notificationSocket.onopen = function (event) {
-          console.log('sending message')
-          notificationSocket.send(JSON.stringify({
-            //messageType: 'GET',
-            //body: 'last'
-            messageType: 'CREATE',
-            body: JSON.stringify({
-              recipient: 'theogio',
-              content: 'Hello there'
-            })
-          }))
-        }
-        notificationSocket.onmessage = function (event) {
-          console.log('receiving message')
-          console.log(event.data)
+        notificationSocket.onopen = function (ignored) {
+          self.$data.notificationSocket = this
+          self.getLastNotifications(this)
         }
       })
-    }
-    if (this.$store.state.userIsLoggedIn && this.$store.state.user != null) {
-      self.$data.notificationSocket = new WebSocket('ws://127.0.0.1:18080/notifications-service/notifications/' +
-        self.$store.state.user.username + '/dooedke')
-      let notificationSocket = self.$data.notificationSocket
-      notificationSocket.onopen = function (event) {
-        self.getLastNotifications(notificationSocket)
-      }
     }
   }
 }
