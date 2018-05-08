@@ -72,17 +72,17 @@ export default {
           "username": this.$data.model.username,
           "password": this.$data.model.password
         }, {withCredentials: true})
-          .then(function (response) {
+          .then(function (ignored) {
             axios.post('http://127.0.0.1:18080/notifications-service/rest/authenticator/login', {
               "username": tmp.$data.model.username,
               "password": tmp.$data.model.password
             }, {withCredentials: true})
-              .then(function (response) {
-                axios.post('http://127.0.0.1:18080/notifications-service/rest/authenticator/login', {
+              .then(function (ignored) {
+                axios.post('http://127.0.0.1:18080/post-service/rest/posts/login', {
                   "username": tmp.$data.model.username,
                   "password": tmp.$data.model.password
                 }, {withCredentials: true})
-                  .then(function (response) {
+                  .then(function (ignored) {
                     tmp.$data.isAuth = true
                     tmp.$router.push('/')
                     return true
