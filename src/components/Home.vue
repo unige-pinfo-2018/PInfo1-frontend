@@ -230,6 +230,17 @@
 /* eslint-disable */
 import VueMarkdown from 'vue-markdown'
 import { directive as onClickaway } from 'vue-clickaway'
+import * as axios from 'axios'
+
+function getWebsocketSessionId (callback) {
+  axios.get('http://127.0.0.1:18080/notifications-service/rest/authenticator/getSessionId', {
+    withCredentials: true
+  }).then(function (response) {
+    let wsSessionId = response.data
+    callback(wsSessionId)
+  })
+}
+
 export default {
   directives: {
     onClickaway: onClickaway,
@@ -270,7 +281,6 @@ export default {
           }
         }
       }
-
       if (action == "upVote1" || action == "upVote2" || action == "upVote3") {
         if (post.colorUpVote == "#dddddd" && post.colorDownVote != "#ff9100" ) {
           axios.put('http://127.0.0.1:18080/post-service/rest/likes/addLike',
@@ -285,6 +295,28 @@ export default {
                 .then(function (response) {
                   post.vote = response.data[0][0]
                   post.colorUpVote = "#ff9100"
+                  axios.get('http://127.0.0.1:18080/post-service/rest/posts/userId_by_id/'+postID)
+                    .then(function (response) {
+                      axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
+                        "ids": [response.data]
+                      }, {withCredentials: true})
+                        .then(function (response) {
+                          console.log(response)
+                          self.sendNotification(response.data[0].username, 'New upvote on your post')
+                          return true
+                        })
+                        .catch(function (error) {
+                          self.warning('Error while trying to reach database')
+                          console.log(error.response);
+                          return false
+                        });
+                      return true
+                    })
+                    .catch(function (error) {
+                      self.warning('Error while trying to reach database')
+                      console.log(error.response);
+                      return false
+                    });
                   return true
                 })
                 .catch(function (error) {
@@ -343,6 +375,28 @@ export default {
                 .then(function (response) {
                   post.vote = response.data[0][0]
                   post.colorDownVote = "#ff9100"
+                  axios.get('http://127.0.0.1:18080/post-service/rest/posts/userId_by_id/'+postID)
+                    .then(function (response) {
+                      axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
+                        "ids": [response.data]
+                      }, {withCredentials: true})
+                        .then(function (response) {
+                          console.log(response)
+                          self.sendNotification(response.data[0].username, 'New downvote on your post')
+                          return true
+                        })
+                        .catch(function (error) {
+                          self.warning('Error while trying to reach database')
+                          console.log(error.response);
+                          return false
+                        });
+                      return true
+                    })
+                    .catch(function (error) {
+                      self.warning('Error while trying to reach database')
+                      console.log(error.response);
+                      return false
+                    });
                   return true
                 })
                 .catch(function (error) {
@@ -590,44 +644,54 @@ export default {
         if (post.hasComments == false) { // Now the post has comment
           post.hasComments = true
         }
+        console.log(postID)
         post.numberOfComments ++
-        axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
+        axios.put('http://127.0.0.1:18080/post-service/rest/posts/addPost', {
+          "userId": self.$data.user[0].id,
+          "content": msg,
+          "parentId": postNumberID
+        })
           .then(function (response) {
-            if (response.data[0] === false) {
-              self.warning('You must be logged in to access this page')
-              self.$router.push('/login')
-            } else {
-              axios.put('http://127.0.0.1:18080/post-service/rest/posts/addPost', {
-                "userId": response.data[1].id,
-                "content": msg,
-                "parentId": postNumberID
-              })
-                .then(function (response) {
-                  let comment = { // creating the comment
-                    hasComments: false, // a comment cannot have comments
-                    id: response.data,
-                    text: msg,
-                    profilePicture: self.$data.user[0].profilePicture,
-                    name: self.$data.user[0].name,
-                    username: "@"+self.$data.user[0].username,
-                    date: "now",
-                    colorUpVote: "#dddddd",
-                    colorDownVote: "#dddddd",
-                    vote: 0
-                  }
-                  self.$data.comments.push(comment) // pushing it so it displays
-                  self.$data.model = {} // reinit the comment box
-                  return true
-                })
-                .catch(function (error) {
-                  self.warning('Could not fetch posts. Database not reachable')
-                  console.log(error.response);
-                  return false
-                });
+            let comment = { // creating the comment
+              hasComments: false, // a comment cannot have comments
+              id: response.data,
+              text: msg,
+              profilePicture: self.$data.user[0].profilePicture,
+              name: self.$data.user[0].name,
+              username: "@"+self.$data.user[0].username,
+              date: "now",
+              colorUpVote: "#dddddd",
+              colorDownVote: "#dddddd",
+              vote: 0
             }
+            self.$data.comments.push(comment) // pushing it so it displays
+            self.$data.model = {} // reinit the comment box
+            axios.get('http://127.0.0.1:18080/post-service/rest/posts/userId_by_id/'+postID)
+              .then(function (response) {
+                axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
+                  "ids": [response.data]
+                }, {withCredentials: true})
+                  .then(function (response) {
+                    console.log(response)
+                    self.sendNotification(response.data[0].username, 'New comment on your post')
+                    return true
+                  })
+                  .catch(function (error) {
+                    self.warning('Error while trying to reach database')
+                    console.log(error.response);
+                    return false
+                  });
+                return true
+              })
+              .catch(function (error) {
+                self.warning('Error while trying to reach database')
+                console.log(error.response);
+                return false
+              });
             return true
           })
           .catch(function (error) {
+            self.warning('Could not fetch posts. Database not reachable')
             console.log(error.response);
             return false
           });
@@ -793,6 +857,24 @@ export default {
             return false
           });
       return b
+    },
+    sendNotification: function (dest, notif) {
+      let self = this
+      if (this.$store.state.userIsLoggedIn && this.$store.state.user != null) {
+        getWebsocketSessionId((sessionId) => {
+          const notificationSocket = new WebSocket('ws://127.0.0.1:18080/notifications-service/notifications/' +
+            self.$store.state.user.username + '/' + sessionId)
+          notificationSocket.onopen = function (ignored) {
+            notificationSocket.send(JSON.stringify({
+              messageType: 'CREATE',
+              body: JSON.stringify({
+                recipient: dest,
+                content: notif
+              })
+            }))
+          }
+        })
+      }
     }
   },
   data() {
