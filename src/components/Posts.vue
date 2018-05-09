@@ -328,6 +328,28 @@ export default {
                 .then(function (response) {
                   post.vote = response.data[0][0]
                   post.colorUpVote = "#ff9100"
+                  axios.get('http://127.0.0.1:18080/post-service/rest/posts/userId_by_id/'+postID)
+                    .then(function (response) {
+                      axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
+                        "ids": [response.data]
+                      }, {withCredentials: true})
+                        .then(function (response) {
+                          console.log(response)
+                          tmp.sendNotification(response.data[0].username, 'New upvote on your post')
+                          return true
+                        })
+                        .catch(function (error) {
+                          tmp.warning('Error while trying to reach database')
+                          console.log(error.response);
+                          return false
+                        });
+                      return true
+                    })
+                    .catch(function (error) {
+                      tmp.warning('Error while trying to reach database')
+                      console.log(error.response);
+                      return false
+                    });
                   return true
                 })
                 .catch(function (error) {
@@ -386,6 +408,28 @@ export default {
                 .then(function (response) {
                   post.vote = response.data[0][0]
                   post.colorDownVote = "#ff9100"
+                  axios.get('http://127.0.0.1:18080/post-service/rest/posts/userId_by_id/'+postID)
+                    .then(function (response) {
+                      axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
+                        "ids": [response.data]
+                      }, {withCredentials: true})
+                        .then(function (response) {
+                          console.log(response)
+                          tmp.sendNotification(response.data[0].username, 'New downvote on your post')
+                          return true
+                        })
+                        .catch(function (error) {
+                          tmp.warning('Error while trying to reach database')
+                          console.log(error.response);
+                          return false
+                        });
+                      return true
+                    })
+                    .catch(function (error) {
+                      tmp.warning('Error while trying to reach database')
+                      console.log(error.response);
+                      return false
+                    });
                   return true
                 })
                 .catch(function (error) {
@@ -700,7 +744,7 @@ export default {
                 }, {withCredentials: true})
                   .then(function (response) {
                     console.log(response)
-                    tmp.sendNotification(response.data[0].username)
+                    tmp.sendNotification(response.data[0].username, 'New comment on your post')
                     return true
                   })
                   .catch(function (error) {
@@ -860,7 +904,7 @@ export default {
       return b
     },
 
-    sendNotification: function (dest) {
+    sendNotification: function (dest, notif) {
       let self = this
       if (this.$store.state.userIsLoggedIn && this.$store.state.user != null) {
         getWebsocketSessionId((sessionId) => {
@@ -871,7 +915,7 @@ export default {
               messageType: 'CREATE',
               body: JSON.stringify({
                 recipient: dest,
-                content: 'New comment on your post'
+                content: notif
               })
             }))
           }
