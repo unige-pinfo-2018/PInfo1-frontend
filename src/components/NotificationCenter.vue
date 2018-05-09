@@ -7,7 +7,7 @@
           <h3 id="notification-center-header">Inbox</h3>
           <hr>
           <p class="notification" v-bind:key="notification.id"
-             v-for="notification in reverseNotifications">
+             v-for="notification in userNotifications">
             {{ notification.content }}
             <br>
             <span style="font-size: 0.8rem;">Created: {{ notification.dateCreated }}</span>
@@ -55,15 +55,6 @@ export default {
       loading: false
     }
   },
-  computed: {
-    reverseNotifications() {
-      let notifs = this.$data.userNotifications
-      if (notifs == null || notifs.length === 0) {
-        return null
-      }
-      return this.$data.userNotifications.reverse();
-    }
-  },
   methods: {
     loadMore () {
       this.$data.loading = true
@@ -77,7 +68,6 @@ export default {
       }))
       socket.onmessage = function (event) {
         if (event.data != null && JSON.parse(event.data).length > 0) {
-          this.$data.read = false
           let newNotifications = JSON.parse(event.data)
           self.$data.lastNotificationIndex += newNotifications.length
           self.$data.userNotifications = self.$data.userNotifications.concat(newNotifications)
