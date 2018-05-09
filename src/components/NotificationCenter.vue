@@ -7,7 +7,7 @@
           <h3 id="notification-center-header">Inbox</h3>
           <hr>
           <p class="notification" v-bind:key="notification.id"
-             v-for="notification in userNotifications">
+             v-for="notification in reverseNotifications">
             {{ notification.content }}
             <br>
             <span style="font-size: 0.8rem;">Created: {{ notification.dateCreated }}</span>
@@ -55,6 +55,11 @@ export default {
       loading: false
     }
   },
+  computed: {
+    reverseNotifications() {
+      return this.$data.userNotifications.reverse();
+    }
+  },
   methods: {
     loadMore () {
       this.$data.loading = true
@@ -89,6 +94,9 @@ export default {
         self.$data.lastNotificationIndex = self.$data.userNotifications.length - 1
       }
     },
+    /**
+     * @returns {int} The number of notifications unread by the user
+     */
     getUnreadNotificationsCount () {
       let nbrUnreadNotifications = 0
       let notifications = this.$data.userNotifications
@@ -99,6 +107,9 @@ export default {
       }
       return nbrUnreadNotifications
     },
+    /**
+     * @returns {string} The name of the icon to use for the notification center.
+     */
     getNotificationIcon () {
       let nbrUnreadNotifications = this.getUnreadNotificationsCount()
       if (nbrUnreadNotifications > 9) { return 'numeric-9-plus-box' }
