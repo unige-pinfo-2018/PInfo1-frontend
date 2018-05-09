@@ -69,7 +69,7 @@ export default {
       })
     },
     changePassword: function () {
-      let tmp = this
+      let self = this
       if (this.form.$valid){ //check if fields are correctly filled
         axios.post('http://127.0.0.1:18080/users-service/rest/users/reset_password', {
           "email": this.$data.model.email,
@@ -77,17 +77,17 @@ export default {
           "password": this.$data.model.password
         })
           .then(function (response) {
-            tmp.success('Success. You can now login.')
-            tmp.$router.push('/login')
+            self.success('Success. You can now login.')
+            self.$router.push('/login')
             return true
           })
           .catch(function (error) {
-            tmp.warning('Oops! Something went unexpected')
+            self.warning('Oops! Something went unexpected')
             console.log(error.response);
             return false
           });
       } else {
-        tmp.warning('Please correct your inputs')
+        self.warning('Please correct your inputs')
       }
     }
   },

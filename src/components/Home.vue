@@ -253,20 +253,20 @@ export default {
       let userLoggedIn = await this.updateUserInfo()
       this.$data.user = []
       this.$data.user.push(userLoggedIn)
-      let tmp = this
+      let self = this
       let action = event.target.parentElement.parentElement.getAttribute("id")
       let postID = event.target // Gets the id for the parent post
         .parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.getAttribute("id")
       let post = null
-      for (let i=0; i<tmp.$data.posts.length; i++) {
-        if (tmp.$data.posts[i].id == postID) { // look for the right post to inject in the answer window
-          post = tmp.$data.posts[i]
+      for (let i=0; i<self.$data.posts.length; i++) {
+        if (self.$data.posts[i].id == postID) { // look for the right post to inject in the answer window
+          post = self.$data.posts[i]
         }
       }
       if (post == null) { // then we look for a comment
-        for (let i = 0; i < tmp.$data.comments.length; i++) {
-          if (tmp.$data.comments[i].id == postID) { // look for the right post to inject in the answer window
-            post = tmp.$data.comments[i]
+        for (let i = 0; i < self.$data.comments.length; i++) {
+          if (self.$data.comments[i].id == postID) { // look for the right post to inject in the answer window
+            post = self.$data.comments[i]
           }
         }
       }
@@ -275,11 +275,11 @@ export default {
         if (post.colorUpVote == "#dddddd" && post.colorDownVote != "#ff9100" ) {
           axios.put('http://127.0.0.1:18080/post-service/rest/likes/addLike',
             {
-              "userId": tmp.$data.user[0].id,
+              "userId": self.$data.user[0].id,
               "postId": postID
             })
             .then(function (response) {
-              axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+tmp.$data.user[0].id, {
+              axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+self.$data.user[0].id, {
                 "idPosts": [post.id]
               })
                 .then(function (response) {
@@ -288,7 +288,7 @@ export default {
                   return true
                 })
                 .catch(function (error) {
-                  tmp.warning('Could not fetch posts. Database not reachable')
+                  self.warning('Could not fetch posts. Database not reachable')
                   console.log(error.response);
                   return false
                 });
@@ -302,11 +302,11 @@ export default {
           if (post.colorDownVote != "#ff9100") {
             axios.put('http://127.0.0.1:18080/post-service/rest/likes/addLike',
               {
-                "userId": tmp.$data.user[0].id,
+                "userId": self.$data.user[0].id,
                 "postId": postID
               })
               .then(function (response) {
-                axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+tmp.$data.user[0].id, {
+                axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+self.$data.user[0].id, {
                   "idPosts": [post.id]
                 })
                   .then(function (response) {
@@ -315,7 +315,7 @@ export default {
                     return true
                   })
                   .catch(function (error) {
-                    tmp.warning('Could not fetch posts. Database not reachable')
+                    self.warning('Could not fetch posts. Database not reachable')
                     console.log(error.response);
                     return false
                   });
@@ -333,11 +333,11 @@ export default {
         if (post.colorDownVote == "#dddddd" && post.colorUpVote != "#ff9100") {
           axios.put('http://127.0.0.1:18080/post-service/rest/dislikes/addDislike',
             {
-              "userId": tmp.$data.user[0].id,
+              "userId": self.$data.user[0].id,
               "postId": postID
             })
             .then(function (response) {
-              axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+tmp.$data.user[0].id, {
+              axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+self.$data.user[0].id, {
                 "idPosts": [post.id]
               })
                 .then(function (response) {
@@ -346,7 +346,7 @@ export default {
                   return true
                 })
                 .catch(function (error) {
-                  tmp.warning('Could not fetch posts. Database not reachable')
+                  self.warning('Could not fetch posts. Database not reachable')
                   console.log(error.response);
                   return false
                 });
@@ -360,11 +360,11 @@ export default {
           if (post.colorUpVote != "#ff9100") {
             axios.put('http://127.0.0.1:18080/post-service/rest/dislikes/addDislike',
               {
-                "userId": tmp.$data.user[0].id,
+                "userId": self.$data.user[0].id,
                 "postId": postID
               })
               .then(function (response) {
-                axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+tmp.$data.user[0].id, {
+                axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+self.$data.user[0].id, {
                   "idPosts": [post.id]
                 })
                   .then(function (response) {
@@ -373,7 +373,7 @@ export default {
                     return true
                   })
                   .catch(function (error) {
-                    tmp.warning('Could not fetch posts. Database not reachable')
+                    self.warning('Could not fetch posts. Database not reachable')
                     console.log(error.response);
                     return false
                   });
@@ -401,13 +401,13 @@ export default {
       let userLoggedIn = await this.updateUserInfo()
       this.$data.user = []
       this.$data.user.push(userLoggedIn)
-      let tmp = this
+      let self = this
       let tags = ""
       /* First we construct a string that will be used in the request to the server */
       if (this.$data.tags.length !== 0) {
         this.$data.isVisibleLoadMore = false
         for (let i = 0; i<this.$data.tags.length; i++) {
-          tags = tags + '&t=' + tmp.$data.tags[i]
+          tags = tags + '&t=' + self.$data.tags[i]
         }
         let query = 'http://127.0.0.1:18080/post-service/rest/posts/posts_and_comments_by_tags?n=100'+tags
         /* We use these variables to store temporary data while doing the second request to the server */
@@ -418,8 +418,8 @@ export default {
         axios.get(query)
           .then(function (response) {
             if (response.data.length !== 0) { //then we have results
-              tmp.$data.isResultVisible = true
-              tmp.$data.posts = [] // we remove existing posts
+              self.$data.isResultVisible = true
+              self.$data.posts = [] // we remove existing posts
               for (let i=0; i<response.data[1].length; i++) {
                 nbComments.push(response.data[1][i].length) // we save the number of comments of each post
               }
@@ -440,7 +440,7 @@ export default {
                     names.push(response.data[i].name)
                     usernames.push(response.data[i].username)
                   }
-                  axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+tmp.$data.user[0].id, {
+                  axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+self.$data.user[0].id, {
                     "idPosts": idPost
                   })
                     .then(function (response) {
@@ -458,29 +458,29 @@ export default {
                           colorDownVote: response.data[1][i].dislike == false ? "#dddddd" : "#ff9100",
                           vote: response.data[0][i]
                         }
-                        tmp.$data.posts.push(post) // pushing the data so they display
+                        self.$data.posts.push(post) // pushing the data so they display
                       }
                       return true
                     })
                     .catch(function (error) {
-                      tmp.warning('Could not fetch posts. Database not reachable')
+                      self.warning('Could not fetch posts. Database not reachable')
                       console.log(error.response);
                       return false
                     });
                   return true
                 })
                 .catch(function (error) {
-                  tmp.warning('Could not fetch posts. Database not reachable')
+                  self.warning('Could not fetch posts. Database not reachable')
                   console.log(error.response);
                   return false
                 });
             } else {
-              tmp.warning('No results found')
+              self.warning('No results found')
             }
             return true
           })
           .catch(function (error) {
-            tmp.warning('Could not connect to database')
+            self.warning('Could not connect to database')
             console.log(error.response);
             return false
           });
@@ -493,7 +493,7 @@ export default {
       let userLoggedIn = await this.updateUserInfo()
       this.$data.user = []
       this.$data.user.push(userLoggedIn)
-      let tmp = this
+      let self = this
       let postID = event.target // Gets which post fired the answer function
         .parentElement.parentElement.parentElement.parentElement
         .parentElement.getAttribute("id")
@@ -501,8 +501,8 @@ export default {
 
       let post
       for (let i=0; i<this.$data.posts.length; i++) {
-        if (tmp.$data.posts[i].id == postNumberID) { // look for the right post to inject in the answer window
-          post = tmp.$data.posts[i]
+        if (self.$data.posts[i].id == postNumberID) { // look for the right post to inject in the answer window
+          post = self.$data.posts[i]
         }
       }
       this.$data.answerTo.push(post) // Pushes it to the answer window
@@ -528,7 +528,7 @@ export default {
                 names.push(response.data[i].name)
                 usernames.push(response.data[i].username)
               }
-              axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+tmp.$data.user[0].id, {
+              axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+self.$data.user[0].id, {
                 "idPosts": postIdsToQuery
               })
                 .then(function (response) {
@@ -546,24 +546,24 @@ export default {
                       colorDownVote: response.data[1][i].dislike == false ? "#dddddd" : "#ff9100",
                       vote: response.data[0][i]
                     }
-                    tmp.$data.comments.push(comment) // pushing the data so they display
+                    self.$data.comments.push(comment) // pushing the data so they display
                   }
                   return true
                 })
                 .catch(function (error) {
-                  tmp.warning('Could not fetch posts. Database not reachable')
+                  self.warning('Could not fetch posts. Database not reachable')
                   console.log(error.response);
                   return false
                 });
               return true
             }).catch(function (error) {
-              tmp.warning('Could not fetch posts. Database not reachable')
+              self.warning('Could not fetch posts. Database not reachable')
               console.log(error.response);
               return false
             });
           })
           .catch(function (error) {
-            tmp.warning('Could not fetch posts. Database not reachable')
+            self.warning('Could not fetch posts. Database not reachable')
             console.log(error.response);
             return false
           });
@@ -574,7 +574,7 @@ export default {
       this.$data.user = []
       this.$data.user.push(userLoggedIn)
       if (!this.empty(this.$data.model.message)) { // Checks that there's something in the text-field area
-        let tmp = this
+        let self = this
         let msg = this.$data.model.message // Gets the message
         let id = this.$data.comments.length + 1 // Creates an id
         let postID = event.target // Gets the id for the parent post
@@ -583,8 +583,8 @@ export default {
         let postNumberID = postID.match(/\d/g).join("") // Gets the number
         let post
         for (let i=0; i<this.$data.posts.length; i++) {
-          if (tmp.$data.posts[i].id == postNumberID) { // look for the right post to inject in the answer window
-            post = tmp.$data.posts[i]
+          if (self.$data.posts[i].id == postNumberID) { // look for the right post to inject in the answer window
+            post = self.$data.posts[i]
           }
         }
         if (post.hasComments == false) { // Now the post has comment
@@ -594,8 +594,8 @@ export default {
         axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
           .then(function (response) {
             if (response.data[0] === false) {
-              tmp.warning('You must be logged in to access this page')
-              tmp.$router.push('/login')
+              self.warning('You must be logged in to access this page')
+              self.$router.push('/login')
             } else {
               axios.put('http://127.0.0.1:18080/post-service/rest/posts/addPost', {
                 "userId": response.data[1].id,
@@ -607,20 +607,20 @@ export default {
                     hasComments: false, // a comment cannot have comments
                     id: response.data,
                     text: msg,
-                    profilePicture: tmp.$data.user[0].profilePicture,
-                    name: tmp.$data.user[0].name,
-                    username: "@"+tmp.$data.user[0].username,
+                    profilePicture: self.$data.user[0].profilePicture,
+                    name: self.$data.user[0].name,
+                    username: "@"+self.$data.user[0].username,
                     date: "now",
                     colorUpVote: "#dddddd",
                     colorDownVote: "#dddddd",
                     vote: 0
                   }
-                  tmp.$data.comments.push(comment) // pushing it so it displays
-                  tmp.$data.model = {} // reinit the comment box
+                  self.$data.comments.push(comment) // pushing it so it displays
+                  self.$data.model = {} // reinit the comment box
                   return true
                 })
                 .catch(function (error) {
-                  tmp.warning('Could not fetch posts. Database not reachable')
+                  self.warning('Could not fetch posts. Database not reachable')
                   console.log(error.response);
                   return false
                 });
@@ -645,11 +645,11 @@ export default {
       }
     },
     switchColor: function (event) {
-      let tmp = this
+      let self = this
       if (event.target.parentElement.parentElement.parentElement.getAttribute("id") === "searchbar") {
-        tmp.search()
+        self.search()
       } else {
-        if (tmp.$data.tags.length !== 0) {
+        if (self.$data.tags.length !== 0) {
           /* Makes sure we never have too much tags */
           this.$data.counter = this.$data.tags.length
           /* Picks a random number */
@@ -667,14 +667,14 @@ export default {
       let userLoggedIn = await this.updateUserInfo()
       this.$data.user = []
       this.$data.user.push(userLoggedIn)
-      let tmp = this
+      let self = this
       let s = document.getElementById('question').value
-      if (!tmp.empty(s)) {
+      if (!self.empty(s)) {
         s = s.replace(/ /g,"+")
         let query = 'http://127.0.0.1:18080/post-service/rest/posts/searchPost?q='+s+'&n=100'
 
         for (let i=0; i<this.$data.tags.length; i++) {
-          query = query + '&t=' + tmp.$data.tags[i]
+          query = query + '&t=' + self.$data.tags[i]
         }
 
         /* We use these variables to store temporary data while doing the second request to the server */
@@ -685,8 +685,8 @@ export default {
         axios.get(query)
           .then(function (response) {
             if (response.data.length !== 0) { //then we have results
-              tmp.$data.isResultVisible = true
-              tmp.$data.posts = [] // we remove existing posts
+              self.$data.isResultVisible = true
+              self.$data.posts = [] // we remove existing posts
               let query = "?id="+response.data[0]
               if (response.data.length > 1) {
                 for (let i=1; i<response.data.length; i++) {
@@ -711,7 +711,7 @@ export default {
                         names.push(response.data[i].name)
                         usernames.push(response.data[i].username)
                       }
-                      axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+tmp.$data.user[0].id, {
+                      axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+self.$data.user[0].id, {
                         "idPosts": idPost
                       })
                         .then(function (response) {
@@ -729,49 +729,49 @@ export default {
                               colorDownVote: response.data[1][i].dislike == false ? "#dddddd" : "#ff9100",
                               vote: response.data[0][i]
                             }
-                            tmp.$data.posts.push(post) // pushing the data so they display
+                            self.$data.posts.push(post) // pushing the data so they display
                           }
                           return true
                         })
                         .catch(function (error) {
-                          tmp.warning('Could not fetch posts. Database not reachable')
+                          self.warning('Could not fetch posts. Database not reachable')
                           console.log(error.response);
                           return false
                         });
                       return true
                     })
                     .catch(function (error) {
-                      tmp.warning('Could not fetch posts. Database not reachable')
+                      self.warning('Could not fetch posts. Database not reachable')
                       console.log(error.response);
                       return false
                     });
                 })
                 .catch(function (error) {
-                  tmp.warning('Could not fetch posts. Database not reachable')
+                  self.warning('Could not fetch posts. Database not reachable')
                   console.log(error.response);
                   return false
                 });
             } else {
-              tmp.warning('No results found')
+              self.warning('No results found')
             }
             return true
           })
           .catch(function (error) {
-            tmp.warning('No results match your query')
+            self.warning('No results match your query')
             console.log(error.response);
             return false
           });
         } else { // if the tags that we provided do not match any post, we don't do anything
           if (this.$data.tags.length !== 0) {
-            //tmp.updateSearch()
+            //self.updateSearch()
           } else {
-            tmp.$data.posts = []
+            self.$data.posts = []
             this.$data.isResultVisible = false
           }
         }
       },
     updateUserInfo: async function () {
-      let tmp = this
+      let self = this
       let b = []
       await
         axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
@@ -784,8 +784,8 @@ export default {
                 profilePicture: response.data[1].pictureUrl
               }
             } else {
-              tmp.warning('You must be logged in to access this page')
-              tmp.$router.push('/login')
+              self.warning('You must be logged in to access this page')
+              self.$router.push('/login')
             }
           })
           .catch(function (error) {
@@ -840,11 +840,11 @@ export default {
     }
   },
     beforeMount () {
-      let tmp = this
+      let self = this
       axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
         .then(function (response) {
           if (response.data[0] === true) {
-            tmp.$data.isAuth = true
+            self.$data.isAuth = true
           }
           return true
         })

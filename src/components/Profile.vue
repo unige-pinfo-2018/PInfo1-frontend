@@ -435,15 +435,15 @@ export default {
     }
   },
   beforeMount () {
-    let tmp = this
+    let self = this
     /* When the component is mounted, the functions below are triggered */
     axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
       .then(function (response) {
         if (response.data[0] === true) {
-          tmp.retrievePosts()
+          self.retrievePosts()
         } else {
-          tmp.warning('You must be logged in to access this page')
-          tmp.$router.push('/login')
+          self.warning('You must be logged in to access this page')
+          self.$router.push('/login')
         }
         return true
       })

@@ -64,7 +64,7 @@ export default {
       })
     },
     login: function () {
-      let tmp = this  //if this is not declared here, using it in the block below
+      let self = this  //if this is not declared here, using it in the block below
                       //doesn't reference the correct instance of vue, so $router
                       //can't be used.
       if (this.form.$valid){ //check if fields are correctly filled
@@ -74,40 +74,40 @@ export default {
         }, {withCredentials: true})
           .then(function (ignored) {
             axios.post('http://127.0.0.1:18080/notifications-service/rest/authenticator/login', {
-              "username": tmp.$data.model.username,
-              "password": tmp.$data.model.password
+              "username": self.$data.model.username,
+              "password": self.$data.model.password
             }, {withCredentials: true})
               .then(function (ignored) {
                 axios.post('http://127.0.0.1:18080/post-service/rest/posts/login', {
-                  "username": tmp.$data.model.username,
-                  "password": tmp.$data.model.password
+                  "username": self.$data.model.username,
+                  "password": self.$data.model.password
                 }, {withCredentials: true})
                   .then(function (ignored) {
-                    tmp.$data.isAuth = true
-                    tmp.$router.push('/')
+                    self.$data.isAuth = true
+                    self.$router.push('/')
                     return true
                   })
                   .catch(function (error) {
-                    tmp.warning('Please check your credentials')
+                    self.warning('Please check your credentials')
                     console.log(error.response);
                     return false
                   });
                 return true
               })
               .catch(function (error) {
-                tmp.warning('Please check your credentials')
+                self.warning('Please check your credentials')
                 console.log(error.response);
                 return false
               });
             return true
           })
           .catch(function (error) {
-            tmp.warning('Please check your credentials')
+            self.warning('Please check your credentials')
             console.log(error.response);
             return false
           });
       } else {
-        tmp.warning('Please correct your inputs')
+        self.warning('Please correct your inputs')
       }
     }
   },

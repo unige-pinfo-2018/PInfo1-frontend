@@ -95,17 +95,17 @@ export default {
       })
     },
     logout () {
-      let tmp = this
+      let self = this
       axios.get('http://127.0.0.1:18080/users-service/rest/users/logout', {withCredentials: true})
         .then(function (response) {
-          tmp.$data.isAuth = false
-          tmp.$router.push('/')
+          self.$data.isAuth = false
+          self.$router.push('/')
           location.reload();
           return true
         })
         .catch(function (error) {
-          tmp.$data.isAuth = false
-          tmp.$router.push('/')
+          self.$data.isAuth = false
+          self.$router.push('/')
           location.reload();
           return false
         });
@@ -115,19 +115,19 @@ export default {
     }
   },
   beforeUpdate () {
-    let tmp = this
+    let self = this
     axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
       .then(function (response) {
         if (response.data[0] === true) {
-          tmp.$store.commit('setLoggedIn', true)
-          tmp.$data.isAuth = true
-          tmp.$data.user.id = response.data[1].id
-          tmp.$data.user.username = response.data[1].username
-          tmp.$data.user.name = response.data[1].name
-          tmp.$data.user.profilePicture = response.data[1].pictureUrl
-          tmp.$store.commit('setUser', tmp.$data.user)
+          self.$store.commit('setLoggedIn', true)
+          self.$data.isAuth = true
+          self.$data.user.id = response.data[1].id
+          self.$data.user.username = response.data[1].username
+          self.$data.user.name = response.data[1].name
+          self.$data.user.profilePicture = response.data[1].pictureUrl
+          self.$store.commit('setUser', tmp.$data.user)
         } else {
-          tmp.$data.isAuth = false
+          self.$data.isAuth = false
         }
         return true
       })
@@ -137,20 +137,20 @@ export default {
       });
   },
   beforeMount () {
-    let tmp = this
+    let self = this
     axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
       .then(function (response) {
         if (response.data[0] === true) {
-          tmp.$store.commit('setLoggedIn', true)
-          tmp.$data.isAuth = true
-          tmp.$data.user.id = response.data[1].id
-          tmp.$data.user.username = response.data[1].username
-          tmp.$data.user.name = response.data[1].name
-          tmp.$data.user.profilePicture = response.data[1].pictureUrl
-          tmp.$store.commit('setUser', tmp.$data.user)
+          self.$store.commit('setLoggedIn', true)
+          self.$data.isAuth = true
+          self.$data.user.id = response.data[1].id
+          self.$data.user.username = response.data[1].username
+          self.$data.user.name = response.data[1].name
+          self.$data.user.profilePicture = response.data[1].pictureUrl
+          self.$store.commit('setUser', tmp.$data.user)
         } else {
-          tmp.$data.isAuth = false
-          tmp.$store.commit('setLoggedIn', false)
+          self.$data.isAuth = false
+          self.$store.commit('setLoggedIn', false)
         }
         return true
       })

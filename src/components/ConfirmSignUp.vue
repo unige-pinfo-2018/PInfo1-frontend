@@ -64,21 +64,21 @@ export default {
       })
     },
     confirmSignup: function () {
-      let tmp = this
+      let self = this
       if (this.form.$valid){ //check if fields are correctly filled
         axios.get('http://127.0.0.1:18080/users-service/rest/users/confirm?email='+this.$data.model.code)
           .then(function (response) {
-            tmp.success('Account confirmation successfull. You can now login.')
-            tmp.$router.push('/login')
+            self.success('Account confirmation successfull. You can now login.')
+            self.$router.push('/login')
             return true
           })
           .catch(function (error) {
-            tmp.warning('Oops! Something went wrong.')
+            self.warning('Oops! Something went wrong.')
             console.log(error.response);
             return false
           });
       } else {
-        tmp.warning('Please correct your inputs')
+        self.warning('Please correct your inputs')
       }
     }
   },

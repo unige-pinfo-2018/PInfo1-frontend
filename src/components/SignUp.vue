@@ -80,7 +80,7 @@ import confirmSignUp from '@/components/ConfirmSignUp.vue'
         })
       },
       signup: function () {
-        let tmp = this  //if this is not declared here, using it in the block below
+        let self = this  //if this is not declared here, using it in the block below
                         //doesn't reference the correct instance of vue, so $router
                         //can't be used.
         if (this.form1.$valid && this.form2.$valid){ //check if fields are correctly filled
@@ -91,15 +91,15 @@ import confirmSignUp from '@/components/ConfirmSignUp.vue'
             "password": this.$data.model1.password
           })
             .then(function (response) {
-              tmp.success('Please check your inbox')
-              tmp.$router.push('/confirmSignUp')
+              self.success('Please check your inbox')
+              self.$router.push('/confirmSignUp')
             })
             .catch(function (error) {
-              tmp.warning('Oops! Something went unexpected')
+              self.warning('Oops! Something went unexpected')
               console.log(error.response);
             });
         } else {
-          tmp.warning('Please correct your inputs')
+          self.warning('Please correct your inputs')
         }
       }
     },

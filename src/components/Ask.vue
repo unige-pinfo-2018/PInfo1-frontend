@@ -201,15 +201,15 @@ export default {
   },
   methods: {
     handleUpload() {
-      let tmp = this
+      let self = this
       let files = this.$data.dropFiles;
       let promises = []
       if (files.length !== 0) {
         if (files.length <= 5) {
-          tmp.success('Upload in progress.... Links will automatically appear in your post when it is uploaded')
-          for (let i = 0; i < tmp.$data.dropFiles.length; i++) {
+          self.success('Upload in progress.... Links will automatically appear in your post when it is uploaded')
+          for (let i = 0; i < self.$data.dropFiles.length; i++) {
             let formData = new FormData();
-            formData.append('image', tmp.$data.dropFiles[i])
+            formData.append('image', self.$data.dropFiles[i])
             const config = {
               baseURL: 'https://api.imgur.com',
               headers: {
@@ -221,16 +221,16 @@ export default {
           axios.all(promises)
             .then((result) => {
               for (let i=0; i<result.length; i++) {
-                tmp.$data.model.message += '![img]('+result[i].data.data.link+')'
+                self.$data.model.message += '![img]('+result[i].data.data.link+')'
               }
-              tmp.$data.dropFiles = []
+              self.$data.dropFiles = []
             })
             .catch((error) => {
               console.log('image post error')
               console.log(error)
             })
         } else {
-          tmp.warning('Cannot upload more than 5 files at a time')
+          self.warning('Cannot upload more than 5 files at a time')
         }
       }
     },
@@ -255,7 +255,7 @@ export default {
       }
     },
     postMessage: function () {
-      let tmp = this
+      let self = this
       if (this.form.$valid) { // Checks that there's something in the text-field area
         let msg = this.$data.model.message // Gets the message
         axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
@@ -265,28 +265,28 @@ export default {
               "content": msg
             })
               .then(function (response) {
-                tmp.success('Message successfully created')
+                self.success('Message successfully created')
                 let id = response.data
-                if (tmp.$data.tags.length !== 0) {
+                if (self.$data.tags.length !== 0) {
                   let query = 'http://127.0.0.1:18080/post-service/rest/tags/addTags?postId=' + id
-                  for (let i = 0; i < tmp.$data.tags.length; i++) {
-                    query = query + '&names=' + tmp.$data.tags[i]
+                  for (let i = 0; i < self.$data.tags.length; i++) {
+                    query = query + '&names=' + self.$data.tags[i]
                   }
                   axios.put(query)
                     .then(function (response) {
                       return true
                     })
                     .catch(function (error) {
-                      tmp.warning('Could not connect to database')
+                      self.warning('Could not connect to database')
                       console.log(error.response);
                       return false
                     });
                 }
-                tmp.$data.model.message = ""
+                self.$data.model.message = ""
                 return true
               })
               .catch(function (error) {
-                tmp.warning('Could not connect to database')
+                self.warning('Could not connect to database')
                 console.log(error.response);
                 return false
               });
@@ -297,21 +297,21 @@ export default {
             return false
           });
       } else {
-        tmp.warning('Please correct your entries')
+        self.warning('Please correct your entries')
       }
     },
     renderMessage: async function () {
       let userLoggedIn = await this.updateUserInfo()
       this.$data.user = []
       this.$data.user.push(userLoggedIn)
-      let tmp = this
+      let self = this
       axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
         .then(function (response) {
           if (response.data[0] === false) {
-            tmp.warning('You must be logged in to access this page')
-            tmp.$router.push('/login')
+            self.warning('You must be logged in to access this page')
+            self.$router.push('/login')
           } else {
-            tmp.$data.source = tmp.$data.model.message
+            self.$data.source = tmp.$data.model.message
           }
           return true
         })
@@ -332,23 +332,23 @@ export default {
     },
     switchColor: function (event) {
       if (event.target.parentElement.parentElement.parentElement.parentElement.parentElement.getAttribute("id") === "askTags") {
-        let tmp = this
-        if (tmp.$data.tags.length !== 0) {
+        let self = this
+        if (self.$data.tags.length !== 0) {
           /* Makes sure we never have too much tags */
-          tmp.$data.counter = tmp.$data.tags.length
+          self.$data.counter = tmp.$data.tags.length
           /* Picks a random number */
           let r = Math.floor(Math.random() * Math.floor(4))
           /* Picks a random color */
-          let color = tmp.$data.colors[r];
+          let color = self.$data.colors[r];
           /* Changes the color of the tag */
           document.getElementById("askBox").getElementsByClassName("myTags")[0]
             .getElementsByClassName("taginput-container is-focusable")[0]
-            .childNodes[tmp.$data.counter - 1].className = "tag " + color + " is-rounded"
+            .childNodes[self.$data.counter - 1].className = "tag " + color + " is-rounded"
         }
       }
     },
     updateUserInfo: async function () {
-      let tmp = this
+      let self = this
       let b = []
       await
         axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
@@ -361,8 +361,8 @@ export default {
                 profilePicture: response.data[1].pictureUrl
               }
             } else {
-              tmp.warning('You must be logged in to access this page')
-              tmp.$router.push('/login')
+              self.warning('You must be logged in to access this page')
+              self.$router.push('/login')
             }
           })
           .catch(function (error) {
@@ -373,13 +373,13 @@ export default {
     }
   },
   beforeMount() {
-    let tmp = this
+    let self = this
     /* When the component is mounted, the functions below are triggered */
     axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
       .then(function (response) {
         if (response.data[0] === false) {
-          tmp.warning('You must be logged in to access this page')
-          tmp.$router.push('/login')
+          self.warning('You must be logged in to access this page')
+          self.$router.push('/login')
         }
         return true
       })

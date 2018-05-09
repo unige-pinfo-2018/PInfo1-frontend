@@ -68,21 +68,21 @@ export default {
       })
     },
     resetPassword: function () {
-      let tmp = this
+      let self = this
       if (this.form.$valid){ //check if fields are correctly filled
         axios.get('http://127.0.0.1:18080/users-service/rest/users/request_password_reset?email='+this.$data.model.email)
           .then(function (response) {
-            tmp.success('Please check your inbox')
-            tmp.$router.push('/newpassword')
+            self.success('Please check your inbox')
+            self.$router.push('/newpassword')
             return true
           })
           .catch(function (error) {
-            tmp.warning('Email address not found in database')
+            self.warning('Email address not found in database')
             console.log(error.response);
             return false
           });
       } else {
-        tmp.warning('Please correct your input')
+        self.warning('Please correct your input')
       }
     }
   },
