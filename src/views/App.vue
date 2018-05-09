@@ -125,7 +125,7 @@ export default {
           self.$data.user.username = response.data[1].username
           self.$data.user.name = response.data[1].name
           self.$data.user.profilePicture = response.data[1].pictureUrl
-          self.$store.commit('setUser', tmp.$data.user)
+          self.$store.commit('setUser', self.$data.user)
         } else {
           self.$data.isAuth = false
         }
@@ -147,7 +147,7 @@ export default {
           self.$data.user.username = response.data[1].username
           self.$data.user.name = response.data[1].name
           self.$data.user.profilePicture = response.data[1].pictureUrl
-          self.$store.commit('setUser', tmp.$data.user)
+          self.$store.commit('setUser', self.$data.user)
         } else {
           self.$data.isAuth = false
           self.$store.commit('setLoggedIn', false)
