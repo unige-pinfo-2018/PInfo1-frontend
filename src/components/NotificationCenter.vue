@@ -159,7 +159,7 @@ export default {
 
 <style scoped>
   #notifications {
-    position: absolute;
+    position: fixed;
     background-color: gray;
     color: whitesmoke;
     -webkit-border-radius: 50%;
@@ -174,7 +174,7 @@ export default {
   }
 
   #notification-center {
-    position: absolute;
+    position: fixed;
     bottom: 98px;
     left: 30px;
     max-height: 300px;
