@@ -220,6 +220,17 @@
 /* eslint-disable */
 import VueMarkdown from 'vue-markdown'
 import { directive as onClickaway } from 'vue-clickaway';
+import * as axios from 'axios'
+
+function getWebsocketSessionId (callback) {
+  axios.get('http://127.0.0.1:18080/notifications-service/rest/authenticator/getSessionId', {
+    withCredentials: true
+  }).then(function (response) {
+    let wsSessionId = response.data
+    callback(wsSessionId)
+  })
+}
+
 export default {
   directives: {
     onClickaway: onClickaway,
@@ -660,44 +671,54 @@ export default {
         if (post.hasComments == false) { // Now the post has comment
           post.hasComments = true
         }
+        console.log(postID)
         post.numberOfComments ++
-        axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
+        axios.put('http://127.0.0.1:18080/post-service/rest/posts/addPost', {
+          "userId": tmp.$data.user[0].id,
+          "content": msg,
+          "parentId": postNumberID
+        })
           .then(function (response) {
-            if (response.data[0] === false) {
-              tmp.warning('You must be logged in to access this page')
-              tmp.$router.push('/login')
-            } else {
-              axios.put('http://127.0.0.1:18080/post-service/rest/posts/addPost', {
-                "userId": response.data[1].id,
-                "content": msg,
-                "parentId": postNumberID
-              })
-                .then(function (response) {
-                  let comment = { // creating the comment
-                    hasComments: false, // a comment cannot have comments
-                    id: response.data,
-                    text: msg,
-                    profilePicture: tmp.$data.user[0].profilePicture,
-                    name: tmp.$data.user[0].name,
-                    username: "@"+tmp.$data.user[0].username,
-                    date: "now",
-                    colorUpVote: "#dddddd",
-                    colorDownVote: "#dddddd",
-                    vote: 0
-                  }
-                  tmp.$data.comments.push(comment) // pushing it so it displays
-                  tmp.$data.model = {} // reinit the comment box
-                  return true
-                })
-                .catch(function (error) {
-                  tmp.warning('Could not fetch posts. Database not reachable')
-                  console.log(error.response);
-                  return false
-                });
+            let comment = { // creating the comment
+              hasComments: false, // a comment cannot have comments
+              id: response.data,
+              text: msg,
+              profilePicture: tmp.$data.user[0].profilePicture,
+              name: tmp.$data.user[0].name,
+              username: "@"+tmp.$data.user[0].username,
+              date: "now",
+              colorUpVote: "#dddddd",
+              colorDownVote: "#dddddd",
+              vote: 0
             }
+            tmp.$data.comments.push(comment) // pushing it so it displays
+            tmp.$data.model = {} // reinit the comment box
+            axios.get('http://127.0.0.1:18080/post-service/rest/posts/userId_by_id/'+postID)
+              .then(function (response) {
+                axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
+                  "ids": [response.data]
+                }, {withCredentials: true})
+                  .then(function (response) {
+                    console.log(response)
+                    tmp.sendNotification(response.data[0].username)
+                    return true
+                  })
+                  .catch(function (error) {
+                    tmp.warning('Error while trying to reach database')
+                    console.log(error.response);
+                    return false
+                  });
+                return true
+              })
+              .catch(function (error) {
+                tmp.warning('Error while trying to reach database')
+                console.log(error.response);
+                return false
+              });
             return true
           })
           .catch(function (error) {
+            tmp.warning('Could not fetch posts. Database not reachable')
             console.log(error.response);
             return false
           });
@@ -837,6 +858,25 @@ export default {
           return false
         });
       return b
+    },
+
+    sendNotification: function (dest) {
+      let self = this
+      if (this.$store.state.userIsLoggedIn && this.$store.state.user != null) {
+        getWebsocketSessionId((sessionId) => {
+          const notificationSocket = new WebSocket('ws://127.0.0.1:18080/notifications-service/notifications/' +
+            self.$store.state.user.username + '/' + sessionId)
+            notificationSocket.onopen = function (ignored) {
+            notificationSocket.send(JSON.stringify({
+              messageType: 'CREATE',
+              body: JSON.stringify({
+                recipient: dest,
+                content: 'New comment on your post'
+              })
+            }))
+          }
+        })
+      }
     }
   },
   beforeMount(){
