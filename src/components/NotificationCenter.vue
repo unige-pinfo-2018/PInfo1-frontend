@@ -85,6 +85,7 @@ export default {
         body: 'last'
       }))
       socket.onmessage = function (event) {
+        self.$data.read = false
         let data = JSON.parse(event.data)
         if (Array.isArray(data)) {
           self.$data.userNotifications = data
