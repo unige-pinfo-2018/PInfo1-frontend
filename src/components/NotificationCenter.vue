@@ -77,7 +77,7 @@ export default {
       }))
       socket.onmessage = function (event) {
         if (event.data != null && JSON.parse(event.data).length > 0) {
-          this.$data.read = false
+          self.$data.read = false
           let newNotifications = JSON.parse(event.data)
           self.$data.lastNotificationIndex += newNotifications.length
           self.$data.userNotifications = self.$data.userNotifications.concat(newNotifications)
