@@ -311,7 +311,7 @@ export default {
             self.warning('You must be logged in to access this page')
             self.$router.push('/login')
           } else {
-            self.$data.source = tmp.$data.model.message
+            self.$data.source = self.$data.model.message
           }
           return true
         })
@@ -335,7 +335,7 @@ export default {
         let self = this
         if (self.$data.tags.length !== 0) {
           /* Makes sure we never have too much tags */
-          self.$data.counter = tmp.$data.tags.length
+          self.$data.counter = self.$data.tags.length
           /* Picks a random number */
           let r = Math.floor(Math.random() * Math.floor(4))
           /* Picks a random color */
