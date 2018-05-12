@@ -356,7 +356,7 @@ export default {
             if (response.data[0] === true) {
               b =  {
                 id: response.data[1].id,
-                username: response.data[1].username,
+                username: '@' + response.data[1].username,
                 name: response.data[1].name,
                 profilePicture: response.data[1].pictureUrl
               }
@@ -430,7 +430,7 @@ export default {
   }
 
   .modal-container {
-    width: 700px;
+    width: 85%;
     margin: 0px auto;
     padding: 20px 30px;
     background-color: #fff;
@@ -438,7 +438,7 @@ export default {
     box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
     transition: all .3s ease;
     font-family: Helvetica, Arial, sans-serif;
-    max-height: 400px;
+    max-height: 85%;
     overflow-y: scroll;
   }
 
