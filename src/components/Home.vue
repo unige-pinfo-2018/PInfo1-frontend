@@ -940,16 +940,16 @@ export default {
 
 <style>
   #searchbar {
-    width: 60%;
-    left: 22%;
+    width: 80%;
+    left: 8%;
     top: 17%;
     position: fixed;
   }
   #postsRes {
     background-color: white;
     border-radius: 25px;
-    width: 60%;
-    left: 22%;
+    width: 80%;
+    left: 8%;
     top: 35%;
     max-height: 350px;
     position: fixed;

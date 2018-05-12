@@ -22,18 +22,19 @@
     </vue-particles>
     <div id="tags">
       <div id="tag" v-on:keyup.enter="switchColor">
-        <h4 style="margin-top: 20px; color: #000000;">Search for tags</h4>
+        <!--<h4 style="margin-top: 20px; color: #000000;">Search for tags</h4>-->
         <b-taginput class="myTags" style="border-radius: 25px; max-height: 430px; margin-left: 15px; margin-top: 15px; margin-right: 15px; margin-bottom: 52px"
                     v-model="tags" rounded
                     type='color'
                     maxtags = "20"
+                    placeholder="Search for tags..."
                     v-on:remove="updateSearch"
                     v-on:add="updateSearch">
         </b-taginput>
       </div>
     </div>
-    <div class="columns is-mobile">
-      <div class="column" id="posts">
+    <div id="posts" class="columns is-mobile">
+      <div class="column" id="post">
         <article v-for="post in posts" :key="post.id" class="media" :id="post.id">
           <figure class="media-left">
             <p class="image is-64x64">
@@ -774,7 +775,7 @@ export default {
       let self = this
       if (self.$data.tags.length !== 0) {
           /* Makes sure we never have too much tags */
-          self.$data.counter = tmp.$data.tags.length
+          self.$data.counter = self.$data.tags.length
           /* Picks a random number */
           let r = Math.floor(Math.random() * Math.floor(4))
           /* Picks a random color */
@@ -863,6 +864,8 @@ export default {
                   console.log(error.response);
                   return false
                 });
+            } else {
+              self.warning('No results found')
             }
             return true
           })
@@ -872,10 +875,8 @@ export default {
             return false
           });
       } else { // if the tags that we provided do not match any post, we don't do anything
-        this.$data.isVisibleLoadMore = true
         this.$data.posts = []
-        this.$data.from = 1
-        this.$data.to = 5
+        this.$data.isResultVisible = false
         this.retrievePosts()
       }
     },
@@ -947,34 +948,38 @@ export default {
 <style>
   #tags {
     bottom: 23%;
-    width: 100%;
+    width: 80%;
     height: 60%;
     text-align: center;
     position: fixed;
+    overflow-y: scroll;
     left: 10%;
   }
 
   #tag {
-    background-color: white;
+    background-color: transparent;
     color: black;
     border-radius: 25px;
-    border: 2px solid #FFFFFF;
-    max-width: 400px;
-    max-height: 400px;
+    border: transparent;
+    width: 80%;
+    height: 10%;
     position: fixed;
-    left: 5%;
-    top: 25%;
+    margin-left: auto;
+    margin-right: auto;
+    overflow-y: scroll;
+    top: 12%;
   }
 
   #posts {
     background-color: white;
     border-radius: 25px;
-    width: 700px;
-    left: 40%;
+    width: 80%;
+    text-align: center;
     top: 25%;
-    max-height: 400px;
+    height: 50%;
     position: fixed;
     overflow-y: scroll;
+    margin-left: 8%;
   }
 
   .modal-mask {
