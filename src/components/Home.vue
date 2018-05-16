@@ -975,7 +975,7 @@ export default {
   }
 
   .modal-container {
-    width: 85%;
+    max-width: 85%;
     margin: 0px auto;
     padding: 20px 30px;
     background-color: #fff;
