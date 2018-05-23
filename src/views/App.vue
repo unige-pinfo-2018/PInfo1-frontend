@@ -19,37 +19,37 @@
                 :background-color=backgroundColor :color=color :position=position
                 :is-open-new-tab=getIsOpenNewTab></quick-menu>
 
-    <div id="social" class="text-xs-center">
-      <button class="button is-outlined is-large is-focused"
-              style="border-color: #2196F3; background-color: transparent; color: white; border-radius: 9999px"
-              onclick="window.location.href = 'https://github.com/unige-pinfo-2018/PInfo1-frontend' ">
-        <b-icon
-          pack="fa"
-          icon="facebook"
-        >
-        </b-icon>
-      </button>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      <button class="button is-outlined is-large is-focused"
-              style="border-color: #2196F3; background-color: transparent; color: white; border-radius: 9999px"
-              onclick="window.location.href = 'https://twitter.com/' ">
-        <b-icon
-          pack="fa"
-          icon="twitter"
-        >
-        </b-icon>
-      </button>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      <button class="button is-outlined is-large is-focused"
-              style="border-color: #2196F3; background-color: transparent; color: white; border-radius: 9999px"
-              onclick="window.location.href = 'https://linkedin.com/' ">
-        <b-icon
-          pack="fa"
-          icon="linkedin"
-        >
-        </b-icon>
-      </button>
-    </div>
+    <!--<div id="social" class="text-xs-center">-->
+      <!--<button class="button is-outlined is-large is-focused"-->
+              <!--style="border-color: #2196F3; background-color: transparent; color: white; border-radius: 9999px"-->
+              <!--onclick="window.location.href = 'https://github.com/unige-pinfo-2018/PInfo1-frontend' ">-->
+        <!--<b-icon-->
+          <!--pack="fa"-->
+          <!--icon="facebook"-->
+        <!--&gt;-->
+        <!--</b-icon>-->
+      <!--</button>-->
+      <!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->
+      <!--<button class="button is-outlined is-large is-focused"-->
+              <!--style="border-color: #2196F3; background-color: transparent; color: white; border-radius: 9999px"-->
+              <!--onclick="window.location.href = 'https://twitter.com/' ">-->
+        <!--<b-icon-->
+          <!--pack="fa"-->
+          <!--icon="twitter"-->
+        <!--&gt;-->
+        <!--</b-icon>-->
+      <!--</button>-->
+      <!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->
+      <!--<button class="button is-outlined is-large is-focused"-->
+              <!--style="border-color: #2196F3; background-color: transparent; color: white; border-radius: 9999px"-->
+              <!--onclick="window.location.href = 'https://linkedin.com/' ">-->
+        <!--<b-icon-->
+          <!--pack="fa"-->
+          <!--icon="linkedin"-->
+        <!--&gt;-->
+        <!--</b-icon>-->
+      <!--</button>-->
+    <!--</div>-->
   </section>
 </template>
 
