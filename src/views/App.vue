@@ -176,8 +176,8 @@ export default {
 /* CSS used for the social media links */
 
 #social {
-  bottom: 30px;
-  z-index: 0;
+  bottom: 10%;
+  /*z-index: 0;*/
   width: 100%;
   text-align: center;
   position: fixed;
