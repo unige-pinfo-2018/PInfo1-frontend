@@ -77,7 +77,7 @@
 
           <b-field horizontal><!-- Label left empty for spacing -->
             <p class="control">
-              <button v-on:click="isVisible=true; renderMessage()" class="button is-outlined" style="color: #2196F3; border-color: #2196F3">
+              <button v-on:click="renderMessage()" class="button is-outlined" style="color: #2196F3; border-color: #2196F3">
                 Preview
               </button>
             </p>
@@ -237,16 +237,6 @@ export default {
     deleteDropFile(index) {
       this.dropFiles.splice(index, 1)
     },
-    success(text) {
-      this.$dialog.alert({
-        title: 'Success',
-        message: text,
-        type: 'is-success',
-        hasIcon: true,
-        icon: 'check-circle',
-        iconPack: 'fa'
-      })
-    },
     empty: function (str) {
       if (typeof str == 'undefined' || !str || str.length === 0 || str === "" || !/[^\s]/.test(str) || /^\s*$/.test(str) || str.replace(/\s/g, "") === "") {
         return true;
@@ -301,33 +291,49 @@ export default {
       }
     },
     renderMessage: async function () {
-      let userLoggedIn = await this.updateUserInfo()
-      this.$data.user = []
-      this.$data.user.push(userLoggedIn)
-      let self = this
-      axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
-        .then(function (response) {
-          if (response.data[0] === false) {
-            self.warning('You must be logged in to access this page')
-            self.$router.push('/login')
-          } else {
-            self.$data.source = self.$data.model.message
-          }
-          return true
-        })
-        .catch(function (error) {
-          console.log(error.response);
-          return false
-        });
+      if (this.empty(this.$data.model.message)) {
+        //fuck off
+      } else {
+        this.isVisible = true
+        let userLoggedIn = await this.updateUserInfo()
+        this.$data.user = []
+        this.$data.user.push(userLoggedIn)
+        let self = this
+        axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
+          .then(function (response) {
+            if (response.data[0] === false) {
+              self.warning('You must be logged in to access this page')
+              self.$router.push('/login')
+            } else {
+              self.$data.source = self.$data.model.message
+            }
+            return true
+          })
+          .catch(function (error) {
+            console.log(error.response);
+            return false
+          });
+      }
     },
-    warning(text) {
-      this.$dialog.alert({
-        title: 'Error',
+    success(text) {
+      this.$snackbar.open({
+        duration: 5000,
         message: text,
-        type: 'is-danger',
-        hasIcon: true,
-        icon: 'times-circle',
-        iconPack: 'fa'
+        type: 'is-info',
+        position: 'is-top',
+        actionText: 'OK',
+        queue: false
+      })
+    },
+    /* Function used to popup a warning with a custom message */
+    warning(text) {
+      this.$snackbar.open({
+        duration: 5000,
+        message: text,
+        type: 'is-info',
+        position: 'is-top',
+        actionText: 'OK',
+        queue: false
       })
     },
     switchColor: function (event) {

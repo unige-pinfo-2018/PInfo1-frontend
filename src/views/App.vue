@@ -85,14 +85,7 @@ export default {
   },
   methods: {
     success(text) {
-      this.$dialog.alert({
-        title: 'Success',
-        message: text,
-        type: 'is-success',
-        hasIcon: true,
-        icon: 'check-circle',
-        iconPack: 'fa'
-      })
+      this.$snackbar.open(text)
     },
     logout () {
       let self = this

@@ -441,14 +441,25 @@ export default {
         }
       }
     },
-    warning(text) {
-      this.$dialog.alert({
-        title: 'Error',
+    success(text) {
+      this.$snackbar.open({
+        duration: 5000,
         message: text,
-        type: 'is-danger',
-        hasIcon: true,
-        icon: 'times-circle',
-        iconPack: 'fa'
+        type: 'is-info',
+        position: 'is-top',
+        actionText: 'OK',
+        queue: false
+      })
+    },
+    /* Function used to popup a warning with a custom message */
+    warning(text) {
+      this.$snackbar.open({
+        duration: 5000,
+        message: text,
+        type: 'is-info',
+        position: 'is-top',
+        actionText: 'OK',
+        queue: false
       })
     },
     updateSearch: async function () {
