@@ -25,37 +25,33 @@
         <div id="pierre" class="columns">
           <!-- The first column of the profile container, with the profile picture, and the personnal infos -->
           <div class="column is-4">
-            <div class="tile is-ancestor is-vertical">
+            <div v-for="u in user" :key="u.id" class="tile is-ancestor is-vertical">
               <div class="tile is-parent">
                 <!-- Tile of the profil picture -->
                 <article class="tile is-child notification box is-white">
                   <figure class="image is-4by3">
-                    <img id="profile-picture" src="http://freevectorsite.com/wp-content/uploads/2013/08/Mustache-and-glasses-Vector-Graphic.jpg">
+                    <img id="profile-picture" :src="u.profilePicture">
                   </figure>
                 </article>
               </div>
-              <div class="tile is-parent">
+              <div class="tile is-parent is-vertical">
                 <!-- Tile of the personal infos -->
-                <article v-for="u in user" :key="u.id" class="tile is-child notification box is-white">
+                <article class="tile is-child notification box is-white">
                   <div id="personal-infos" class="content">
                     <p><i class="fa fa-bookmark"></i>&ensp;{{u.name}}</p>
-                    <p><i class="fa fa-user"></i>&ensp;{{u.username}}</p>
-                    <p><i class="fa fa-university"></i>&ensp;{{u.university}}</p>
-                    <p><i class="fa fa-desktop"></i>&ensp;{{u.field}}</p>
-                    <p><i class="fa fa-graduation-cap"></i>&ensp;{{u.cursus}}</p>
-                    <!--<p><i class="fa fa-bookmark"></i>&ensp;Steve Hostettler</p>
-                    <p><i class="fa fa-user"></i>&ensp;Best_Prof_ever</p>
-                    <p><i class="fa fa-university"></i>&ensp;University of Geneva</p>
-                    <p><i class="fa fa-desktop"></i>&ensp;Computer Science</p>
-                    <p><i class="fa fa-graduation-cap"></i>&ensp;Professor</p>-->
+                    <p><i class="fa fa-user"></i>&ensp;@{{u.username}}</p>
                   </div>
                 </article>
+                <br>
+                <div class="tile is-child">
+                  <a id="edit-button" class="button is-rounded" @click="launch">Edit my profile</a>
+                </div>
               </div>
             </div>
           </div>
           <!-- The second column of the profile container, with the activities card, the contact logos and the edit button -->
           <div id="profile-column-right" class="column is-7">
-            <div class="tile is-ancestor is-vertical">
+            <div class="tile is-ancestor">
               <div class="tile is-parent">
                 <div id="container-activities" class="container">
                   <!-- The activities card -->
@@ -65,135 +61,9 @@
                         My recent activities
                       </p>
                     </div>
+
                     <div id="card-activities-content" class="card-content">
-
-                      <article class="media">
-                      <figure class="media-left">
-                        <p class="image is-48x48">
-                          <img src="https://lh5.ggpht.com/jaxy6yyOOhXRQOyHpmeccsP0fuvSZxe0ezRDZ_hWiSh3XPM32T9-t9Bj-gJ_u-tp-Sc=w170" style="border-radius: 50%;">
-                        </p>
-                      </figure>
-                      <div class="media-content">
-                        <div class="content">
-                          <p>
-                            <strong>Title of a post about biology.</strong>
-                            <br />
-                            <small>A sneak peek of the post...</small>
-                          </p>
-                        </div>
-                      </div>
-                      <div class="level-left">
-                        <a class="level-item">
-                            <button class="button is-outlined"
-                                    style="color: #2196F3; border-color: #2196F3"
-                                    @click="isVisible = true; answer($event)">
-                              View
-                            </button>
-                          </a>
-                      </div>
-                    </article>
-                    <article id="activity_1" class="media">
-                      <figure class="media-left">
-                        <p class="image is-48x48">
-                          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/480px-Python-logo-notext.svg.png" style="border-radius: 50%;">
-                        </p>
-                      </figure>
-                      <div class="media-content">
-                        <div class="content">
-                          <p>
-                            <strong>Title of a post about python.</strong>
-                            <br />
-                            <small>A sneak peek of the post...</small>
-                          </p>
-                        </div>
-                      </div>
-                      <div class="level-left">
-                        <a class="level-item">
-                            <button class="button is-outlined"
-                                    style="color: #2196F3; border-color: #2196F3"
-                                    @click="isVisible = true; answer($event)">
-                              View
-                            </button>
-                          </a>
-                      </div>
-                    </article>
-                    <article id="activity_2" class="media">
-                      <figure class="media-left">
-                        <p class="image is-48x48">
-                          <img src="https://physics.uconn.edu/wp-content/uploads/sites/1363/2015/08/physics.png" style="border-radius: 50%;">
-                        </p>
-                      </figure>
-                      <div class="media-content">
-                        <div class="content">
-                          <p>
-                            <strong>Title of a post about physics.</strong>
-                            <br />
-                            <small>A sneak peek of the post...</small>
-                          </p>
-                        </div>
-                      </div>
-                      <div class="level-left">
-                        <a class="level-item">
-                            <button class="button is-outlined"
-                                    style="color: #2196F3; border-color: #2196F3"
-                                    @click="isVisible = true; answer($event)">
-                              View
-                            </button>
-                          </a>
-                      </div>
-                    </article>
-                    <article id="activity_3" class="media">
-                      <figure class="media-left">
-                        <p class="image is-48x48">
-                          <img src="https://lh5.ggpht.com/jaxy6yyOOhXRQOyHpmeccsP0fuvSZxe0ezRDZ_hWiSh3XPM32T9-t9Bj-gJ_u-tp-Sc=w170" style="border-radius: 50%;">
-                        </p>
-                      </figure>
-                      <div class="media-content">
-                        <div class="content">
-                          <p>
-                            <strong>Title of a post about something.</strong>
-                            <br />
-                            <small>A sneak peek of the post...</small>
-                          </p>
-                        </div>
-                      </div>
-                      <div class="level-left">
-                        <a class="level-item">
-                            <button class="button is-outlined"
-                                    style="color: #2196F3; border-color: #2196F3"
-                                    @click="isVisible = true; answer($event)">
-                              View
-                            </button>
-                          </a>
-                      </div>
-                    </article>
-                    <article id="activity_4" class="media">
-                      <figure class="media-left">
-                        <p class="image is-48x48">
-                          <img src="https://lh5.ggpht.com/jaxy6yyOOhXRQOyHpmeccsP0fuvSZxe0ezRDZ_hWiSh3XPM32T9-t9Bj-gJ_u-tp-Sc=w170" style="border-radius: 50%;">
-                        </p>
-                      </figure>
-                      <div class="media-content">
-                        <div class="content">
-                          <p>
-                            <strong>Title of a post about something else</strong>
-                            <br />
-                            <small>A sneak peek of the post...</small>
-                          </p>
-                        </div>
-                      </div>
-                      <div class="level-left">
-                        <a class="level-item">
-                            <button class="button is-outlined"
-                                    style="color: #2196F3; border-color: #2196F3"
-                                    @click="isVisible = true; answer($event)">
-                              View
-                            </button>
-                          </a>
-                      </div>
-                    </article>
-
-                      <!-- <article v-for="post in posts" :key="post.id" class="media" :id="post.id">
+                      <article v-for="post in posts" :key="post.id" class="media" :id="post.id">
                         <figure class="media-left">
                           <p class="image is-64x64">
                             <img :src="post.profilePicture" style="border-radius: 50%;">
@@ -209,65 +79,28 @@
                           </div>
                           <nav class="level is-mobile">
                             <div class="level-right">
-                              <a class="level-item">
+                              <a id="upVote1" class="level-item" v-on:click="handleVote($event)">
                                 <b-icon
-                                  pack="fa"
-                                  icon="heart"
-                                  style="color: orangered;"
+                                  v-bind:style="{color: post.colorUpVote}"
+                                  id = 'votes'
+                                  icon="arrow-up"
                                 >
                                 </b-icon>
                               </a>
-                              <a class="level-item">
+                              <a id="downVote1" class="level-item" v-on:click="handleVote($event)">
                                 <b-icon
-                                  pack="fa"
-                                  icon="thumbs-down"
-                                  style="color: #000"
+                                  v-bind:style="{color: post.colorDownVote}"
+                                  id = 'votes'
+                                  icon="arrow-down"
                                 >
                                 </b-icon>
                               </a>
-                            </div>
-                            <div class="level-left">
-                              <a class="level-item">
-                                <button class="button is-outlined"
-                                        style="color: #2196F3; border-color: #2196F3"
-                                        @click="isVisible = true; answer($event)">
-                                  Answer
-                                </button>
-                              </a>
+                              <p>{{post.vote}}</p>
                             </div>
                           </nav>
                         </div>
-                        <div class="media-right" style="text-align: center">
-                          <b-icon
-                            pack="fa"
-                            icon="comment"
-                            style="color: #44c784"
-                          >
-                          </b-icon>
-                          <p>{{post.numberOfComments}}</p>
-                        </div>
-                      </article> -->
-                      <article class="media" id="footer">
-                        <footer style="background-color: white; margin-right: auto; margin-left: auto">
-                          <button class="button is-outlined" style="color: #2196F3; border-color: #2196F3">Load more</button>
-                        </footer>
                       </article>
                     </div>
-                  </div>
-                </div>
-              </div>
-              <!-- The edit button and contact logos-->
-              <div id="contact-logos" class="tile is-parent ">
-                <div class="columns">
-                  <div class="column">
-                    <i class="fa fa-facebook-square"></i>
-                    <i class="fa fa-twitter-square"></i>
-                    <i class="fa fa-linkedin"></i>
-                    <i class="fa fa-instagram"></i>
-                  </div>
-                  <div class="column">
-                    <!-- <a id="edit-button" class="button is-rounded" @click="launch">Edit my profile</a> -->
-                    <a id="edit-button" class="button is-rounded">Edit my profile</a>
                   </div>
                 </div>
               </div>
@@ -282,112 +115,40 @@
       <div class="modal-card">
         <header class="modal-card-head">
           <p class="modal-card-title">Profile Edition</p>
-          <button class="delete" aria-label="close" @click="close"></button>
         </header>
         <section class="modal-card-body">
-          <div class="content">
-            <div id="edit-columns" class="columns is-variable is-5">
-              <div id="edit-column-left" class="column is-half">
-                <!-- Name -->
-                <div class="field">
-                  <label class="label">Name</label>
-                  <div class="control">
-                    <input class="input" type="text" value="Steve Hostettler">
-                  </div>
-                  <p class="help">This name won't be displayed on the website.</p>
-                </div>
-                <!-- Email -->
-                <div class="field">
-                  <label class="label">Email</label>
-                  <div class="control">
-                    <input class="input is-static" type="email" value="Steve.Hostettler@unige.ch" readonly>
-                  </div>
-                </div>
-                <!-- Faculty -->
-                <div class="field">
-                  <label class="label">Faculty</label>
-                  <div class="control">
-                    <input class="input" type="text" value="Computer Science">
-                  </div>
-                </div>
-                <!-- Contact box -->
-                <div class="field">
-                  <label class="label">Contact</label>
-                  <div class="control">
-                    <textarea class="textarea" placeholder="Text area"></textarea>
-                  </div>
-                </div>
-              </div>
-              <div id="edit-column-right" class="column is-half">
-                <!-- Username -->
-                <div class="field">
-                  <label class="label">Username</label>
-                  <div class="control has-icons-left has-icons-right">
-                    <input class="input is-success" type="text" value="Best_Prof_ever">
-                    <span class="icon is-small is-left">
-                                              <i class="fa fa-user"></i>
-                                            </span>
-                    <span class="icon is-small is-right">
-                                              <i class="fa fa-check"></i>
-                                            </span>
-                  </div>
-                  <p class="help is-success">This username is available</p>
-                </div>
-                <!-- School -->
-                <div class="field">
-                  <label class="label">School</label>
-                  <div class="control">
-                    <input class="input is-static" type="email" value="University of Geneva" readonly>
-                  </div>
-                </div>
-                <!-- Degree -->
-                <div class="field">
-                  <label class="label">Degree</label>
-                  <div class="control">
-                    <div class="select">
-                      <select>
-                                            <option>Options</option>
-                                            <option>Bachelor</option>
-                                            <option>Master</option>
-                                            <option>PhD</option>
-                                            <option>Assistant</option>
-                                            <option>Professor</option>
-                                          </select>
-                    </div>
-                  </div>
-                </div>
-                <!-- Profile picture -->
-                <div class=" field">
-                  <label class="label">Profile picture</label>
-                  <div class="file">
-                    <label class="file-label">
-                        <input class="file-input" type="file" name="resume">
-                        <span class="file-cta">
-                            <span class="file-icon">
-                                <i class="fa fa-upload"></i>
-                            </span>
-                            <span class="file-label">
-                                Choose a profile picture...
-                            </span>
-                        </span>
-                    </label>
-                  </div>
-                </div>
-                <!-- Switch -->
-                <div id="switch" class="field">
-                  <b-switch type="is-info" v-model="isSwitchedCustom" true-value="Contact informations sharded" false-value="Contact informations not sharded">
-                    {{ isSwitchedCustom }}
-                  </b-switch>
-                </div>
+          <div class="columns">
+            <div class="column">
+              <formly-form :form="form" :model="model" :fields="fields" style="border: none"></formly-form>
+              <label class="label">Profile picture</label>
+              <b-upload v-model="dropFiles"
+                        v-on:input="handleUpload">
+                <a class="button" style="background-color: #65B0FF">
+                  <b-icon icon="upload" style="color:white"></b-icon>
+                  <span style="color:white">Upload</span>
+                </a>
+              </b-upload>
+              <div class="files">
+                <span class="tag is-outlined is-small"
+                style="color: #2196F3">
+                  {{this.$data.temp_ProfilePicture[1]}}
+                  <button class="delete is-small"
+                      type="button"
+                      @click="deleteDropFile()">
+                  </button>
+                </span>
               </div>
             </div>
           </div>
         </section>
-        <footer class="modal-card-foot">
-          <div class="field is-grouped-right">
-            <button class="button is-info">Save changes</button>
-          </div>
-        </footer>
+        <article class="media" id="footer">
+          <footer class="modal-card-foot">
+            <div class="field is-grouped is-grouped-right">
+              <button class="button" @click="saveChanges" style="background-color: #65B0FF; color:white">Save changes</button>
+              <button class="button" type="button" @click="close">Cancel</button>
+            </div>
+          </footer>
+        </article>
       </div>
     </div>
   </section>
@@ -395,34 +156,360 @@
 
 <script>
 /* eslint-disable */
+import VueMarkdown from 'vue-markdown'
+import { directive as onClickaway } from 'vue-clickaway';
+import * as axios from 'axios'
+
+function getWebsocketSessionId (callback) {
+  axios.get('http://127.0.0.1:18080/notifications-service/rest/authenticator/getSessionId', {
+    withCredentials: true
+  }).then(function (response) {
+    let wsSessionId = response.data
+    callback(wsSessionId)
+  })
+}
+
 export default {
-  name: 'Profile',
+  directives: {
+    onClickaway: onClickaway,
+  },
+  /* eslint-disable */
+  name: 'Posts',
+  components: {
+    VueMarkdown
+  },
   created: function () {
-    this.$store.commit('switch_background', require('../assets/bg.jpg'))
+    this.$store.commit('switch_background', require('../assets/bg-black.jpg'))
   },
   data () {
     return {
-      user: [
-        {
-          name: "Kilian Ruchti",
-          username: "@Kiki",
-          university: "Geneva",
-          cursus: "Bachelor",
-          field: "Computer Science"
-        }
-      ],
       isSwitched: false,
       isSwitchedCustom: 'Contact informations not sharded',
-      isActive: false
+      isActive: false,
+      isVisible: false, // To show or not the answer window
+
+      form: {},
+      model: {
+        name:""
+      },
+      fields: [
+        {
+          key: 'name',
+          type: 'input-with-field',
+          required: true,
+          templateOptions: {
+            properties: {
+              'type': 'text',
+              'maxlength': 30,
+              'placeholder': "Name"
+            },
+            wrapper: {
+              properties: {
+                'addons': false,
+                'label': 'Name',
+                'style': "max-width: 300px; margin-left: auto; margin-right: auto"
+              }
+            }
+          }
+        }
+      ],
+
+      dropFiles: [],
+      temp_ProfilePicture:[],
+      posts: [ // contains all the post displayed on screen
+      ],
+      user: [ // information of the current user that's logged in
+      ],
+      comments: [ // will contain all comments relative to a post
+      ]
     }
   },
   methods: {
+    checkStringNotEmpty: function(string) {
+      this.string != ''
+    },
     launch: function () {
       this.isActive = true
     },
     close: function () {
       this.isActive = false
     },
+
+    saveChanges: async function () {
+      let self = this  //if this is not declared here, using it in the block below
+      //doesn't reference the correct instance of vue, so $router
+      //can't be used.
+
+      if (self.$data.dropFiles.length != 0 && self.$data.temp_ProfilePicture.length == 0) {
+        self.warning("Please wait for the upload to finish.")
+      } else {
+        if (self.form.$valid && self.$data.temp_ProfilePicture.length != 0) {
+          axios.post('http://127.0.0.1:18080/users-service/rest/users/update_user', {
+            "confirmed":self.$data.user[0].confirmed,
+            "curriculum":self.$data.user[0].curriculum,
+            "email":self.$data.user[0].email,
+            "id":self.$data.user[0].id,
+            "name": self.$data.model.name,
+            "pictureUrl": self.$data.temp_ProfilePicture[0],
+            "password":self.$data.user[0].password,
+            "role":self.$data.user[0].role,
+            "username":self.$data.user[0].username}
+            , {withCredentials: true})
+          window.location.reload(true)
+        } else if (self.form.$valid && self.$data.temp_ProfilePicture.length == 0) {
+          axios.post('http://127.0.0.1:18080/users-service/rest/users/update_user', {
+            "confirmed":self.$data.user[0].confirmed,
+            "curriculum":self.$data.user[0].curriculum,
+            "email":self.$data.user[0].email,
+            "id":self.$data.user[0].id,
+            "name": self.$data.model.name,
+            "pictureUrl": self.$data.user[0].profilePicture,
+            "password":self.$data.user[0].password,
+            "role":self.$data.user[0].role,
+            "username":self.$data.user[0].username}
+            , {withCredentials: true})
+          window.location.reload(true)
+        } else if (!self.form.$valid && self.$data.temp_ProfilePicture.length != 0) {
+          axios.post('http://127.0.0.1:18080/users-service/rest/users/update_user', {
+            "confirmed":self.$data.user[0].confirmed,
+            "curriculum":self.$data.user[0].curriculum,
+            "email":self.$data.user[0].email,
+            "id":self.$data.user[0].id,
+            "name": self.$data.user[0].name,
+            "pictureUrl": self.$data.temp_ProfilePicture[0],
+            "password":self.$data.user[0].password,
+            "role":self.$data.user[0].role,
+            "username":self.$data.user[0].username}
+            , {withCredentials: true})
+          window.location.reload(true)
+        } else {
+          self.warning('Please correct your inputs.')
+        }
+      }
+    },
+
+    handleUpload() {
+      let self = this
+      let files = this.$data.dropFiles;
+      let promises = []
+      let temp=[]
+      if (files.length !== 0) {
+        if (files.length <= 1) {
+          self.success('Upload in progress.... Links will automatically appear under the button when it is uploaded')
+          for (let i = 0; i < self.$data.dropFiles.length; i++) {
+            let formData = new FormData();
+            formData.append('image', self.$data.dropFiles[i])
+            const config = {
+              baseURL: 'https://api.imgur.com',
+              headers: {
+                'Authorization': 'Client-ID ' + '254c66d26ff90cc'
+                }
+              }
+            promises.push(axios.post('/3/image', formData, config))
+          }
+          axios.all(promises)
+            .then((result) => {
+              for (let i=0; i<result.length; i++) {
+                temp.push(result[i].data.data.link)
+                self.$data.temp_ProfilePicture.push(temp[0], self.$data.dropFiles[i].name)
+              }
+            })
+            .catch((error) => {
+              console.log('image post error')
+              console.log(error)
+            })
+        } else {
+          self.warning('Cannot upload more than 1 profile picture at a time')
+        }
+      }
+    },
+
+    deleteDropFile() {
+      this.dropFiles.splice(0, 1),
+      this.$data.temp_ProfilePicture=[]
+    },
+
+    handleVote: async function (event) {
+      let userLoggedIn = await this.updateUserInfo()
+      this.$data.user = []
+      this.$data.user.push(userLoggedIn)
+      let self = this
+      let action = event.target.parentElement.parentElement.getAttribute("id")
+      let postID = event.target // Gets the id for the parent post
+        .parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.getAttribute("id")
+      let post = null
+      for (let i=0; i<self.$data.posts.length; i++) {
+        if (self.$data.posts[i].id == postID) { // look for the right post to inject in the answer window
+          post = self.$data.posts[i]
+        }
+      }
+      if (post == null) { // then we look for a comment
+        for (let i = 0; i < self.$data.comments.length; i++) {
+          if (self.$data.comments[i].id == postID) { // look for the right post to inject in the answer window
+            post = self.$data.comments[i]
+          }
+        }
+      }
+
+      if (action == "upVote1" || action == "upVote2" || action == "upVote3") {
+        if (post.colorUpVote == "#dddddd" && post.colorDownVote != "#ff9100" ) {
+          axios.put('http://127.0.0.1:18080/post-service/rest/likes/addLike',
+            {
+              "userId": self.$data.user[0].id,
+              "postId": postID
+            })
+            .then(function (response) {
+              axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+self.$data.user[0].id, {
+                "idPosts": [post.id]
+              })
+                .then(function (response) {
+                  post.vote = response.data[0][0]
+                  post.colorUpVote = "#ff9100"
+                  axios.get('http://127.0.0.1:18080/post-service/rest/posts/userId_by_id/'+postID)
+                    .then(function (response) {
+                      axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
+                        "ids": [response.data]
+                      }, {withCredentials: true})
+                        .then(function (response) {
+                          self.sendNotification(response.data[0].username, 'New upvote on your post')
+                          return true
+                        })
+                        .catch(function (error) {
+                          self.warning('Error while trying to reach database')
+                          console.log(error.response);
+                          return false
+                        });
+                      return true
+                    })
+                    .catch(function (error) {
+                      self.warning('Error while trying to reach database')
+                      console.log(error.response);
+                      return false
+                    });
+                  return true
+                })
+                .catch(function (error) {
+                  self.warning('Could not fetch posts. Database not reachable')
+                  console.log(error.response);
+                  return false
+                });
+              return true
+            })
+            .catch(function (error) {
+              console.log(error.response);
+              return false
+            });
+        } else {
+          if (post.colorDownVote != "#ff9100") {
+            axios.put('http://127.0.0.1:18080/post-service/rest/likes/addLike',
+              {
+                "userId": self.$data.user[0].id,
+                "postId": postID
+              })
+              .then(function (response) {
+                axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+self.$data.user[0].id, {
+                  "idPosts": [post.id]
+                })
+                  .then(function (response) {
+                    post.vote = response.data[0][0]
+                    post.colorUpVote = "#dddddd"
+                    return true
+                  })
+                  .catch(function (error) {
+                    self.warning('Could not fetch posts. Database not reachable')
+                    console.log(error.response);
+                    return false
+                  });
+                return true
+              })
+              .catch(function (error) {
+                console.log(error.response);
+                return false
+              });
+          }
+        }
+      }
+
+      if (action == "downVote1" || action == "downVote2" || action == "downVote3") {
+        if (post.colorDownVote == "#dddddd" && post.colorUpVote != "#ff9100") {
+          axios.put('http://127.0.0.1:18080/post-service/rest/dislikes/addDislike',
+            {
+              "userId": self.$data.user[0].id,
+              "postId": postID
+            })
+            .then(function (response) {
+              axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+self.$data.user[0].id, {
+                "idPosts": [post.id]
+              })
+                .then(function (response) {
+                  post.vote = response.data[0][0]
+                  post.colorDownVote = "#ff9100"
+                  axios.get('http://127.0.0.1:18080/post-service/rest/posts/userId_by_id/'+postID)
+                    .then(function (response) {
+                      axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
+                        "ids": [response.data]
+                      }, {withCredentials: true})
+                        .then(function (response) {
+                          self.sendNotification(response.data[0].username, 'New downvote on your post')
+                          return true
+                        })
+                        .catch(function (error) {
+                          self.warning('Error while trying to reach database')
+                          console.log(error.response);
+                          return false
+                        });
+                      return true
+                    })
+                    .catch(function (error) {
+                      self.warning('Error while trying to reach database')
+                      console.log(error.response);
+                      return false
+                    });
+                  return true
+                })
+                .catch(function (error) {
+                  self.warning('Could not fetch posts. Database not reachable')
+                  console.log(error.response);
+                  return false
+                });
+              return true
+            })
+            .catch(function (error) {
+              console.log(error.response);
+              return false
+            });
+        } else {
+          if (post.colorUpVote != "#ff9100") {
+            axios.put('http://127.0.0.1:18080/post-service/rest/dislikes/addDislike',
+              {
+                "userId": self.$data.user[0].id,
+                "postId": postID
+              })
+              .then(function (response) {
+                axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+self.$data.user[0].id, {
+                  "idPosts": [post.id]
+                })
+                  .then(function (response) {
+                    post.vote = response.data[0][0]
+                    post.colorDownVote = "#dddddd"
+                    return true
+                  })
+                  .catch(function (error) {
+                    self.warning('Could not fetch posts. Database not reachable')
+                    console.log(error.response);
+                    return false
+                  });
+                return true
+              })
+              .catch(function (error) {
+                console.log(error.response);
+                return false
+              });
+          }
+        }
+      }
+    },
+
     success(text) {
       this.$snackbar.open({
         duration: 5000,
@@ -444,8 +531,136 @@ export default {
         queue: false
       })
     },
+    retrievePosts: async function () {
+      let userLoggedIn = await this.updateUserInfo()
+      this.$data.user = []
+      this.$data.user.push(userLoggedIn)
+      let self = this
+      let idPost = [], textPost = [], datePost = [], userIdsToQuery = []
+      let profilePictures = [], names = [], usernames = []
+      await axios.get('http://127.0.0.1:18080/post-service/rest/posts/getPostsOfUser/'+self.$data.user[0].id, { withCredentials: true })
+        .then(function (response) {
+          if (response.data != null && response.data.length > 0) {
+            for (let i=0; i<response.data.length; i++) {
+              let date = new Date(response.data[i].datePost)
+              datePost.push(date)
+              idPost.push(response.data[i].id)
+              textPost.push(response.data[i].content)
+              userIdsToQuery.push(response.data[i].userId)
+            }
+
+            axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
+              "ids": userIdsToQuery
+            }, {withCredentials: true})
+              .then(function (response) {
+                for (let i=0; i<response.data.length; i++) {
+                  profilePictures.push(response.data[i].pictureUrl)
+                  names.push(response.data[i].name)
+                  usernames.push(response.data[i].username)
+                }
+                axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+self.$data.user[0].id, {
+                  "idPosts": idPost
+                }, { withCredentials: true })
+                  .then(function (response) {
+                    for (let i=response.data[0].length-1; i>=0; i--) {
+                      let post = {
+                        id: idPost[i],
+                        text: textPost[i],
+                        profilePicture: profilePictures[i],
+                        name: names[i],
+                        username: "@"+usernames[i],
+                        date: datePost[i].getDay() + '/' + datePost[i].getMonth() + '/' + datePost[i].getFullYear() + ' - ' + datePost[i].getHours() + ':' + datePost[i].getMinutes() + ':' + datePost[i].getSeconds(),
+                        colorUpVote: response.data[1][i].like == false ? "#dddddd" : "#ff9100",
+                        colorDownVote: response.data[1][i].dislike == false ? "#dddddd" : "#ff9100",
+                        vote: response.data[0][i]
+                      }
+                      self.$data.posts.push(post) // pushing the data so they display
+                    }
+                    return true
+                  })
+                  .catch(function (error) {
+                    self.warning('Could not fetch posts. Database not reachable')
+                    console.log(error.response);
+                    return false
+                  });
+                return true
+              })
+              .catch(function (error) {
+                self.warning('Could not fetch posts. Database not reachable')
+                console.log(error)
+                return false
+              });
+
+          } else {
+            self.warning("No more posts to fetch")
+          }
+          return true
+        })
+        .catch(function (error) {
+          self.warning('Could not connect to database')
+          console.log(error);
+          return false
+        });
+    },
+
+    /* Checks if a string is empty or undefined or only contains white spaces */
+    empty: function (str) {
+      if (typeof str == 'undefined' || !str || str.length === 0 || str === "" || !/[^\s]/.test(str) || /^\s*$/.test(str) || str.replace(/\s/g,"") === "") {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    sendNotification: function (dest, notif) {
+      let self = this
+      if (this.$store.state.userIsLoggedIn && this.$store.state.user != null) {
+        getWebsocketSessionId((sessionId) => {
+          const notificationSocket = new WebSocket('ws://127.0.0.1:18080/notifications-service/notifications/' +
+            self.$store.state.user.username + '/' + sessionId)
+            notificationSocket.onopen = function (ignored) {
+            notificationSocket.send(JSON.stringify({
+              messageType: 'CREATE',
+              body: JSON.stringify({
+                recipient: dest,
+                content: notif
+              })
+            }))
+          }
+        })
+      }
+    }
   },
-  beforeMount () {
+
+  updateUserInfo: async function () {
+    let self = this
+    let b = []
+    await
+    axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
+      .then(function (response) {
+        if (response.data[0] === true) {
+          b =  {
+            confirmed:response.data[1].confirmed,
+            curriculum:response.data[1].curriculum,
+            email:response.data[1].email,
+            id: response.data[1].id,
+            username: response.data[1].username,
+            name: response.data[1].name,
+            profilePicture: response.data[1].pictureUrl,
+            password: response.data[1].password,
+            role: response.data[1].role
+          }
+        } else {
+          self.warning('You must be logged in to access this page')
+          self.$router.push('/login')
+        }
+      })
+      .catch(function (error) {
+        console.log(error.response);
+        return false
+      });
+    return b
+  },
+  beforeMount(){
     let self = this
     /* When the component is mounted, the functions below are triggered */
     axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
@@ -459,7 +674,7 @@ export default {
         return true
       })
       .catch(function (error) {
-        console.log(error.response)
+        console.log(error.response);
         return false
       });
   }
@@ -505,13 +720,14 @@ export default {
 }
 
 #card-activities {
-  height: 350px;
+  height: 400px;
+  width: auto;
   overflow-y: auto;
 }
 
 #card-activities-content {
   overflow-y: auto;
-  height: 87%;
+  height: auto;
   padding: 16px;
 }
 
@@ -520,14 +736,12 @@ export default {
 }
 
 #container-activities {
-  height: 350px;
-  width: 500px;
+  height: 400px;
+  width: auto;
 }
 
 #edit-button {
-  position: absolute;
-  right: 30px;
-  bottom: 3px;
+  width: auto;
   background-color: #65B0FF;
   color: white;
 }
@@ -571,6 +785,7 @@ export default {
   width: auto;
   height: 100%;
   margin: auto;
+  max-width: 100%;
 }
 
 #switch {
@@ -587,9 +802,47 @@ export default {
 .modal {
   z-index: 1000;
 }
+
 .modal-card {
-  height: 85%;
+  height: 65%;
   width: 60%;
+}
+
+.modal-mask {
+  position: fixed;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .5);
+  display: table;
+  transition: opacity .3s ease;
+}
+
+.modal-wrapper {
+  display: table-cell;
+  vertical-align: middle;
+  width: 700px;
+}
+
+.modal-container {
+  width: 85%;
+  margin: 0px auto;
+  padding: 20px 30px;
+  background-color: #fff;
+  border-radius: 25px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+  transition: all .3s ease;
+  font-family: Helvetica, Arial, sans-serif;
+  max-height: 85%;
+  overflow-y: scroll;
+}
+
+.modal-enter .modal-container,
+.modal-leave-active .modal-container {
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
 }
 
 .notification {
