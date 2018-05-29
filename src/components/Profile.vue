@@ -225,7 +225,7 @@ export default {
     }
   },
   methods: {
-    checkStringNotEmpty: function(string) {
+    checkStringNotEmpty: function (string) {
       this.string != ''
     },
     launch: function () {
@@ -245,41 +245,44 @@ export default {
       } else {
         if (self.form.$valid && self.$data.temp_ProfilePicture.length != 0) {
           axios.post('http://127.0.0.1:18080/users-service/rest/users/update_user', {
-            "confirmed":self.$data.user[0].confirmed,
-            "curriculum":self.$data.user[0].curriculum,
-            "email":self.$data.user[0].email,
-            "id":self.$data.user[0].id,
-            "name": self.$data.model.name,
-            "pictureUrl": self.$data.temp_ProfilePicture[0],
-            "password":self.$data.user[0].password,
-            "role":self.$data.user[0].role,
-            "username":self.$data.user[0].username}
+              "confirmed": self.$data.user[0].confirmed,
+              "curriculum": self.$data.user[0].curriculum,
+              "email": self.$data.user[0].email,
+              "id": self.$data.user[0].id,
+              "name": self.$data.model.name,
+              "pictureUrl": self.$data.temp_ProfilePicture[0],
+              "password": self.$data.user[0].password,
+              "role": self.$data.user[0].role,
+              "username": self.$data.user[0].username
+            }
             , {withCredentials: true})
           window.location.reload(true)
         } else if (self.form.$valid && self.$data.temp_ProfilePicture.length == 0) {
           axios.post('http://127.0.0.1:18080/users-service/rest/users/update_user', {
-            "confirmed":self.$data.user[0].confirmed,
-            "curriculum":self.$data.user[0].curriculum,
-            "email":self.$data.user[0].email,
-            "id":self.$data.user[0].id,
-            "name": self.$data.model.name,
-            "pictureUrl": self.$data.user[0].profilePicture,
-            "password":self.$data.user[0].password,
-            "role":self.$data.user[0].role,
-            "username":self.$data.user[0].username}
+              "confirmed": self.$data.user[0].confirmed,
+              "curriculum": self.$data.user[0].curriculum,
+              "email": self.$data.user[0].email,
+              "id": self.$data.user[0].id,
+              "name": self.$data.model.name,
+              "pictureUrl": self.$data.user[0].profilePicture,
+              "password": self.$data.user[0].password,
+              "role": self.$data.user[0].role,
+              "username": self.$data.user[0].username
+            }
             , {withCredentials: true})
           window.location.reload(true)
         } else if (!self.form.$valid && self.$data.temp_ProfilePicture.length != 0) {
           axios.post('http://127.0.0.1:18080/users-service/rest/users/update_user', {
-            "confirmed":self.$data.user[0].confirmed,
-            "curriculum":self.$data.user[0].curriculum,
-            "email":self.$data.user[0].email,
-            "id":self.$data.user[0].id,
-            "name": self.$data.user[0].name,
-            "pictureUrl": self.$data.temp_ProfilePicture[0],
-            "password":self.$data.user[0].password,
-            "role":self.$data.user[0].role,
-            "username":self.$data.user[0].username}
+              "confirmed": self.$data.user[0].confirmed,
+              "curriculum": self.$data.user[0].curriculum,
+              "email": self.$data.user[0].email,
+              "id": self.$data.user[0].id,
+              "name": self.$data.user[0].name,
+              "pictureUrl": self.$data.temp_ProfilePicture[0],
+              "password": self.$data.user[0].password,
+              "role": self.$data.user[0].role,
+              "username": self.$data.user[0].username
+            }
             , {withCredentials: true})
           window.location.reload(true)
         } else {
@@ -292,7 +295,7 @@ export default {
       let self = this
       let files = this.$data.dropFiles;
       let promises = []
-      let temp=[]
+      let temp = []
       if (files.length !== 0) {
         if (files.length <= 1) {
           self.success('Upload in progress.... Links will automatically appear under the button when it is uploaded')
@@ -303,13 +306,13 @@ export default {
               baseURL: 'https://api.imgur.com',
               headers: {
                 'Authorization': 'Client-ID ' + '254c66d26ff90cc'
-                }
               }
+            }
             promises.push(axios.post('/3/image', formData, config))
           }
           axios.all(promises)
             .then((result) => {
-              for (let i=0; i<result.length; i++) {
+              for (let i = 0; i < result.length; i++) {
                 temp.push(result[i].data.data.link)
                 self.$data.temp_ProfilePicture.push(temp[0], self.$data.dropFiles[i].name)
               }
@@ -326,7 +329,7 @@ export default {
 
     deleteDropFile() {
       this.dropFiles.splice(0, 1),
-      this.$data.temp_ProfilePicture=[]
+        this.$data.temp_ProfilePicture = []
     },
 
     handleVote: async function (event) {
@@ -338,7 +341,7 @@ export default {
       let postID = event.target // Gets the id for the parent post
         .parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.getAttribute("id")
       let post = null
-      for (let i=0; i<self.$data.posts.length; i++) {
+      for (let i = 0; i < self.$data.posts.length; i++) {
         if (self.$data.posts[i].id == postID) { // look for the right post to inject in the answer window
           post = self.$data.posts[i]
         }
@@ -352,20 +355,20 @@ export default {
       }
 
       if (action == "upVote1" || action == "upVote2" || action == "upVote3") {
-        if (post.colorUpVote == "#dddddd" && post.colorDownVote != "#ff9100" ) {
+        if (post.colorUpVote == "#dddddd" && post.colorDownVote != "#ff9100") {
           axios.put('http://127.0.0.1:18080/post-service/rest/likes/addLike',
             {
               "userId": self.$data.user[0].id,
               "postId": postID
             })
             .then(function (response) {
-              axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+self.$data.user[0].id, {
+              axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/' + self.$data.user[0].id, {
                 "idPosts": [post.id]
               })
                 .then(function (response) {
                   post.vote = response.data[0][0]
                   post.colorUpVote = "#ff9100"
-                  axios.get('http://127.0.0.1:18080/post-service/rest/posts/userId_by_id/'+postID)
+                  axios.get('http://127.0.0.1:18080/post-service/rest/posts/userId_by_id/' + postID)
                     .then(function (response) {
                       axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
                         "ids": [response.data]
@@ -407,7 +410,7 @@ export default {
                 "postId": postID
               })
               .then(function (response) {
-                axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+self.$data.user[0].id, {
+                axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/' + self.$data.user[0].id, {
                   "idPosts": [post.id]
                 })
                   .then(function (response) {
@@ -438,13 +441,13 @@ export default {
               "postId": postID
             })
             .then(function (response) {
-              axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+self.$data.user[0].id, {
+              axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/' + self.$data.user[0].id, {
                 "idPosts": [post.id]
               })
                 .then(function (response) {
                   post.vote = response.data[0][0]
                   post.colorDownVote = "#ff9100"
-                  axios.get('http://127.0.0.1:18080/post-service/rest/posts/userId_by_id/'+postID)
+                  axios.get('http://127.0.0.1:18080/post-service/rest/posts/userId_by_id/' + postID)
                     .then(function (response) {
                       axios.post('http://127.0.0.1:18080/users-service/rest/users/by_ids', {
                         "ids": [response.data]
@@ -486,7 +489,7 @@ export default {
                 "postId": postID
               })
               .then(function (response) {
-                axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+self.$data.user[0].id, {
+                axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/' + self.$data.user[0].id, {
                   "idPosts": [post.id]
                 })
                   .then(function (response) {
@@ -538,10 +541,10 @@ export default {
       let self = this
       let idPost = [], textPost = [], datePost = [], userIdsToQuery = []
       let profilePictures = [], names = [], usernames = []
-      await axios.get('http://127.0.0.1:18080/post-service/rest/posts/getPostsOfUser/'+self.$data.user[0].id, { withCredentials: true })
+      await axios.get('http://127.0.0.1:18080/post-service/rest/posts/getPostsOfUser/' + self.$data.user[0].id, {withCredentials: true})
         .then(function (response) {
           if (response.data != null && response.data.length > 0) {
-            for (let i=0; i<response.data.length; i++) {
+            for (let i = 0; i < response.data.length; i++) {
               let date = new Date(response.data[i].datePost)
               datePost.push(date)
               idPost.push(response.data[i].id)
@@ -553,22 +556,22 @@ export default {
               "ids": userIdsToQuery
             }, {withCredentials: true})
               .then(function (response) {
-                for (let i=0; i<response.data.length; i++) {
+                for (let i = 0; i < response.data.length; i++) {
                   profilePictures.push(response.data[i].pictureUrl)
                   names.push(response.data[i].name)
                   usernames.push(response.data[i].username)
                 }
-                axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/'+self.$data.user[0].id, {
+                axios.post('http://127.0.0.1:18080/post-service/rest/posts/nbUpvotes_by_ids/' + self.$data.user[0].id, {
                   "idPosts": idPost
-                }, { withCredentials: true })
+                }, {withCredentials: true})
                   .then(function (response) {
-                    for (let i=response.data[0].length-1; i>=0; i--) {
+                    for (let i = response.data[0].length - 1; i >= 0; i--) {
                       let post = {
                         id: idPost[i],
                         text: textPost[i],
                         profilePicture: profilePictures[i],
                         name: names[i],
-                        username: "@"+usernames[i],
+                        username: "@" + usernames[i],
                         date: datePost[i].getDay() + '/' + datePost[i].getMonth() + '/' + datePost[i].getFullYear() + ' - ' + datePost[i].getHours() + ':' + datePost[i].getMinutes() + ':' + datePost[i].getSeconds(),
                         colorUpVote: response.data[1][i].like == false ? "#dddddd" : "#ff9100",
                         colorDownVote: response.data[1][i].dislike == false ? "#dddddd" : "#ff9100",
@@ -605,7 +608,7 @@ export default {
 
     /* Checks if a string is empty or undefined or only contains white spaces */
     empty: function (str) {
-      if (typeof str == 'undefined' || !str || str.length === 0 || str === "" || !/[^\s]/.test(str) || /^\s*$/.test(str) || str.replace(/\s/g,"") === "") {
+      if (typeof str == 'undefined' || !str || str.length === 0 || str === "" || !/[^\s]/.test(str) || /^\s*$/.test(str) || str.replace(/\s/g, "") === "") {
         return true;
       } else {
         return false;
@@ -617,7 +620,7 @@ export default {
         getWebsocketSessionId((sessionId) => {
           const notificationSocket = new WebSocket('ws://127.0.0.1:18080/notifications-service/notifications/' +
             self.$store.state.user.username + '/' + sessionId)
-            notificationSocket.onopen = function (ignored) {
+          notificationSocket.onopen = function (ignored) {
             notificationSocket.send(JSON.stringify({
               messageType: 'CREATE',
               body: JSON.stringify({
@@ -628,37 +631,36 @@ export default {
           }
         })
       }
+    },
+    updateUserInfo: async function () {
+      let self = this
+      let b = []
+      await
+        axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
+          .then(function (response) {
+            if (response.data[0] === true) {
+              b = {
+                confirmed: response.data[1].confirmed,
+                curriculum: response.data[1].curriculum,
+                email: response.data[1].email,
+                id: response.data[1].id,
+                username: response.data[1].username,
+                name: response.data[1].name,
+                profilePicture: response.data[1].pictureUrl,
+                password: response.data[1].password,
+                role: response.data[1].role
+              }
+            } else {
+              self.warning('You must be logged in to access this page')
+              self.$router.push('/login')
+            }
+          })
+          .catch(function (error) {
+            console.log(error.response);
+            return false
+          });
+      return b
     }
-  },
-
-  updateUserInfo: async function () {
-    let self = this
-    let b = []
-    await
-    axios.get('http://127.0.0.1:18080/users-service/rest/users/isLoggedIn', {withCredentials: true})
-      .then(function (response) {
-        if (response.data[0] === true) {
-          b =  {
-            confirmed:response.data[1].confirmed,
-            curriculum:response.data[1].curriculum,
-            email:response.data[1].email,
-            id: response.data[1].id,
-            username: response.data[1].username,
-            name: response.data[1].name,
-            profilePicture: response.data[1].pictureUrl,
-            password: response.data[1].password,
-            role: response.data[1].role
-          }
-        } else {
-          self.warning('You must be logged in to access this page')
-          self.$router.push('/login')
-        }
-      })
-      .catch(function (error) {
-        console.log(error.response);
-        return false
-      });
-    return b
   },
   beforeMount(){
     let self = this
