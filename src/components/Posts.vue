@@ -481,7 +481,7 @@ export default {
       let formData = new FormData();
       formData.append('image', self.$data.files[0])
       const config = {
-        baseURL: 'https://api.imgur.com',
+        baseURL: 'http://api.imgur.com',
         headers: {
           'Authorization': 'Client-ID ' + '254c66d26ff90cc'
         }
@@ -979,7 +979,7 @@ export default {
     height: 50%;
     position: fixed;
     overflow-y: scroll;
-    margin-left: 8%;
+    margin-left: 6%;
   }
 
   .modal-mask {

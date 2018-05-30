@@ -34,7 +34,7 @@
           </a>
         </p>
       </div>
-      <b-taginput class="myTags" style="border-radius: 25px; width: 100%; border: none"
+      <b-taginput class="myTags" style="border-radius: 25px; width: 102%; border: none"
                   v-model="tags" rounded
                   type='color'
                   maxtags = "5"
@@ -209,6 +209,13 @@
                   <div class="field">
                     <p class="control">
                       <button class="button" v-on:click="postComment($event)">Post comment</button>
+                      <b-upload v-model="files"
+                                v-on:input="handleUpload">
+                        <a class="button is-primary">
+                          <b-icon icon="upload"></b-icon>
+                          <span>Upload</span>
+                        </a>
+                      </b-upload>
                     </p>
                   </div>
                 </div>
@@ -259,6 +266,29 @@ export default {
         self.deletePost();
         self.$data.isVisible=false
       }
+    },
+    handleUpload() {
+      let self = this
+      let promises = []
+      let formData = new FormData();
+      formData.append('image', self.$data.files[0])
+      const config = {
+        baseURL: 'http://api.imgur.com',
+        headers: {
+          'Authorization': 'Client-ID ' + '254c66d26ff90cc'
+        }
+      }
+      promises.push(axios.post('/3/image', formData, config))
+      axios.all(promises)
+        .then((result) => {
+          for (let i=0; i<result.length; i++) {
+            self.$data.model.message += '![img]('+result[i].data.data.link+')'
+          }
+          self.$data.dropFiles = []
+        })
+        .catch((error) => {
+          console.log(error)
+        })
     },
     handleVote: async function (event) {
       let userLoggedIn = await this.updateUserInfo()
@@ -890,6 +920,7 @@ export default {
   },
   data() {
     return {
+      files: [],
       isResultVisible: false,
       tags: [], // contains the tags
       colors: [ // all colors that the tags can recieve

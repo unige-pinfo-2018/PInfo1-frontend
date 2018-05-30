@@ -23,7 +23,7 @@
     </vue-particles>
     <div id="signup">
       <figure class="avatar">
-        <img src="../assets/logo.png" width="90" height="90">
+        <img src="http://i.imgur.com/yGADVrk.png" width="90" height="90">
       </figure>
       <div v-on:keyup.enter="signup" class="columns">
         <div class="column is-6">

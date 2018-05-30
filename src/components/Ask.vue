@@ -26,7 +26,7 @@
         <div id="askBox" v-on:keyup.enter="switchColor($event)">
           <div class="columns">
             <div id="askTags" class="column" style="max-width: 100px">
-              <b-taginput class="myTags" style="border-radius: 25px; width: fit-content; border: none; max-height: 400px; top: 14%"
+              <b-taginput class="myTags" style="border-radius: 25px; width: 725%; border: none; max-height: 400px; top: 0%; margin-left: 162%"
                           v-model="tags" rounded
                           type='color'
                           maxtags = "5"
@@ -35,7 +35,7 @@
             </div>
             <div class="column">
               <b-field horizontal>
-                <formly-form :form="form" :model="model" :fields="fields" style="border: none; width: 550px; margin-left: 15%;"></formly-form>
+                <formly-form :form="form" :model="model" :fields="fields" style="border: none; width: 550px; margin-left: 0%; margin-top: 12%"></formly-form>
               </b-field>
             </div>
             <div class="column">
@@ -44,7 +44,7 @@
                   <b-upload v-model="dropFiles"
                             multiple
                             drag-drop
-                            style="margin-left: 30%"
+                            style="width: 20px;"
                             v-on:input="handleUpload">
                     <section class="section">
                       <div class="content has-text-centered">
@@ -132,12 +132,6 @@ export default {
     return {
       dropFiles: [],
       user: [ // information of the current user that's logged in
-        {
-          id: '1',
-          username: '@theogio',
-          name: 'Théo Giovanna',
-          profilePicture: 'http://foundrysocial.com/wp-content/uploads/2016/12/Anonymous-Icon-Round-01.png'
-        }
       ],
       model: {},
       form: {},
@@ -188,7 +182,7 @@ export default {
             let formData = new FormData();
             formData.append('image', self.$data.dropFiles[i])
             const config = {
-              baseURL: 'https://api.imgur.com',
+              baseURL: 'http://api.imgur.com',
               headers: {
                 'Authorization': 'Client-ID ' + '254c66d26ff90cc'
                 }
@@ -381,7 +375,8 @@ export default {
   #ask {
     background-color: white;
     border-radius: 25px;
-    width: 1200px;
+    width: 80%;
+    max-width: 80%;
     left: 10%;
     top: 25%;
     height: 400px;
@@ -390,7 +385,7 @@ export default {
   }
   #askBox {
     margin-top: 7%;
-    margin-left: 7%;
+    margin-left: 0%;
     max-width: 1000px;
   }
 
@@ -413,7 +408,7 @@ export default {
   }
 
   .modal-container {
-    max-width: 85%;
+    max-width: 80%;
     margin: 0px auto;
     padding: 20px 30px;
     background-color: #fff;
@@ -421,7 +416,7 @@ export default {
     box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
     transition: all .3s ease;
     font-family: Helvetica, Arial, sans-serif;
-    max-height: 85%;
+    max-height: 80%;
     overflow-y: scroll;
   }
 

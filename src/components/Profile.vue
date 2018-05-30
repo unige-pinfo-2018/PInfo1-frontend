@@ -303,7 +303,7 @@ export default {
             let formData = new FormData();
             formData.append('image', self.$data.dropFiles[i])
             const config = {
-              baseURL: 'https://api.imgur.com',
+              baseURL: 'http://api.imgur.com',
               headers: {
                 'Authorization': 'Client-ID ' + '254c66d26ff90cc'
               }

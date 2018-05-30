@@ -22,7 +22,7 @@
     </vue-particles>
     <div v-on:keyup.enter="confirmSignup" id="login">
       <figure class="avatar">
-        <img src="../assets/logo.png" width="90" height="90">
+        <img src="http://i.imgur.com/yGADVrk.png" width="90" height="90">
       </figure>
       <formly-form :form="form" :model="model" :fields="fields" style="border: none"></formly-form>
       <br/>

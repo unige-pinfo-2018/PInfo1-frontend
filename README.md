@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/unige-pinfo-2018/PInfo1-frontend.svg?branch=master)](https://travis-ci.org/unige-pinfo-2018/PInfo1-frontend.svg?branch=master)
 
 
-RELEASE ONLINE AT http://129.194.69.128:18080/#/
+RELEASE ONLINE AT https://129.194.69.128:18443/#/
 
 # uniweb
 
