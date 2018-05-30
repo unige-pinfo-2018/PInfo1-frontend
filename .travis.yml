@@ -4,6 +4,8 @@ addons:
   ssh_known_hosts: 129.194.69.128
 before_install:
 - find src -type f -exec sed -i 's/127.0.0.1/129.194.69.128/g' {} +
+- find src -type f -exec sed -i 's/http/https/g' {} +
+- find src -type f -exec sed -i 's/18080/18443/g' {} +
 install:
 - npm install
 script:

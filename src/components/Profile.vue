@@ -618,7 +618,7 @@ export default {
       let self = this
       if (this.$store.state.userIsLoggedIn && this.$store.state.user != null) {
         getWebsocketSessionId((sessionId) => {
-          const notificationSocket = new WebSocket('ws://127.0.0.1:18080/notifications-service/notifications/' +
+          const notificationSocket = new WebSocket('wss://127.0.0.1:18080/notifications-service/notifications/' +
             self.$store.state.user.username + '/' + sessionId)
           notificationSocket.onopen = function (ignored) {
             notificationSocket.send(JSON.stringify({

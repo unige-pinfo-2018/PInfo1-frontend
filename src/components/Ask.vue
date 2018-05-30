@@ -143,29 +143,6 @@ export default {
       form: {},
       fields: [
         {
-          key: 'subject',
-          type: 'input-with-field',
-          required: true,
-          templateOptions: {
-            properties: {
-              'type': 'text',
-              'placeholder': "Subject"
-            },
-            wrapper: {
-              properties: {
-                'label': 'Subject',
-                'addons': false,
-              }
-            }
-          },
-          validators: {
-            reliability: {
-              expression: 'model[field.key].length > 0',
-              message: 'Cannot be empty'
-            }
-          }
-        },
-        {
           "key": "message",
           "type": "input-with-field",
           "templateOptions": {
